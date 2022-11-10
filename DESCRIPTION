@@ -1,0 +1,17 @@
+Package: offshoredatr
+Type: Package
+Title: Offshore Data Preparation
+Version: 0.1.0
+Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
+Description: Offshore data preparation for use in prioritizations
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    magrittr,
+    raster,
+    sf
+RoxygenNote: 7.2.1
+Depends: 
+    R (>= 2.10)
