@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-get_geomorphology <- function(area_polygon, planning_grid, raster_or_vector = "raster"){
+get_geomorphology <- function(area_polygon, planning_grid = NULL, raster_or_vector = "vector"){
   geomorph_files <- c("Basins_Basins perched on the shelf.rds", "Basins_Basins perched on the slope.rds", 
                       "Basins_Large basins of seas and oceans.rds", "Basins_Major ocean basins.rds", 
                       "Basins_Small basins of seas and oceans.rds", "Bridges.rds", 
@@ -20,9 +20,8 @@ get_geomorphology <- function(area_polygon, planning_grid, raster_or_vector = "r
                       "Troughs.rds")
   
   geomorph_file_paths <- system.file("extdata", geomorph_files, package = "offshoredatr", mustWork = TRUE)
-  print(geomorph_file_paths)
 
-  sf_use_s2(FALSE)
+  sf::sf_use_s2(FALSE)
 
   geomorph_data <- list()
 
@@ -30,8 +29,8 @@ get_geomorphology <- function(area_polygon, planning_grid, raster_or_vector = "r
     feature_name <- gsub(pattern =  ".rds",replacement =  "", basename(file_name))
   
     temp_file <- readRDS(file_name) %>%
-      st_crop(area_polygon) %>%
-      st_intersection(area_polygon)
+      sf::st_crop(area_polygon) %>%
+      sf::st_intersection(area_polygon)
 
     if(nrow(temp_file)>0)
     {
@@ -39,16 +38,20 @@ get_geomorphology <- function(area_polygon, planning_grid, raster_or_vector = "r
     }
   }
 
-  geomorph_data_stack <- stack()
-
-  for (geomorph_feature in names(geomorph_data)) {
-    geomorph_data_stack <- geomorph_data[[geomorph_feature]] %>%
-      st_transform(crs = crs(planning_grid)) %>%
-      rasterize(planning_grid, field = 1) %>%
-      mask(., planning_grid) %>%
-      setNames(geomorph_feature) %>%
-      addLayer(geomorph_data_stack, .)
+  if(raster_or_vector == "vector"){
+    return(geomorph_data)
   }
-
-  ifelse(raster_or_vector == "raster", return(geomorph_data_stack), return(geomorph_data))
+  else{
+    geomorph_data_stack <- stack()
+    
+    for (geomorph_feature in names(geomorph_data)) {
+      geomorph_data_stack <- geomorph_data[[geomorph_feature]] %>%
+        sf::st_transform(crs = crs(planning_grid)) %>%
+        raster::rasterize(planning_grid, field = 1) %>%
+        raster::mask(., planning_grid) %>%
+        setNames(geomorph_feature) %>%
+        raster::addLayer(geomorph_data_stack, .)
+    }
+    return(geomorph_data_stack)
+  }
 }

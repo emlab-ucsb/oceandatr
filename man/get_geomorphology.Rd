@@ -4,7 +4,11 @@
 \alias{get_geomorphology}
 \title{Get geomorphology for an area of interest}
 \usage{
-get_geomorphology(area_polygon, planning_grid, raster_or_vector = "raster")
+get_geomorphology(
+  area_polygon,
+  planning_grid = NULL,
+  raster_or_vector = "raster"
+)
 }
 \arguments{
 \item{area_polygon}{}

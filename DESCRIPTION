@@ -10,6 +10,7 @@ LazyData: true
 Imports: 
     dplyr,
     magrittr,
+    mregions2,
     raster,
     sf
 RoxygenNote: 7.2.1
