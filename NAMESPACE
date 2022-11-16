@@ -3,4 +3,5 @@
 export("%>%")
 export(get_eez)
 export(get_geomorphology)
+export(get_planning_grid)
 importFrom(magrittr,"%>%")

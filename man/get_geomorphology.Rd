@@ -7,7 +7,7 @@
 get_geomorphology(
   area_polygon,
   planning_grid = NULL,
-  raster_or_vector = "raster"
+  raster_or_vector = "vector"
 )
 }
 \arguments{
