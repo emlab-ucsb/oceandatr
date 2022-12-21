@@ -22,6 +22,16 @@ devtools::install_github("emlab-ucsb/offshoredatr")
 
 ## Example of usage
 
+``` r
+#load libraries needed
+library(offshoredatr)
+library(sf)
+#> Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE
+library(raster)
+#> Loading required package: sp
+library(tmap)
+```
+
 ### Obtain an EEZ for an area of interest
 
 This function pulls data for EEZs from the [Marine
@@ -34,13 +44,6 @@ not necessarily the same as the country name you would expect!
 TO DO: make the name matching fuzzy
 
 ``` r
-library(offshoredatr)
-library(sf)
-#> Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE
-library(raster)
-#> Loading required package: sp
-library(tmap)
-
 bermuda_eez <- get_eez(country_name = "bermudian")
 
 #plot to check we have Bermuda's EEZ
@@ -49,7 +52,7 @@ tm_shape(bermuda_eez) +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-area of interest-1.png" width="100%" />
 
 # Choose a CRS
 
@@ -113,7 +116,7 @@ tm_shape(bermuda_eez_projected) +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-planning grid-1.png" width="100%" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
@@ -129,7 +132,7 @@ tm_shape(bermuda_eez_projected) +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-planning grid cells-1.png" width="100%" />
 
 ### Get geomorphological data for area of interest
 
@@ -146,23 +149,10 @@ this package, so it is not necessary to download them.
 geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = planning_grid)
 
 tm_shape(geomorphology) +
-  tm_raster(col = "sienna", title = "Geomorphology") +
+  tm_raster(palette = "sienna2", title = "Geomorphology") +
   tm_shape(bermuda_eez_projected) +
   tm_borders() +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
-
-## REMINDER FOR ME, WILL DELETE:
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+<img src="man/figures/README-geomorphology-1.png" width="100%" />
