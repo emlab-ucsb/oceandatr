@@ -1,4 +1,6 @@
 #' Get geomorphology for an area of interest
+#' 
+#' Geomorphological features from the Harris et al. 2014 dataset, available at: https://www.bluehabitats.org
 #'
 #' @param area_polygon 
 #' @param planning_grid 
@@ -8,7 +10,7 @@
 #' @export
 #'
 #' @examples
-get_geomorphology <- function(area_polygon, planning_grid = NULL, raster_or_vector = "vector"){
+get_geomorphology <- function(area_polygon, planning_grid = NULL){
   geomorph_files <- c("Basins_Basins perched on the shelf.rds", "Basins_Basins perched on the slope.rds", 
                       "Basins_Large basins of seas and oceans.rds", "Basins_Major ocean basins.rds", 
                       "Basins_Small basins of seas and oceans.rds", "Bridges.rds", 
@@ -38,7 +40,7 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL, raster_or_vect
     }
   }
 
-  if(raster_or_vector == "vector"){
+  if(is.null(planning_grid)){
     return(geomorph_data)
   }
   else{
