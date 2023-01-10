@@ -4,11 +4,7 @@
 \alias{get_geomorphology}
 \title{Get geomorphology for an area of interest}
 \usage{
-get_geomorphology(
-  area_polygon,
-  planning_grid = NULL,
-  raster_or_vector = "vector"
-)
+get_geomorphology(area_polygon, planning_grid = NULL)
 }
 \arguments{
 \item{area_polygon}{}
@@ -21,5 +17,5 @@ get_geomorphology(
 A raster stack with geomorphological features found within the area polygon rasterized using the planning_grid input raster, or a list of geomorphological features in sf format
 }
 \description{
-Get geomorphology for an area of interest
+Geomorphological features from the Harris et al. 2014 dataset, available at: https://www.bluehabitats.org
 }

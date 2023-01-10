@@ -112,9 +112,23 @@ tm_shape(bermuda_eez_projected) +
   tm_graticules(lines = FALSE)
 ```
 
+### Get bathymetry for area of interest
+
+Now we have our planning grid, we can get data for this area of interest. A key piece of data is bathymetry. If the user has downloaded data for the area of interest from the [GEBCO website](https://www.gebco.net), they can pass the file path to this function and it will crop and rasterize the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the [ETOPO 2022 Global Relief model](https://www.ncei.noaa.gov/products/etopo-global-relief-model) using a function borrowed from the `marmap` package.
+
+```{r bathymetry}
+bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = planning_grid, keep = FALSE)
+
+tm_shape(bathymetry) +
+  tm_raster(palette = "Blues", title = "Depth (m)") +
+  tm_shape(bermuda_eez_projected) +
+  tm_borders() +
+  tm_graticules(lines = FALSE)
+```
+
 ### Get geomorphological data for area of interest
 
-Now we have our planning grid, we can get data for this area of interest. The first type of data we will get is geomorpological features. These data come from [Harris et al. 2014, Geomorphology of the Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available for download from https://www.bluehabitats.org. The features that are suggested as major habitats for inclusion in no-take MPAs by [Ceccarelli et al. 2021](https://doi.org/10.3389/fmars.2021.634574) are included in this package, so it is not necessary to download them.
+The seafloor has its own mountains, plains and other geomorphological features just as on land. These data come from [Harris et al. 2014, Geomorphology of the Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available for download from https://www.bluehabitats.org. The features that are suggested as major habitats for inclusion in no-take MPAs by [Ceccarelli et al. 2021](https://doi.org/10.3389/fmars.2021.634574) are included in this package, so it is not necessary to download them.
 
 ```{r geomorphology, warning=FALSE, message=FALSE}
 geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = planning_grid)

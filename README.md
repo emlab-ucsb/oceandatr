@@ -134,11 +134,38 @@ tm_shape(bermuda_eez_projected) +
 
 <img src="man/figures/README-planning grid cells-1.png" width="100%" />
 
-### Get geomorphological data for area of interest
+### Get bathymetry for area of interest
 
 Now we have our planning grid, we can get data for this area of
-interest. The first type of data we will get is geomorpological
-features. These data come from [Harris et al. 2014, Geomorphology of the
+interest. A key piece of data is bathymetry. If the user has downloaded
+data for the area of interest from the [GEBCO
+website](https://www.gebco.net), they can pass the file path to this
+function and it will crop and rasterize the data using the supplied
+planning grid. If no file path is provided, the function will extract
+bathymetry data for the area from the [ETOPO 2022 Global Relief
+model](https://www.ncei.noaa.gov/products/etopo-global-relief-model)
+using a function borrowed from the `marmap` package.
+
+``` r
+bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = planning_grid, keep = FALSE)
+#> Querying NOAA database ...
+#> This may take seconds to minutes, depending on grid size
+#> x1 = -68.9 y1 = 28.9 x2 = -60.7 y2 = 35.8 ncell.lon = 492 ncell.lat = 414
+
+tm_shape(bathymetry) +
+  tm_raster(palette = "Blues", title = "Depth (m)") +
+  tm_shape(bermuda_eez_projected) +
+  tm_borders() +
+  tm_graticules(lines = FALSE)
+```
+
+<img src="man/figures/README-bathymetry-1.png" width="100%" />
+
+### Get geomorphological data for area of interest
+
+The seafloor has its own mountains, plains and other geomorphological
+features just as on land. These data come from [Harris et al. 2014,
+Geomorphology of the
 Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available
 for download from <https://www.bluehabitats.org>. The features that are
 suggested as major habitats for inclusion in no-take MPAs by [Ceccarelli
