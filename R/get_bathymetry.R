@@ -1,6 +1,6 @@
 #' Get bathymetry for area of interest
 #'
-#' Best source of bathymetry data is GEBCO (https://www.gebco.net). If the user has downloaded data for the area of interest, for example from GEBCO (https://www.gebco.net), they can pass the file path to this function and it will crop and rasterize the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the ETOPO 2022 Global Relief model served by NOAA (https://www.ncei.noaa.gov/products/etopo-global-relief-model).
+#' If the user has downloaded data for the area of interest, for example from GEBCO (https://www.gebco.net), they can pass the file path to this function and it will crop and rasterize the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the ETOPO 2022 Global Relief model served by NOAA (https://www.ncei.noaa.gov/products/etopo-global-relief-model).
 #'
 #' @param area_polygon 
 #' @param planning_grid 
@@ -40,10 +40,10 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
 #modifying as I want it to return a raster, and also don't want to load the whole marmap package which comes with a lot of dependencies
 
 get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, keep = keep, antimeridian = antimeridian, path = path){
-  lon1 = st_bbox(aoi)$xmin
-  lon2 = st_bbox(aoi)$xmax
-  lat1 = st_bbox(aoi)$ymin 
-  lat2 = st_bbox(aoi)$ymax
+  lon1 = sf::st_bbox(aoi)$xmin
+  lon2 = sf::st_bbox(aoi)$xmax
+  lat1 = sf::st_bbox(aoi)$ymin 
+  lat2 = sf::st_bbox(aoi)$ymax
   
   #here on copied directly from marmap package
   if (lon1 == lon2) 
@@ -186,8 +186,8 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       }
     }
     
-    if(!inMemory(bath)){
-      bath <- readAll(bath)
+    if(!raster::inMemory(bath)){
+      bath <- raster::readAll(bath)
     }
     
     if (keep) {

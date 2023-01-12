@@ -9,9 +9,9 @@ get_bathymetry(
   planning_grid = NULL,
   bathymetry_data_filepath = NULL,
   resolution = 1,
-  keep = TRUE,
+  keep = FALSE,
   antimeridian = FALSE,
-  path = "../data"
+  path = NULL
 )
 }
 \arguments{
@@ -33,5 +33,5 @@ get_bathymetry(
 A raster of bathymetry for the area of interest, rasterized to the planning grid resolution and CRS if supplied.
 }
 \description{
-Best source of bathymetry data is GEBCO (https://www.gebco.net). If the user has downloaded data for the area of interest from GEBCO, they can pass the file path to this function and it will crop and rasterize the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the ETOPO1 Global Relief model (https://www.ngdc.noaa.gov/mgg/global/relief/).
+If the user has downloaded data for the area of interest, for example from GEBCO (https://www.gebco.net), they can pass the file path to this function and it will crop and rasterize the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the ETOPO 2022 Global Relief model served by NOAA (https://www.ncei.noaa.gov/products/etopo-global-relief-model).
 }

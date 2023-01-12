@@ -9,8 +9,14 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "1%"
 )
+devtools::load_all()
+
+#figure output settings
+h = 3.5
+w = 3.5
+ow = "400"
 ```
 
 # offshoredatr
@@ -24,18 +30,19 @@ Offshoredatr aims to provide simple functions for creating data for conducting a
 
 You can install the development version of offshoredatr from [GitHub](https://github.com/) with:
 
-``` r
-# install.packages("devtools")
+```{r, eval = FALSE}
+if (!require(devtools)) install.packages("devtools")
 devtools::install_github("emlab-ucsb/offshoredatr")
 ```
 
 ## Example of usage
 
-```{r}
-#load libraries needed
+```{r eval=FALSE}
+#load offshoredatr package
 library(offshoredatr)
-library(sf)
-library(raster)
+```
+```{r}
+#load tmap package for making nice maps
 library(tmap)
 ```
 
@@ -45,7 +52,7 @@ This function pulls data for EEZs from the [Marine Gazetteer](https://marineregi
 
 TO DO: make the name matching fuzzy
 
-```{r area of interest}
+```{r area of interest, fig.height=h, fig.width=w, out.width=ow}
 bermuda_eez <- get_eez(country_name = "bermudian")
 
 #plot to check we have Bermuda's EEZ
@@ -86,11 +93,11 @@ projection <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal",
 
 A planning grid is needed for spatial prioritization. This divides the area of interest into grid cells. The `planning_grid` function will return a planning grid for the specified area of interest (polygon), projected into the coordinate refernce system specified, at the cell resolution specified in kilometres.
 
-```{r planning grid, warning=FALSE}
+```{r planning grid, warning=FALSE, fig.height=h, fig.width=w, out.width=ow}
 planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 5)
 
 #project the eez into same projection as planning grid for plotting
-bermuda_eez_projected <- st_transform(bermuda_eez, crs = projection)
+bermuda_eez_projected <- sf::st_transform(bermuda_eez, crs = projection)
 
 #plot the planning grid
 tm_shape(bermuda_eez_projected) +
@@ -102,12 +109,12 @@ tm_shape(bermuda_eez_projected) +
 
 The raster covers Bermuda's EEZ. The grid cells would be too small to see if we plotted them, but here is a coarser grid (lower resolution) visualized so we can see what the grid cells look like.
 
-```{r planning grid cells}
+```{r planning grid cells, fig.height=h, fig.width=w, out.width=ow}
 planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 20)
 
 tm_shape(bermuda_eez_projected) +
   tm_borders() +
-  tm_shape(rasterToPolygons(planning_grid_coarse, dissolve = FALSE)) +
+  tm_shape(raster::rasterToPolygons(planning_grid_coarse, dissolve = FALSE)) +
   tm_borders() +
   tm_graticules(lines = FALSE)
 ```
@@ -116,7 +123,7 @@ tm_shape(bermuda_eez_projected) +
 
 Now we have our planning grid, we can get data for this area of interest. A key piece of data is bathymetry. If the user has downloaded data for the area of interest from the [GEBCO website](https://www.gebco.net), they can pass the file path to this function and it will crop and rasterize the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the [ETOPO 2022 Global Relief model](https://www.ncei.noaa.gov/products/etopo-global-relief-model) using a function borrowed from the `marmap` package.
 
-```{r bathymetry}
+```{r bathymetry, fig.height=h, fig.width=w, out.width=ow}
 bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = planning_grid, keep = FALSE)
 
 tm_shape(bathymetry) +
@@ -126,15 +133,37 @@ tm_shape(bathymetry) +
   tm_graticules(lines = FALSE)
 ```
 
+### Depth classification
+
+The ocean can be classified into 5 depth zones:
+
+* 0 - 200m: Epipelagic zone
+* 200 - 1000m: Mesopelagic zone
+* 1000 - 4000m: Bathypelagic zone
+* 4000 - 6000m: Abyssopelagic zone
+* 6000m+: Hadopelagic zone
+
+We can use these depth zone definitions to classify the bathymetry we just obtained into depth zones based on the ocean floor depths.
+
+```{r depth classification, fig.height=h, fig.width=w, out.width=ow}
+depth_zones <- classify_depths(bathymetry, planning_grid)
+
+tm_shape(depth_zones) +
+  tm_raster(palette = "blue4", legend.show = FALSE) +
+  tm_shape(bermuda_eez_projected) +
+  tm_borders() +
+  tm_graticules(lines = FALSE)
+```
+
 ### Get geomorphological data for area of interest
 
 The seafloor has its own mountains, plains and other geomorphological features just as on land. These data come from [Harris et al. 2014, Geomorphology of the Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available for download from https://www.bluehabitats.org. The features that are suggested as major habitats for inclusion in no-take MPAs by [Ceccarelli et al. 2021](https://doi.org/10.3389/fmars.2021.634574) are included in this package, so it is not necessary to download them.
 
-```{r geomorphology, warning=FALSE, message=FALSE}
+```{r geomorphology, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = planning_grid)
 
 tm_shape(geomorphology) +
-  tm_raster(palette = "sienna2", title = "Geomorphology") +
+  tm_raster(palette = "sienna2", legend.show = FALSE) +
   tm_shape(bermuda_eez_projected) +
   tm_borders() +
   tm_graticules(lines = FALSE)

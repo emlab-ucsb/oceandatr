@@ -16,19 +16,19 @@ You can install the development version of offshoredatr from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+if (!require(devtools)) install.packages("devtools")
 devtools::install_github("emlab-ucsb/offshoredatr")
 ```
 
 ## Example of usage
 
 ``` r
-#load libraries needed
+#load offshoredatr package
 library(offshoredatr)
-library(sf)
-#> Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE
-library(raster)
-#> Loading required package: sp
+```
+
+``` r
+#load tmap package for making nice maps
 library(tmap)
 ```
 
@@ -52,7 +52,7 @@ tm_shape(bermuda_eez) +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-area of interest-1.png" width="100%" />
+<img src="man/figures/README-area of interest-1.png" width="400" />
 
 # Choose a CRS
 
@@ -106,7 +106,7 @@ resolution specified in kilometres.
 planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 5)
 
 #project the eez into same projection as planning grid for plotting
-bermuda_eez_projected <- st_transform(bermuda_eez, crs = projection)
+bermuda_eez_projected <- sf::st_transform(bermuda_eez, crs = projection)
 
 #plot the planning grid
 tm_shape(bermuda_eez_projected) +
@@ -116,7 +116,7 @@ tm_shape(bermuda_eez_projected) +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-planning grid-1.png" width="100%" />
+<img src="man/figures/README-planning grid-1.png" width="400" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
@@ -127,12 +127,12 @@ planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection
 
 tm_shape(bermuda_eez_projected) +
   tm_borders() +
-  tm_shape(rasterToPolygons(planning_grid_coarse, dissolve = FALSE)) +
+  tm_shape(raster::rasterToPolygons(planning_grid_coarse, dissolve = FALSE)) +
   tm_borders() +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-planning grid cells-1.png" width="100%" />
+<img src="man/figures/README-planning grid cells-1.png" width="400" />
 
 ### Get bathymetry for area of interest
 
@@ -159,7 +159,34 @@ tm_shape(bathymetry) +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-bathymetry-1.png" width="100%" />
+<img src="man/figures/README-bathymetry-1.png" width="400" />
+
+### Depth classification
+
+The ocean can be classified into 5 depth zones:
+
+- 0 - 200m: Epipelagic zone
+- 200 - 1000m: Mesopelagic zone
+- 1000 - 4000m: Bathypelagic zone
+- 4000 - 6000m: Abyssopelagic zone
+- 6000m+: Hadopelagic zone
+
+We can use these depth zone definitions to classify the bathymetry we
+just obtained into depth zones based on the ocean floor depths.
+
+``` r
+depth_zones <- classify_depths(bathymetry, planning_grid)
+#> Warning in raster::projectRaster(., to = planning_grid): input and ouput crs are
+#> the same
+
+tm_shape(depth_zones) +
+  tm_raster(palette = "blue4", legend.show = FALSE) +
+  tm_shape(bermuda_eez_projected) +
+  tm_borders() +
+  tm_graticules(lines = FALSE)
+```
+
+<img src="man/figures/README-depth classification-1.png" width="400" />
 
 ### Get geomorphological data for area of interest
 
@@ -176,10 +203,10 @@ this package, so it is not necessary to download them.
 geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = planning_grid)
 
 tm_shape(geomorphology) +
-  tm_raster(palette = "sienna2", title = "Geomorphology") +
+  tm_raster(palette = "sienna2", legend.show = FALSE) +
   tm_shape(bermuda_eez_projected) +
   tm_borders() +
   tm_graticules(lines = FALSE)
 ```
 
-<img src="man/figures/README-geomorphology-1.png" width="100%" />
+<img src="man/figures/README-geomorphology-1.png" width="400" />
