@@ -4,7 +4,6 @@
 #'
 #' @param area_polygon 
 #' @param planning_grid 
-#' @param raster_or_vector 
 #'
 #' @return A raster stack with geomorphological features found within the area polygon rasterized using the planning_grid input raster, or a list of geomorphological features in sf format
 #' @export

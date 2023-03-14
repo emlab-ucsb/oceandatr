@@ -10,8 +10,6 @@ get_geomorphology(area_polygon, planning_grid = NULL)
 \item{area_polygon}{}
 
 \item{planning_grid}{}
-
-\item{raster_or_vector}{}
 }
 \value{
 A raster stack with geomorphological features found within the area polygon rasterized using the planning_grid input raster, or a list of geomorphological features in sf format

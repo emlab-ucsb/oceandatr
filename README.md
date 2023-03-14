@@ -27,11 +27,6 @@ devtools::install_github("emlab-ucsb/offshoredatr")
 library(offshoredatr)
 ```
 
-``` r
-#load tmap package for making nice maps
-library(tmap)
-```
-
 ### Obtain an EEZ for an area of interest
 
 This function pulls data for EEZs from the [Marine
@@ -47,12 +42,10 @@ TO DO: make the name matching fuzzy
 bermuda_eez <- get_eez(country_name = "bermudian")
 
 #plot to check we have Bermuda's EEZ
-tm_shape(bermuda_eez) +
-  tm_polygons(col = "lightblue") +
-  tm_graticules(lines = FALSE)
+plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 ```
 
-<img src="man/figures/README-area of interest-1.png" width="400" />
+<img src="man/figures/README-area of interest-1.png" width="800" />
 
 # Choose a CRS
 
@@ -99,24 +92,23 @@ projection <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal",
 A planning grid is needed for spatial prioritization. This divides the
 area of interest into grid cells. The `planning_grid` function will
 return a planning grid for the specified area of interest (polygon),
-projected into the coordinate refernce system specified, at the cell
+projected into the coordinate reference system specified, at the cell
 resolution specified in kilometres.
 
 ``` r
 planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 5)
 
 #project the eez into same projection as planning grid for plotting
-bermuda_eez_projected <- sf::st_transform(bermuda_eez, crs = projection)
+bermuda_eez_projected <- bermuda_eez %>% 
+  sf::st_transform(crs = projection) %>% 
+  sf::st_geometry()
 
 #plot the planning grid
-tm_shape(bermuda_eez_projected) +
-  tm_borders() +
-  tm_shape(planning_grid) +
-  tm_raster(title = "Planning grid") + 
-  tm_graticules(lines = FALSE)
+plot(planning_grid, col = "gold3", main = NULL, axes = FALSE, legend = FALSE)
+plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-planning grid-1.png" width="400" />
+<img src="man/figures/README-planning grid-1.png" width="800" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
@@ -125,16 +117,13 @@ visualized so we can see what the grid cells look like.
 ``` r
 planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 20)
 
-tm_shape(bermuda_eez_projected) +
-  tm_borders() +
-  tm_shape(raster::rasterToPolygons(planning_grid_coarse, dissolve = FALSE)) +
-  tm_borders() +
-  tm_graticules(lines = FALSE)
+plot(bermuda_eez_projected, main = NULL, axes = FALSE)
+plot(raster::rasterToPolygons(planning_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
-<img src="man/figures/README-planning grid cells-1.png" width="400" />
+<img src="man/figures/README-planning grid cells-1.png" width="800" />
 
-### Get bathymetry for area of interest
+### Get bathymetry
 
 Now we have our planning grid, we can get data for this area of
 interest. A key piece of data is bathymetry. If the user has downloaded
@@ -152,14 +141,11 @@ bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = plannin
 #> This may take seconds to minutes, depending on grid size
 #> x1 = -68.9 y1 = 28.9 x2 = -60.7 y2 = 35.8 ncell.lon = 492 ncell.lat = 414
 
-tm_shape(bathymetry) +
-  tm_raster(palette = "Blues", title = "Depth (m)") +
-  tm_shape(bermuda_eez_projected) +
-  tm_borders() +
-  tm_graticules(lines = FALSE)
+plot(bathymetry, col = hcl.colors(n=255, "Blues"), main = NULL, axes = FALSE) 
+plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-bathymetry-1.png" width="400" />
+<img src="man/figures/README-bathymetry-1.png" width="800" />
 
 ### Depth classification
 
@@ -176,19 +162,15 @@ just obtained into depth zones based on the ocean floor depths.
 
 ``` r
 depth_zones <- classify_depths(bathymetry, planning_grid)
-#> Warning in raster::projectRaster(., to = planning_grid): input and ouput crs are
-#> the same
+#> Warning in raster::projectRaster(., to = planning_grid): input and ouput crs
+#> are the same
 
-tm_shape(depth_zones) +
-  tm_raster(palette = "blue4", legend.show = FALSE) +
-  tm_shape(bermuda_eez_projected) +
-  tm_borders() +
-  tm_graticules(lines = FALSE)
+plot(depth_zones, col = "navyblue", axes = FALSE, legend = FALSE, addfun = function(){plot(bermuda_eez_projected, add=TRUE)})
 ```
 
-<img src="man/figures/README-depth classification-1.png" width="400" />
+<img src="man/figures/README-depth classification-1.png" width="800" />
 
-### Get geomorphological data for area of interest
+### Get geomorphological data
 
 The seafloor has its own mountains, plains and other geomorphological
 features just as on land. These data come from [Harris et al. 2014,
@@ -202,11 +184,67 @@ this package, so it is not necessary to download them.
 ``` r
 geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = planning_grid)
 
-tm_shape(geomorphology) +
-  tm_raster(palette = "sienna2", legend.show = FALSE) +
-  tm_shape(bermuda_eez_projected) +
-  tm_borders() +
-  tm_graticules(lines = FALSE)
+plot(geomorphology, col = "sienna2", axes = FALSE, legend = FALSE, addfun = function(){plot(bermuda_eez_projected, add=TRUE)})
 ```
 
-<img src="man/figures/README-geomorphology-1.png" width="400" />
+<img src="man/figures/README-geomorphology-1.png" width="800" />
+
+## Get knolls data
+
+Knolls are another geomorphological feature, which are ‘small’
+seamounts, classified as seamounts between 200 and 1000m higher than the
+surrounding seafloor [Morato et
+al. 2008](https://doi.org/10.3354/meps07268). Data are the knoll base
+area data from [Yesson et
+al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004).
+
+``` r
+knolls <- get_knolls(area_polygon = bermuda_eez, planning_grid = planning_grid)
+
+plot(knolls, col = "grey40", main = NULL, axes = FALSE, legend = FALSE)
+plot(bermuda_eez_projected, add=TRUE)
+```
+
+<img src="man/figures/README-knolls-1.png" width="800" />
+
+## Get seamount areas
+
+Seamounts, classified as peaks at least 1000m higher than the
+surrounding seafloor [Morato et
+al. 2008](https://doi.org/10.3354/meps07268). These data are from
+[Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030).
+Each peak is buffered to the distance specified in the function call (in
+units of kilometres)
+
+``` r
+seamounts <- get_seamounts_buffered(area_polygon = bermuda_eez, planning_grid = planning_grid, buffer_km = 30)
+
+plot(seamounts, col = "saddlebrown", main = NULL, axes = FALSE, legend = FALSE)
+plot(bermuda_eez_projected, add=TRUE)
+```
+
+<img src="man/figures/README-seamounts-1.png" width="800" />
+
+## Habitat suitability models
+
+Retrieve habitat suitability data for 3 deep water coral groups: \*
+Antipatharia:
+
+``` r
+coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez) %>% 
+  #function returns the raw data in EPSG 4326; project to local crs for plotting
+  projectRaster(crs = crs(planning_grid))
+#> [1] "Antipatharia data done"
+#> [1] "Cold water coral data done"
+#> [1] "Octocoral data done"
+
+#show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
+plot_add <- function(){
+  plot(bermuda_eez_projected, border = "grey40", add=TRUE) 
+  plot(rasterToPolygons(seamounts, dissolve = TRUE), col = NA, border = "red", add=TRUE)
+  }
+
+plot(coral_habitat, col = hcl.colors(n=100, "cividis"), axes = FALSE, addfun = plot_add)
+```
+
+<img src="man/figures/README-coral habitat-1.png" width="800" />
