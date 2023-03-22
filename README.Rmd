@@ -65,7 +65,7 @@ The bounding box coordinates for the area of interest can be used to generate th
 sf::st_bbox(bermuda_eez)
 ```
 
-The coordinates above should be entered as the 'Geographic extent' and the map should then have a box drawn around the bounding box of the area of interest. The projection can then be copied and pasted from the pop-up box when clicking on 'WKT'. The projeciton needs to be placed in quotation marks as follows:
+The coordinates above should be entered as the 'Geographic extent' and the map should then have a box drawn around the bounding box of the area of interest. The projection can then be copied and pasted from the pop-up box when clicking on 'WKT'. The projection needs to be placed in quotation marks as follows:
 
 ```{r projection}
 projection <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal",
