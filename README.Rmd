@@ -173,7 +173,9 @@ plot(bermuda_eez_projected, add=TRUE)
 ## Habitat suitability models
 
 Retrieve habitat suitability data for 3 deep water coral groups:
-* Antipatharia: 
+* Antipatharia: Habitats associated with increased biodiversity in both invertebrate and vertebrate species; global distributions were modeled by [Yesson et al. (2017)](https://doi.org/10.1016/j.dsr2.2015.12.004)
+* Cold water coral: Important habitats and nursery areas for many species; global distributions were modeled by [Davies and Guinotte (2011)](https://doi.org/10.1371/journal.pone.0018483)
+* Octocoral: Important habitats for invertebrates, groundfish, rockfish and other species; global distributions were modeled by [Yesson et al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
 
 
 ```{r coral habitat, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
