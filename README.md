@@ -39,7 +39,9 @@ not necessarily the same as the country name you would expect!
 TO DO: make the name matching fuzzy
 
 ``` r
-bermuda_eez <- get_eez(country_name = "bermudian")
+bermuda_eez <- get_eez(country_name = "Bermuda")
+#> Loading ISO 19139 XML schemas...
+#> Loading ISO 19115 codelists...
 
 #plot to check we have Bermuda's EEZ
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)

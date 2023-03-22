@@ -49,7 +49,7 @@ This function pulls data for EEZs from the [Marine Gazetteer](https://marineregi
 TO DO: make the name matching fuzzy
 
 ```{r area of interest, fig.height=h, fig.width=w, out.width=ow}
-bermuda_eez <- get_eez(country_name = "bermudian")
+bermuda_eez <- get_eez(country_name = "Bermuda")
 
 #plot to check we have Bermuda's EEZ
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)

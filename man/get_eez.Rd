@@ -13,8 +13,8 @@ get_eez(country_name)
 The EEZ as an sf object
 }
 \description{
-This uses the `mr_gaz_records_by_name` and `mr_gaz_record` functions from the `mregions2` package to retrieve an EEZ object from the Marine Gazeeter (https://marineregions.org/gazetteer.php). Note that the EEZ name is often different to the country name, e.g. use "Bermudian" to get Bermuda's EEZ; see https://marineregions.org/gazetteer.php?p=search for a list of EEZ names
+This uses the `mrp_get` function from the `mregions2` package to retrieve an EEZ object from Marine Regions (https://marineregions.org/gazetteer.php). For a full list of EEZs available, use `marineregions2::mrp_col_unique("eez", "territory1")`
 }
 \examples{
-get_eez("bermudian")
+get_eez("Bermuda")
 }

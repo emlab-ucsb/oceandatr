@@ -11,6 +11,8 @@ Imports:
     magrittr,
     mregions2,
     terra
+Remotes:
+    lifewatch/mregions2
 RoxygenNote: 7.2.1
 Depends: 
     R (>= 2.10),
