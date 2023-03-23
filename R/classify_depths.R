@@ -3,12 +3,12 @@
 #' @description This function takes a bathymetric raster (depths must be negative and in meters) and reclassifies depths to categorical depth zones. If geospatial data are not in the appropriate coordinate reference system, users can specify a planning grid to reproject the bathymetry data. 
 #' 
 #' @details The depth groups are categorized as follows: 
-#' \describe{
-#' \item{\code{Epipelagic Zone}}{0-200 m depth}
-#' \item{\code{Mesopelagic Zone}}{200-1000 m depth}
-#' \item{\code{Bathypelagic Zone}}{1000-4000 m depth}
-#' \item{\code{Abyssopelagic Zone}}{4000-6000 m depth}
-#' \item{\code{Hadopelagic Zone}}{6000+ m depth}
+#' \itemize{
+#' \item Epipelagic Zone: 0-200 m depth
+#' \item Mesopelagic Zone: 200-1000 m depth
+#' \item Bathypelagic Zone: 1000-4000 m depth
+#' \item Abyssopelagic Zone: 4000-6000 m depth
+#' \item Hadopelagic Zone: 6000+ m depth
 #' }
 #' 
 #' @param bathymetry_raster a raster of bathymetry data (meters) that you wish to categorize; depths must be negative
