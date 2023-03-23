@@ -1,12 +1,17 @@
 #' Get seamount peaks for area of interest
+#' 
+#' @description This function collects data for seamount peak locations within the area of interest. Seamounts are classified as peaks at least 1000m higher than the surrounding seafloor (Morato et al. 2008)
 #'
-#' Seamounts, classified as peaks at least 1000m higher than the surrounding seafloor [Morato et al. 2008](https://doi.org/10.3354/meps07268). These data are from [Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030).
-#' @param area_polygon 
+#' @param area_polygon an sf polygon or multipolygon object of the area of interest (e.g., a country's EEZ)
 #'
 #' @return An sf object of seamounts for the area of interest
 #' @export
 #'
 #' @examples
+#' # Grab EEZ data first 
+#' bermuda_eez <- get_eez(country_name = "Bermuda")
+#' # Get seamount peak locations 
+#' seamount_peaks <- get_seamount_peaks(bermuda_eez)
 get_seamount_peaks <- function(area_polygon){
   system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
     readRDS() %>% 
