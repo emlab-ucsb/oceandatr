@@ -12,7 +12,7 @@ get_area(
 )
 }
 \arguments{
-\item{query_type}{string; the area type that you would like to query for; some options include "eez", "high seas", "ecoregions" (default is "eez")}
+\item{query_type}{string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions" (default is "eez")}
 
 \item{area_name}{string; the name of the country or area that you would like to query for; must match a name in `mregions2` for the `mregions_column` selected}
 
