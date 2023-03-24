@@ -32,14 +32,10 @@ library(offshoredatr)
 This function pulls data for EEZs from the [Marine
 Gazetteer](https://marineregions.org/gazetteer.php) using the
 `mregions2` R package; the function is just a wrapper to make the
-process a bit simpler. It’s very basic at the moment and will fail if it
-doesn’t find an EEZ that matches the `country_name` specified, which is
-not necessarily the same as the country name you would expect!
-
-TO DO: make the name matching fuzzy
+process a bit simpler.
 
 ``` r
-bermuda_eez <- get_eez(country_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda")
 #> Loading ISO 19139 XML schemas...
 #> Loading ISO 19115 codelists...
 
@@ -47,7 +43,7 @@ bermuda_eez <- get_eez(country_name = "Bermuda")
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 ```
 
-<img src="man/figures/README-area of interest-1.png" width="800" />
+<img src="man/figures/README-area of interest-1.png" width="600" />
 
 # Choose a CRS
 
@@ -71,7 +67,7 @@ sf::st_bbox(bermuda_eez)
 The coordinates above should be entered as the ‘Geographic extent’ and
 the map should then have a box drawn around the bounding box of the area
 of interest. The projection can then be copied and pasted from the
-pop-up box when clicking on ‘WKT’. The projeciton needs to be placed in
+pop-up box when clicking on ‘WKT’. The projection needs to be placed in
 quotation marks as follows:
 
 ``` r
@@ -110,7 +106,7 @@ plot(planning_grid, col = "gold3", main = NULL, axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-planning grid-1.png" width="800" />
+<img src="man/figures/README-planning grid-1.png" width="600" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
@@ -123,7 +119,7 @@ plot(bermuda_eez_projected, main = NULL, axes = FALSE)
 plot(raster::rasterToPolygons(planning_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
-<img src="man/figures/README-planning grid cells-1.png" width="800" />
+<img src="man/figures/README-planning grid cells-1.png" width="600" />
 
 ### Get bathymetry
 
@@ -147,7 +143,7 @@ plot(bathymetry, col = hcl.colors(n=255, "Blues"), main = NULL, axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-bathymetry-1.png" width="800" />
+<img src="man/figures/README-bathymetry-1.png" width="600" />
 
 ### Depth classification
 
@@ -170,7 +166,7 @@ depth_zones <- classify_depths(bathymetry, planning_grid)
 plot(depth_zones, col = "navyblue", axes = FALSE, legend = FALSE, addfun = function(){plot(bermuda_eez_projected, add=TRUE)})
 ```
 
-<img src="man/figures/README-depth classification-1.png" width="800" />
+<img src="man/figures/README-depth classification-1.png" width="600" />
 
 ### Get geomorphological data
 
@@ -189,7 +185,7 @@ geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = p
 plot(geomorphology, col = "sienna2", axes = FALSE, legend = FALSE, addfun = function(){plot(bermuda_eez_projected, add=TRUE)})
 ```
 
-<img src="man/figures/README-geomorphology-1.png" width="800" />
+<img src="man/figures/README-geomorphology-1.png" width="600" />
 
 ## Get knolls data
 
@@ -207,7 +203,7 @@ plot(knolls, col = "grey40", main = NULL, axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-knolls-1.png" width="800" />
+<img src="man/figures/README-knolls-1.png" width="600" />
 
 ## Get seamount areas
 
@@ -225,12 +221,20 @@ plot(seamounts, col = "saddlebrown", main = NULL, axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-seamounts-1.png" width="800" />
+<img src="man/figures/README-seamounts-1.png" width="600" />
 
 ## Habitat suitability models
 
 Retrieve habitat suitability data for 3 deep water coral groups: \*
-Antipatharia:
+Antipatharia: Habitats associated with increased biodiversity in both
+invertebrate and vertebrate species; global distributions were modeled
+by [Yesson et al. (2017)](https://doi.org/10.1016/j.dsr2.2015.12.004) \*
+Cold water coral: Important habitats and nursery areas for many species;
+global distributions were modeled by [Davies and Guinotte
+(2011)](https://doi.org/10.1371/journal.pone.0018483) \* Octocoral:
+Important habitats for invertebrates, groundfish, rockfish and other
+species; global distributions were modeled by [Yesson et
+al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
 
 ``` r
 coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez) %>% 
@@ -249,4 +253,25 @@ plot_add <- function(){
 plot(coral_habitat, col = hcl.colors(n=100, "cividis"), axes = FALSE, addfun = plot_add)
 ```
 
-<img src="man/figures/README-coral habitat-1.png" width="800" />
+<img src="man/figures/README-coral habitat-1.png" width="600" />
+
+## Environmental Regions
+
+Bioregions are often included in spatial planning, but available
+bioregional classifications are either too coarse or too detailed to be
+useful for planning at the EEZ level. Borrowing methods from [Magris et
+al. 2020](https://doi.org/10.1111/ddi.13183)
+
+``` r
+#cluster the data
+enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid, num_clusters = 3)
+```
+
+<img src="man/figures/README-environmental regions-1.png" width="600" />
+
+``` r
+#plot
+plot(enviro_regions, col = palette.colors(n = terra::minmax(enviro_regions)[2], palette = 'Dark2'), axes = FALSE)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="600" />

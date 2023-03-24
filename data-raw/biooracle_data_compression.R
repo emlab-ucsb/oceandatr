@@ -8,7 +8,7 @@ library(dplyr)
 
 options(timeout = 60*5)
 
-bo_layer_codes <- c("BO22_chlomean_ss", "BO22_dissoxmean_ss", "BO22_nitratemean_ss", "BO22_phosphatemean_ss", "BO22_ppmean_ss", "BO22_salinitymean_ss", "BO22_silicatemean_ss", "BO22_tempmax_ss", "BO22_tempmean_ss", "BO22_tempmin_ss")
+bo_layer_codes <- c("BO22_chlomean_ss", "BO22_dissoxmean_ss", "BO22_nitratemean_ss", "BO22_ph", "BO22_phosphatemean_ss", "BO22_carbonphytomean_ss", "BO22_ppmean_ss", "BO22_salinitymean_ss", "BO22_silicatemean_ss", "BO22_tempmax_ss", "BO22_tempmean_ss", "BO22_tempmin_ss")
 
 start_time <- Sys.time()
 
@@ -20,10 +20,13 @@ download_time <- Sys.time() - start_time
 
 enviro_data_names <- sdmpredictors::list_layers() %>% 
   filter(layer_code %in% bo_layer_codes) %>% 
-  select(name) %>%
+  dplyr::select(name) %>%
   mutate(name = gsub(" ", "_", name)) %>% 
   pull()
 
+#pH has a non-standard name as of 2023-3-24, rename manually
+enviro_data_names[enviro_data_names == "BO_ph"] <- "pH_(mean)"
+ 
 names(enviro_data) <- enviro_data_names
 
 for (i in 1:terra::nlyr(enviro_data)) {
