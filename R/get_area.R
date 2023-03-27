@@ -19,6 +19,7 @@
 #' get_area(area_name = "KIR", mregions_column = "iso_ter1")
 get_area <- function(query_type = "eez", area_name, mregions_column = "territory1", show_options = FALSE){
   if(show_options) { 
+    message("Please be patient, this may take some time.")
     cols_available <- mregions2::mrp_colnames(query_type)$column_name
     cols_available <- cols_available[!grepl("geom|area", cols_available)]
     all_options <- lapply(cols_available, function(x){mregions2::mrp_col_distinct(query_type, x)})
