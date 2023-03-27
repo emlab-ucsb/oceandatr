@@ -44,10 +44,10 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
 #modifying as I want it to return a raster, and also don't want to load the whole marmap package which comes with a lot of dependencies
 
 get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, keep = keep, antimeridian = antimeridian, path = path){
-  lon1 = sf::st_bbox(aoi)$xmin
-  lon2 = sf::st_bbox(aoi)$xmax
-  lat1 = sf::st_bbox(aoi)$ymin 
-  lat2 = sf::st_bbox(aoi)$ymax
+  lon1 = as.numeric(sf::st_bbox(aoi)$xmin)
+  lon2 = as.numeric(sf::st_bbox(aoi)$xmax)
+  lat1 = as.numeric(sf::st_bbox(aoi)$ymin)
+  lat2 = as.numeric(sf::st_bbox(aoi)$ymax)
   
   #here on copied directly from marmap package
   if (lon1 == lon2) 
@@ -79,16 +79,14 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
   if (lon1 < lon2) {
     x1 <- lon1
     x2 <- lon2
-  }
-  else {
+  } else {
     x2 <- lon1
     x1 <- lon2
   }
   if (lat1 < lat2) {
     y1 <- lat1
     y2 <- lat2
-  }
-  else {
+  } else {
     y2 <- lat1
     y1 <- lat2
   }
@@ -111,8 +109,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       stop("It's impossible to fetch an area with less than one cell. Either increase the longitudinal range or the resolution (i.e. use a smaller resolution value)")
     if (ncell.lat < 2) 
       stop("It's impossible to fetch an area with less than one cell. Either increase the latitudinal range or the resolution (i.e. use a smaller resolution value)")
-  }
-  else {
+  } else {
     ncell.lon <- (x2 - x1) * 60/resolution
     ncell.lat <- (y2 - y1) * 60/resolution
     if (ncell.lon < 2 & ncell.lat < 2) 
@@ -132,8 +129,9 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
     
     message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
     WEB.REQUEST <- paste0("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/DEM_all/ImageServer/exportImage?bbox=", x1, ",", y1, ",", x2, ",", y2, "&bboxSR=4326&size=", ncell.lon, ",", ncell.lat,"&imageSR=4326&format=tiff&pixelType=F32&interpolation=+RSP_NearestNeighbor&compression=LZ77&renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%", database, "%27%22}&f=image")
-    download.file(url = WEB.REQUEST, destfile = "tmp.tif", mode = "wb")
-    dat <- suppressWarnings(try(terra::rast("tmp.tif"), silent = TRUE))
+    filename <- gsub("[.]", "", paste(x1, x2, y1, y2, sep = "_"))
+    download.file(url = WEB.REQUEST, destfile = paste0(filename, "_tmp.tif"), mode = "wb")
+    dat <- suppressWarnings(try(terra::rast(paste0(filename, "_tmp.tif")), silent = TRUE))
     return(dat)
   }
   
@@ -141,8 +139,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
   if (antimeridian) {
     FILE <- paste0("marmap_coord_", x1, ";", y1, ";", x2, 
                    ";", y2, "_res_", resolution, "_anti", ".grd")
-  }
-  else {
+  } else {
     FILE <- paste0("marmap_coord_", x1, ";", y1, ";", x2, 
                    ";", y2, "_res_", resolution, ".grd")
   }
@@ -151,8 +148,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
             sep = "")
     existing.bathy <- raster(file.path(path, FILE))
     return(existing.bathy)
-  }
-  else { # otherwise, fetch it from the NOAA server
+  } else { # otherwise, fetch it from the NOAA server
     if (antimeridian) {
       message("Querying NOAA database ...")
       message("This may take seconds to minutes, depending on grid size\n")
@@ -160,23 +156,21 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       right <- fetch(l3, y1, l4, y2, ncell.lon.right, ncell.lat)
       if (is(left, "try-error") | is(right, "try-error")) {
         stop("The NOAA server cannot be reached\n")
-      }
-      else {
+      } else {
         message("Got data crossing antimeridian")
-        bath <- raster::merge(left, right) %>% 
+        bath <- terra::merge(left, right) %>%
           setNames("bathymetry")
-        #left <- as.bathy(left)
-        #left <- left[-nrow(left), ]
-        #right <- as.bathy(right)
-        #rownames(right) <- as.numeric(rownames(right)) + 
+        # left <- marmap::as.bathy(raster::raster(left))
+        # left <- left[-nrow(left), ]
+        # right <- marmap::as.bathy(raster::raster(right))
+        # rownames(right) <- as.numeric(rownames(right)) +
         #  360
-        #bath2 <- rbind(left, right)
-        #class(bath2) <- "bathy"
-        #bath <- as.xyz(bath2)
+        # bath2 <- rbind(left, right)
+        # class(bath2) <- "bathy"
+        # bath <- marmap::as.xyz(bath2)
         
       }
-    }
-    else {
+    } else {
       message("Querying NOAA database ...")
       message("This may take seconds to minutes, depending on grid size")
       bath <- fetch(x1, y1, x2, y2, ncell.lon, ncell.lat) %>% 
@@ -184,8 +178,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       
       if (is(bath, "try-error")) {
         stop("The NOAA server cannot be reached\n")
-      }
-      else{
+      } else{
         "Got data"
       }
     }
@@ -198,7 +191,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       terra::writeRaster(bath, file = file.path(path, FILE), overwrite =FALSE)
     }
     #clean up the temp file
-    file.remove("tmp.tif")
+    file.remove(list.files(pattern = "tmp.tif"))
     return(bath)
   }
   
