@@ -21,8 +21,7 @@ get_area <- function(query_type = "eez", area_name, mregions_column = "territory
   if(show_options) { 
     cols_available <- mregions2::mrp_colnames(query_type)$column_name
     cols_available <- cols_available[!grepl("geom|area", cols_available)]
-    all_options <- purrr::map(.x = cols_available, 
-                              .f = ~{mregions2::mrp_col_distinct(query_type, .x)})
+    all_options <- lapply(cols_available, function(x){mregions2::mrp_col_distinct(query_type, x)})
     names(all_options) <- cols_available
     return(all_options)
   } else { 
