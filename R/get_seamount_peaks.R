@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' # Grab EEZ data first 
-#' bermuda_eez <- get_eez(country_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Get seamount peak locations 
 #' seamount_peaks <- get_seamount_peaks(bermuda_eez)
 get_seamount_peaks <- function(area_polygon){

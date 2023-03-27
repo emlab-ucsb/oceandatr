@@ -29,7 +29,7 @@ The depth groups are categorized as follows:
 }
 \examples{
 # Grab EEZ data first 
-bermuda_eez <- get_eez(country_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda")
 # Grab bathymetry data
 bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
 # Classify depths 

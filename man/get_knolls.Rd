@@ -22,7 +22,7 @@ These data are the knoll base area data from Yesson et al. (2011)
 }
 \examples{
 # Grab EEZ data first 
-bermuda_eez <- get_eez(country_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda")
 # Get knolls
 knolls <- get_knolls(area_polygon = bermuda_eez)
 }

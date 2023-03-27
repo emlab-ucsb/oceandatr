@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' # Grab EEZ data first 
-#' bermuda_eez <- get_eez(country_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Grab bathymetry data
 #' bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
 get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, antimeridian = FALSE, path = NULL){

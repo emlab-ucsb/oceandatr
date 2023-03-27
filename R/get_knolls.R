@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' # Grab EEZ data first 
-#' bermuda_eez <- get_eez(country_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Get knolls
 #' knolls <- get_knolls(area_polygon = bermuda_eez)
 get_knolls <- function(area_polygon, planning_grid = NULL){

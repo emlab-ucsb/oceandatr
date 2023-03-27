@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' # Grab EEZ data first 
-#' bermuda_eez <- get_eez(country_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Get coral habitat
 #' coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez)
 get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_threshold = 0.22, octocoral_threshold = 2){

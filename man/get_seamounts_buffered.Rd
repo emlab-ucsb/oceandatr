@@ -24,7 +24,7 @@ Seamounts are classified as peaks at least 1000 m higher than the surrounding se
 }
 \examples{
 # Grab EEZ data first 
-bermuda_eez <- get_eez(country_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda")
 # Create a CRS using a local, equal area projection in WKT format for Bermuda. 
 # You can get WKT outputs in equal area projections for your area of interest from https://projectionwizard.org
 projection <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal", GEOGCS["GCS_WGS_1984", DATUM["D_WGS_1984", SPHEROID["WGS_1984",6378137.0,298.257223563]], PRIMEM["Greenwich",0.0], UNIT["Degree",0.0174532925199433]], PROJECTION["Lambert_Azimuthal_Equal_Area"], PARAMETER["False_Easting",0.0], PARAMETER["False_Northing",0.0], PARAMETER["Central_Meridian",-64.5], PARAMETER["Latitude_Of_Origin",32], UNIT["Meter",1.0]]'
