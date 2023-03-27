@@ -49,15 +49,15 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
     return(geomorph_data)
   }
   else{
-    geomorph_data_stack <- stack()
+    geomorph_data_stack <- c()
     
     for (geomorph_feature in names(geomorph_data)) {
       geomorph_data_stack <- geomorph_data[[geomorph_feature]] %>%
         sf::st_transform(crs = crs(planning_grid)) %>%
         raster::rasterize(planning_grid, field = 1) %>%
-        raster::mask(., planning_grid) %>%
+        raster::mask(planning_grid) %>%
         setNames(geomorph_feature) %>%
-        raster::addLayer(geomorph_data_stack, .)
+        c(geomorph_data_stack, .)
     }
     return(geomorph_data_stack)
   }

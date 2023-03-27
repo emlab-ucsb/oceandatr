@@ -16,20 +16,20 @@
 #' # Get knolls
 #' knolls <- get_knolls(area_polygon = bermuda_eez)
 get_knolls <- function(area_polygon, planning_grid = NULL){
-  if(is.null(planning_grid)){
     knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
       readRDS() %>% 
       sf::st_crop(area_polygon) %>%
       sf::st_intersection(area_polygon)
-  }
-  else{
-    knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
-      readRDS() %>%
-      sf::st_crop(area_polygon) %>% 
-      sf::st_transform(crs = crs(planning_grid)) %>%
-      raster::rasterize(planning_grid, field = 1) %>%
-      raster::mask(., planning_grid) %>%
+    
+    if(is.null(planning_grid)){
+      return(knolls)
+     }
+    else{
+    knolls <- knolls %>%
+      terra::project(planning_grid, method = 'near') %>% 
+      terra::mask(planning_grid) %>%
       setNames("knolls")
+    
+    return(knolls)
   }
-  return(knolls)
 }

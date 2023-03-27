@@ -25,60 +25,61 @@
 get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_threshold = 0.22, octocoral_threshold = 2){
  
   antipatharia <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-    raster::raster() %>% 
-    raster::crop(area_polygon) %>% 
-    raster::mask(area_polygon) %>% 
+    terra::rast() %>% 
+    terra::crop(area_polygon, mask = TRUE) %>% 
     setNames("Antipatharia")
   
-  ifelse(cellStats(antipatharia, sum) < 1, print("No antipatharia in area of interest"), print("Antipatharia data done"))
+  ifelse(terra::global(antipatharia, "sum") < 1, print("No antipatharia in area of interest"), print("Antipatharia data done"))
 
   
   cold_corals <- system.file("extdata", "binary_grid_figure7.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-    raster::raster() %>% 
-    raster::crop(area_polygon) %>% 
-    raster::mask(area_polygon) %>% 
+    terra::rast() %>% 
+    terra::crop(area_polygon, mask = TRUE) %>% 
     setNames("Cold_Corals")
   
-  ifelse(cellStats(cold_corals, sum) < 1, print("No octocorals in area of interest"), print("Cold water coral data done"))
+  ifelse(terra::global(cold_corals, "sum") < 1, print("No octocorals in area of interest"), print("Cold water coral data done"))
   
   octocorals <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-    raster::raster() %>% 
-    raster::crop(area_polygon) %>% 
-    raster::mask(area_polygon) %>% 
+    terra::rast() %>% 
+    terra::crop(area_polygon, mask = TRUE) %>% 
     setNames("Octocoral")
   
-  ifelse(cellStats(octocorals, sum) < 1, print("No octocorals in area of interest"), print("Octocoral data done"))
+  ifelse(terra::global(octocorals, "sum") < 1, print("No octocorals in area of interest"), print("Octocoral data done"))
   
-  corals_stack <- raster::stack(antipatharia, cold_corals, octocorals) %>% 
-    raster::subset(which(cellStats(., sum) >1))
-
-  gc()
+  corals_stack <- c(antipatharia, cold_corals, octocorals) %>% 
+    terra::subset(which(terra::global(., "sum") >1))
   
   if(is.null(planning_grid)){
     return(corals_stack)
   }
   else{
     antipatharia <- antipatharia %>%     
-      projectRaster(., to = planning_grid) %>% 
-      mask(planning_grid) %>%
+      terra::project(planning_grid) %>% 
+      terra::mask(planning_grid) %>%
       #convert antipatharia habitat suitability to presence/ absence map "by choosing a threshold value of habitat suitability based on the maximum sum of sensitivity and specificity (threshold mss = 0.23)". Text from the original source paper, Yesson et al. 2017
-      reclassify(c(0, antipatharia_threshold, NA, 
-                   antipatharia_threshold, 100, 1)) %>%
+      terra::classify(matrix(c(0, antipatharia_threshold, NA, 
+                               antipatharia_threshold, 100, 1), ncol = 3, byrow = TRUE)) %>%
       setNames("antipatharia")
     
     cold_corals <- cold_corals %>% 
-      reclassify(c(0, 0.5, NA, 
-                   0.5, 1.1, 1), include.lowest = TRUE) %>%
-      projectRaster(., to = planning_grid, method = 'ngb') %>% 
-      mask(planning_grid) %>% 
+      terra::classify(matrix(c(0, 0.5, NA, 
+                               0.5, 1.1, 1), ncol = 3, byrow = TRUE)) %>%
+      terra::project(planning_grid, method = 'near') %>% 
+      terra::mask(planning_grid) %>% 
       setNames("cold_coral")
     
     octocorals <- octocorals %>% 
-      reclassify(c(0, octocoral_threshold, NA,
-                   octocoral_threshold,7, 1), include.lowest = TRUE) %>% 
-      projectRaster(., to = planning_grid, method = 'ngb') %>% 
-      mask(planning_grid) %>% 
+      terra::classify(matrix(c(0, octocoral_threshold, NA,
+                               octocoral_threshold,7, 1), ncol = 3, byrow = TRUE)) %>% 
+      terra::project(planning_grid, method = 'near') %>% 
+      terra::mask(planning_grid) %>% 
       setNames("octocorals")
+    
+    corals_stack <- c(antipatharia, cold_corals, octocorals) %>% 
+      terra::subset(which(terra::global(., "sum") >1))
+    
+    return(corals_stack)
   }
   
+  gc()
 }

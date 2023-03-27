@@ -21,6 +21,6 @@
 get_planning_grid <- function(area_polygon, projection_crs, resolution_km = 5){
   area_polygon %>% 
     sf::st_transform(projection_crs) %>% 
-    raster::raster(resolution = resolution_km*1000) %>% 
-    terra::rasterize(sf::st_transform(area_polygon, projection_crs), ., touches=TRUE, field = 1)
+    terra::rast(resolution = resolution_km*1000) %>% 
+    terra::rasterize(terra::vect(sf::st_transform(area_polygon, projection_crs)), ., touches=TRUE, field = 1)
 }

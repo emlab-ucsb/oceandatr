@@ -14,14 +14,10 @@
 #' @examples
 get_enviro_regions <- function(area_polygon, planning_grid = NULL, num_clusters = NULL, max_num_clusters = 15){
   
-  ## REMOVE ONCE ALL FUNCTIONS USE ONLY TERRA##
-  planning_grid <- terra::rast(planning_grid)
-  #######
-  
-  tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
+   tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
   
   enviro_data <- terra::rast(tif_list) %>% 
-    terra::crop(terra::vect(area_polygon), mask = TRUE)
+    terra::crop(area_polygon, mask = TRUE)
   
   if(is.null(planning_grid)){
     return(enviro_data)  

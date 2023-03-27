@@ -30,7 +30,7 @@ get_seamounts_buffered <- function(area_polygon, planning_grid, buffer_km = 30){
     sf::st_buffer(buffer_km*1000) %>% 
     sf::st_union() %>% 
     sf::st_as_sf() %>% 
-    raster::rasterize(planning_grid, field = 1) %>% 
-    raster::mask(., planning_grid) %>% 
+    terra::rasterize(planning_grid, field = 1) %>% 
+    terra::mask(planning_grid) %>% 
     setNames("seamounts")
 }

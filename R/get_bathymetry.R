@@ -25,17 +25,16 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
     bathymetry <- get_etopo_bathymetry(area_polygon, resolution = resolution, keep = keep, antimeridian = antimeridian, path = path)
   }
   else{
-    bathymetry <- raster(bathymetry_data_filepath) %>% 
-      raster::crop(area_polygon) %>% 
-      raster::mask(area_polygon)
+    bathymetry <- terra::rast(bathymetry_data_filepath) %>% 
+      terra::crop(area_polygon, mask=TRUE)
   }
   if(is.null(planning_grid)){
     return(bathymetry)
   }
   else{
     bathymetry_planning_grid <- bathymetry %>% 
-      raster::projectRaster(., to = planning_grid) %>% 
-      raster::mask(planning_grid) %>% 
+      terra::project(planning_grid) %>% 
+      terra::mask(planning_grid) %>% 
       setNames("bathymetry")
   }
 }
@@ -134,7 +133,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
     message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
     WEB.REQUEST <- paste0("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/DEM_all/ImageServer/exportImage?bbox=", x1, ",", y1, ",", x2, ",", y2, "&bboxSR=4326&size=", ncell.lon, ",", ncell.lat,"&imageSR=4326&format=tiff&pixelType=F32&interpolation=+RSP_NearestNeighbor&compression=LZ77&renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%", database, "%27%22}&f=image")
     download.file(url = WEB.REQUEST, destfile = "tmp.tif", mode = "wb")
-    dat <- suppressWarnings(try(raster::raster("tmp.tif"), silent = TRUE))
+    dat <- suppressWarnings(try(terra::rast("tmp.tif"), silent = TRUE))
     return(dat)
   }
   
@@ -191,12 +190,12 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       }
     }
     
-    if(!raster::inMemory(bath)){
-      bath <- raster::readAll(bath)
-    }
+    # if(!raster::inMemory(bath)){
+    #   bath <- raster::readAll(bath)
+    # }
     
     if (keep) {
-      raster::writeRaster(bath, file = file.path(path, FILE), overwrite =FALSE)
+      terra::writeRaster(bath, file = file.path(path, FILE), overwrite =FALSE)
     }
     #clean up the temp file
     file.remove("tmp.tif")

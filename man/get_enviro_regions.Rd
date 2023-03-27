@@ -4,7 +4,12 @@
 \alias{get_enviro_regions}
 \title{Create environmental regions for area of interest}
 \usage{
-get_enviro_regions(area_polygon)
+get_enviro_regions(
+  area_polygon,
+  planning_grid = NULL,
+  num_clusters = NULL,
+  max_num_clusters = 15
+)
 }
 \arguments{
 \item{area_polygon}{}
