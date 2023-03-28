@@ -33,9 +33,10 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
   }
   else{
     bathymetry_planning_grid <- bathymetry %>% 
-      terra::project(planning_grid) %>% 
-      terra::mask(planning_grid) %>% 
+      terra::project(planning_grid) %>%
+      terra::mask(planning_grid) %>%
       setNames("bathymetry")
+    return(bathymetry_planning_grid)
   }
 }
 
@@ -146,7 +147,7 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
   if (FILE %in% list.files(path = path)) {
     message("File already exists ; loading \'", FILE, "\'", 
             sep = "")
-    existing.bathy <- raster(file.path(path, FILE))
+    existing.bathy <- terra::rast(file.path(path, FILE))
     return(existing.bathy)
   } else { # otherwise, fetch it from the NOAA server
     if (antimeridian) {
@@ -183,9 +184,9 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
       }
     }
     
-    # if(!raster::inMemory(bath)){
-    #   bath <- raster::readAll(bath)
-    # }
+    if(!terra::inMemory(bath)){
+      terra::set.values(bath)
+    }
     
     if (keep) {
       terra::writeRaster(bath, file = file.path(path, FILE), overwrite =FALSE)
