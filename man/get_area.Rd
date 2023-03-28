@@ -5,16 +5,16 @@
 \title{Get an a shapefile for the area of interest}
 \usage{
 get_area(
-  query_type = "eez",
   area_name,
+  query_type = "eez",
   mregions_column = "territory1",
   show_options = FALSE
 )
 }
 \arguments{
-\item{query_type}{string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list()` to see the full list of data_product options. (default is "eez")}
-
 \item{area_name}{string; the name of the country or area that you would like to query for; must match a name in `mregions2` for the `mregions_column` selected}
+
+\item{query_type}{string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list()` to see the full list of data_product options. (default is "eez")}
 
 \item{mregions_column}{string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (defaut is "territory1")}
 

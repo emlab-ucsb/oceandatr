@@ -2,8 +2,8 @@
 #' 
 #' This uses the `mrp_get` function from the `mregions2` package to retrieve an area object from Marine Regions (https://marineregions.org/gazetteer.php). You can filter using any column available in the `mregions2` database. To see all possible column names and codes, specify `show_options` = TRUE when you run the function. 
 #'
-#' @param query_type string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list()` to see the full list of data_product options. (default is "eez")
 #' @param area_name string; the name of the country or area that you would like to query for; must match a name in `mregions2` for the `mregions_column` selected
+#' @param query_type string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list()` to see the full list of data_product options. (default is "eez")
 #' @param mregions_column string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (defaut is "territory1")
 #' @param show_options logical; whether to show all of the options available in `mregions2` or not; running this will not query `mregions2` (default is FALSE)
 #'
@@ -17,7 +17,7 @@
 #' get_area(area_name = "Bermuda")
 #' # Get EEZ areas for Kiribati (iso_ter1 = KIR)
 #' get_area(area_name = "KIR", mregions_column = "iso_ter1")
-get_area <- function(query_type = "eez", area_name, mregions_column = "territory1", show_options = FALSE){
+get_area <- function(area_name, query_type = "eez", mregions_column = "territory1", show_options = FALSE){
   if(show_options) { 
     message("Please be patient, this may take some time.")
     cols_available <- mregions2::mrp_colnames(query_type)$column_name
