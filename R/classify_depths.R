@@ -31,31 +31,29 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
   
   if(is.null(planning_grid)){
     depth_classification <- bathymetry_raster %>%
-      raster::reclassify(c(-200, Inf, 1,
-                   -1000, -200, 2,
-                   -4000, -1000, 3,
-                   -6000, -4000, 4,
-                   -12000, -6000, 5))
+      terra::classify(matrix(c(-200, Inf, 1, 
+                               -1000, -200, 2,
+                               -4000, -1000, 3,
+                               -6000, -4000, 4,
+                               -12000, -6000, 5), ncol = 3, byrow = TRUE))
       
     depth_zones_stack <- depth_classification %>% 
-      raster::layerize() %>% 
-      raster::reclassify(c(-0.1,0.1,NA)) %>% 
-      setNames(depth_zone_names[raster::cellStats(depth_classification, min):raster::cellStats(depth_classification, max)])
+      terra::segregate(other=NA) %>%  
+      setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
+    
   } else{
     depth_classification <- bathymetry_raster %>%
-      raster::projectRaster(., to = planning_grid) %>% 
-      raster::mask(planning_grid) %>% 
-      raster::reclassify(c(-200, Inf, 1,
-                           -1000, -200, 2,
-                           -4000, -1000, 3,
-                           -6000, -4000, 4,
-                           -12000, -6000, 5))
+      terra::project(planning_grid) %>% 
+      terra::mask(planning_grid) %>% 
+      terra::classify(matrix(c(-200, Inf, 1, 
+                               -1000, -200, 2,
+                               -4000, -1000, 3,
+                               -6000, -4000, 4,
+                               -12000, -6000, 5), ncol = 3, byrow = TRUE))
     
     depth_zones_stack <- depth_classification %>% 
-      raster::layerize() %>% 
-      raster::mask(planning_grid) %>% 
-      raster::reclassify(c(-0.1,0.1,NA)) %>% 
-      setNames(depth_zone_names[raster::cellStats(depth_classification, min):raster::cellStats(depth_classification, max)])
+      terra::segregate(other=NA) %>%  
+      setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
   }
   return(depth_zones_stack)
 }

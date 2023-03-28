@@ -40,6 +40,9 @@ get_enviro_regions <- function(area_polygon, planning_grid = NULL, num_clusters 
       
       enviro_regions_boxplot(enviro_regions, enviro_data)
       
+      enviro_regions <- enviro_regions %>% 
+        terra::segregate(other=NA)
+      
       return(enviro_regions)
     }
     else{
@@ -57,6 +60,9 @@ get_enviro_regions <- function(area_polygon, planning_grid = NULL, num_clusters 
       enviro_regions[as.numeric(names(kmean_result$cluster))] <- kmean_result$cluster
       
       enviro_regions_boxplot(enviro_regions, enviro_data)
+      
+      enviro_regions <- enviro_regions %>% 
+        terra::segregate(other=NA)
       
       return(enviro_regions)
     }

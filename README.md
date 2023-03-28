@@ -71,7 +71,7 @@ pop-up box when clicking on ‘WKT’. The projection needs to be placed in
 quotation marks as follows:
 
 ``` r
-projection <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal",
+projection_bermuda <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal",
  GEOGCS["GCS_WGS_1984",
   DATUM["D_WGS_1984",
    SPHEROID["WGS_1984",6378137.0,298.257223563]],
@@ -94,15 +94,15 @@ projected into the coordinate reference system specified, at the cell
 resolution specified in kilometres.
 
 ``` r
-planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 5)
+planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution_km = 5)
 
 #project the eez into same projection as planning grid for plotting
 bermuda_eez_projected <- bermuda_eez %>% 
-  sf::st_transform(crs = projection) %>% 
+  sf::st_transform(crs = projection_bermuda) %>% 
   sf::st_geometry()
 
 #plot the planning grid
-plot(planning_grid, col = "gold3", main = NULL, axes = FALSE, legend = FALSE)
+terra::plot(planning_grid, col = "gold3", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -113,10 +113,10 @@ see if we plotted them, but here is a coarser grid (lower resolution)
 visualized so we can see what the grid cells look like.
 
 ``` r
-planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 20)
+planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution_km = 20)
 
-plot(bermuda_eez_projected, main = NULL, axes = FALSE)
-plot(raster::rasterToPolygons(planning_grid_coarse, dissolve = FALSE), add=TRUE)
+plot(bermuda_eez_projected, axes = FALSE)
+terra::plot(terra::as.polygons(planning_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
 <img src="man/figures/README-planning grid cells-1.png" width="600" />
@@ -139,7 +139,7 @@ bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = plannin
 #> This may take seconds to minutes, depending on grid size
 #> x1 = -68.9 y1 = 28.9 x2 = -60.7 y2 = 35.8 ncell.lon = 492 ncell.lat = 414
 
-plot(bathymetry, col = hcl.colors(n=255, "Blues"), main = NULL, axes = FALSE) 
+terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -160,10 +160,8 @@ just obtained into depth zones based on the ocean floor depths.
 
 ``` r
 depth_zones <- classify_depths(bathymetry, planning_grid)
-#> Warning in raster::projectRaster(., to = planning_grid): input and ouput crs
-#> are the same
 
-plot(depth_zones, col = "navyblue", axes = FALSE, legend = FALSE, addfun = function(){plot(bermuda_eez_projected, add=TRUE)})
+terra::plot(depth_zones, col = "navyblue", axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-depth classification-1.png" width="600" />
@@ -182,7 +180,7 @@ this package, so it is not necessary to download them.
 ``` r
 geomorphology <- get_geomorphology(area_polygon = bermuda_eez, planning_grid = planning_grid)
 
-plot(geomorphology, col = "sienna2", axes = FALSE, legend = FALSE, addfun = function(){plot(bermuda_eez_projected, add=TRUE)})
+terra::plot(geomorphology, col = "sienna2", axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-geomorphology-1.png" width="600" />
@@ -199,7 +197,7 @@ al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004).
 ``` r
 knolls <- get_knolls(area_polygon = bermuda_eez, planning_grid = planning_grid)
 
-plot(knolls, col = "grey40", main = NULL, axes = FALSE, legend = FALSE)
+terra::plot(knolls, col = "grey40", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -217,7 +215,7 @@ units of kilometres)
 ``` r
 seamounts <- get_seamounts_buffered(area_polygon = bermuda_eez, planning_grid = planning_grid, buffer_km = 30)
 
-plot(seamounts, col = "saddlebrown", main = NULL, axes = FALSE, legend = FALSE)
+terra::plot(seamounts, col = "saddlebrown", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -225,32 +223,31 @@ plot(bermuda_eez_projected, add=TRUE)
 
 ## Habitat suitability models
 
-Retrieve habitat suitability data for 3 deep water coral groups: \*
-Antipatharia: Habitats associated with increased biodiversity in both
-invertebrate and vertebrate species; global distributions were modeled
-by [Yesson et al. (2017)](https://doi.org/10.1016/j.dsr2.2015.12.004) \*
-Cold water coral: Important habitats and nursery areas for many species;
-global distributions were modeled by [Davies and Guinotte
-(2011)](https://doi.org/10.1371/journal.pone.0018483) \* Octocoral:
-Important habitats for invertebrates, groundfish, rockfish and other
-species; global distributions were modeled by [Yesson et
-al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
+Retrieve habitat suitability data for 3 deep water coral groups:
+
+- Antipatharia: Habitats associated with increased biodiversity in both
+  invertebrate and vertebrate species; global distributions were modeled
+  by [Yesson et al. (2017)](https://doi.org/10.1016/j.dsr2.2015.12.004)
+- Cold water coral: Important habitats and nursery areas for many
+  species; global distributions were modeled by [Davies and Guinotte
+  (2011)](https://doi.org/10.1371/journal.pone.0018483)
+- Octocoral: Important habitats for invertebrates, groundfish, rockfish
+  and other species; global distributions were modeled by [Yesson et
+  al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
 
 ``` r
-coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez) %>% 
-  #function returns the raw data in EPSG 4326; project to local crs for plotting
-  projectRaster(crs = crs(planning_grid))
+coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez, planning_grid = planning_grid)
 #> [1] "Antipatharia data done"
 #> [1] "Cold water coral data done"
 #> [1] "Octocoral data done"
 
 #show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
 plot_add <- function(){
-  plot(bermuda_eez_projected, border = "grey40", add=TRUE) 
-  plot(rasterToPolygons(seamounts, dissolve = TRUE), col = NA, border = "red", add=TRUE)
+  terra::lines(terra::vect(bermuda_eez_projected), col = "grey40")
+  terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "red")
   }
 
-plot(coral_habitat, col = hcl.colors(n=100, "cividis"), axes = FALSE, addfun = plot_add)
+terra::plot(coral_habitat, col = "coral", axes = FALSE, fun = plot_add)
 ```
 
 <img src="man/figures/README-coral habitat-1.png" width="600" />
@@ -271,7 +268,7 @@ enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid =
 
 ``` r
 #plot
-plot(enviro_regions, col = palette.colors(n = terra::minmax(enviro_regions)[2], palette = 'Dark2'), axes = FALSE)
+terra::plot(enviro_regions, col = palette.colors(n = terra::minmax(enviro_regions)[2], palette = 'Dark2'), axes = FALSE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="600" />

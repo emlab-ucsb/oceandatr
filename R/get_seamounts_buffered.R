@@ -26,10 +26,11 @@ get_seamounts_buffered <- function(area_polygon, planning_grid, buffer_km = 30){
     readRDS() %>% 
     sf::st_crop(area_polygon) %>%
     sf::st_intersection(area_polygon) %>% 
-    sf::st_transform(crs = crs(planning_grid)) %>% 
+    sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
     sf::st_buffer(buffer_km*1000) %>% 
     sf::st_union() %>% 
     sf::st_as_sf() %>% 
+    terra::vect() %>% 
     terra::rasterize(planning_grid, field = 1) %>% 
     terra::mask(planning_grid) %>% 
     setNames("seamounts")

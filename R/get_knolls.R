@@ -26,8 +26,9 @@ get_knolls <- function(area_polygon, planning_grid = NULL){
      }
     else{
     knolls <- knolls %>%
-      terra::project(planning_grid, method = 'near') %>% 
-      terra::mask(planning_grid) %>%
+      sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
+      terra::vect() %>% 
+      terra::rasterize(planning_grid, field = 1) %>% 
       setNames("knolls")
     
     return(knolls)
