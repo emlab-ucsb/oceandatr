@@ -195,13 +195,15 @@ Bioregions are often included in spatial planning, but available bioregional cla
 
 ```{r environmental regions, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 #cluster the data
-enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid, num_clusters = 3)
+#start_time <- Sys.time()
+enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid)
+#end_time <- Sys.time()-start_time
 ```
 
 
 ```{r, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 #plot
-terra::plot(enviro_regions, col = palette.colors(n = terra::minmax(enviro_regions)[2], palette = 'Dark2'), axes = FALSE)
+terra::plot(enviro_regions, col = "forestgreen", axes = FALSE, legend =FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 

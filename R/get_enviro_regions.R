@@ -12,43 +12,35 @@
 #' @export
 #'
 #' @examples
-get_enviro_regions <- function(area_polygon, planning_grid = NULL, num_clusters = NULL, max_num_clusters = 15){
+get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots = TRUE, raw_data = FALSE, num_clusters = NULL, max_num_clusters = 8){
   
-   tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
+  enviro_data <- get_enviro_data(area_polygon, planning_grid)
   
-  enviro_data <- terra::rast(tif_list) %>% 
-    terra::crop(area_polygon, mask = TRUE)
-  
-  if(is.null(planning_grid)){
-    return(enviro_data)  
+ if(raw_data){
+   return(enviro_data)
   }
   else{
     if(is.null(num_clusters)){
       
-      enviro_data <- enviro_data %>% 
-        terra::project(planning_grid) %>% 
-        terra::mask(planning_grid)
-      
       message("This could several minutes")
-      clust_results <- NbClust::NbClust(data = terra::as.data.frame(enviro_data, na.rm = NA), method = "kmeans", max.nc = max_num_clusters,  index = "all")
+      #setting index = "all" results in large memory usage and long runtime (I haven't run to completion after >1hr), for the moment, setting the index to "hartigan" which is the same algorithm (Hartigan-Wong) used by the kmeans() function used below
+      clust_results <- NbClust::NbClust(data = terra::as.data.frame(enviro_data, na.rm = NA), method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")
       
       #create environmental regions raster, filled with NAs to start with
-      enviro_regions <- terra::rast(enviro_data, nlyrs=1, vals = NA, names = "enviro_regions")
+      enviro_regions <- terra::rast(enviro_data, nlyrs=1, vals = NA, names = "enviro_region")
       
       #set cluster ids in raster - subset for only raster values that are non-NA
       enviro_regions[as.numeric(names(clust_results$Best.partition))] <- clust_results$Best.partition
       
-      enviro_regions_boxplot(enviro_regions, enviro_data)
-      
+      if(show_plots){
+        enviro_regions_boxplot(enviro_regions, enviro_data)
+      }
       enviro_regions <- enviro_regions %>% 
         terra::segregate(other=NA)
       
       return(enviro_regions)
     }
     else{
-      enviro_data <- enviro_data %>% 
-        terra::project(planning_grid) %>% 
-        terra::mask(planning_grid)
       
       #k-means clustering for specific number of clusters
       kmean_result <- kmeans(x = terra::as.data.frame(enviro_data, na.rm = NA), centers = num_clusters, nstart = 10)
@@ -59,7 +51,9 @@ get_enviro_regions <- function(area_polygon, planning_grid = NULL, num_clusters 
       #set cluster ids in raster - subset for only raster values that are non-NA
       enviro_regions[as.numeric(names(kmean_result$cluster))] <- kmean_result$cluster
       
-      enviro_regions_boxplot(enviro_regions, enviro_data)
+      if(show_plots){
+        enviro_regions_boxplot(enviro_regions, enviro_data)
+      }
       
       enviro_regions <- enviro_regions %>% 
         terra::segregate(other=NA)
@@ -69,6 +63,24 @@ get_enviro_regions <- function(area_polygon, planning_grid = NULL, num_clusters 
   }
 }
 
+get_enviro_data <- function(area_polygon, planning_grid){
+  tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
+  
+  enviro_data <- terra::rast(tif_list) %>% 
+    terra::crop(area_polygon, mask = TRUE)
+  
+  if(is.null(planning_grid)){
+    message("Data is not projected")
+    return(enviro_data) 
+  } 
+  else{
+    enviro_data <- enviro_data %>% 
+      terra::project(planning_grid) %>% 
+      terra::mask(planning_grid)
+    
+    return(enviro_data)
+  }
+}
 
 enviro_regions_boxplot <- function(enviro_regions, enviro_data){
   #compare values in each environmental region

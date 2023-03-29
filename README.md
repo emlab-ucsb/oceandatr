@@ -135,6 +135,7 @@ using a function borrowed from the `marmap` package.
 
 ``` r
 bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = planning_grid, keep = FALSE)
+#> [1] 300
 #> Querying NOAA database ...
 #> This may take seconds to minutes, depending on grid size
 #> x1 = -68.9 y1 = 28.9 x2 = -60.7 y2 = 35.8 ncell.lon = 492 ncell.lat = 414
@@ -261,14 +262,19 @@ al. 2020](https://doi.org/10.1111/ddi.13183)
 
 ``` r
 #cluster the data
-enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid, num_clusters = 3)
+#start_time <- Sys.time()
+enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid)
 ```
 
 <img src="man/figures/README-environmental regions-1.png" width="600" />
 
 ``` r
+#end_time <- Sys.time()-start_time
+```
+
+``` r
 #plot
-terra::plot(enviro_regions, col = palette.colors(n = terra::minmax(enviro_regions)[2], palette = 'Dark2'), axes = FALSE)
+terra::plot(enviro_regions, col = "forestgreen", axes = FALSE, legend =FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="600" />

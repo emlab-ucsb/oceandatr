@@ -20,9 +20,9 @@
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Grab bathymetry data
 #' bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
-get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, antimeridian = FALSE, path = NULL){
+get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, antimeridian = FALSE, path = NULL, download_timeout = 300){
   if(is.null(bathymetry_data_filepath)){
-    bathymetry <- get_etopo_bathymetry(area_polygon, resolution = resolution, keep = keep, antimeridian = antimeridian, path = path)
+    bathymetry <- get_etopo_bathymetry(area_polygon, resolution = resolution, keep = keep, antimeridian = antimeridian, path = path, download_timeout = download_timeout)
   }
   else{
     bathymetry <- terra::rast(bathymetry_data_filepath) %>% 
@@ -44,7 +44,7 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
 #modified version of getNOAA.bathy function from the marmap package
 #modifying as I want it to return a raster, and also don't want to load the whole marmap package which comes with a lot of dependencies
 
-get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, keep = keep, antimeridian = antimeridian, path = path){
+get_etopo_bathymetry <- function(aoi, resolution, keep, antimeridian, path, download_timeout){
   lon1 = as.numeric(sf::st_bbox(aoi)$xmin)
   lon2 = as.numeric(sf::st_bbox(aoi)$xmax)
   lat1 = as.numeric(sf::st_bbox(aoi)$ymin)
@@ -127,6 +127,9 @@ get_etopo_bathymetry <- function(aoi = area_polygon, resolution = resolution, ke
     x2 <- round(x2, 1)
     y1 <- round(y1, 1)
     y2 <- round(y2, 1)
+    
+    #increase timeout for download which is 60s by default; too short time to download largers files
+    options(timeout = max(download_timeout, getOption("timeout")))
     
     message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
     WEB.REQUEST <- paste0("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/DEM_all/ImageServer/exportImage?bbox=", x1, ",", y1, ",", x2, ",", y2, "&bboxSR=4326&size=", ncell.lon, ",", ncell.lat,"&imageSR=4326&format=tiff&pixelType=F32&interpolation=+RSP_NearestNeighbor&compression=LZ77&renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%", database, "%27%22}&f=image")
