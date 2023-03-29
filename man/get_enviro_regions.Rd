@@ -7,8 +7,10 @@
 get_enviro_regions(
   area_polygon,
   planning_grid = NULL,
+  show_plots = TRUE,
+  raw_data = FALSE,
   num_clusters = NULL,
-  max_num_clusters = 15
+  max_num_clusters = 8
 )
 }
 \arguments{
