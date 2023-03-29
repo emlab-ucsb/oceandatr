@@ -8,7 +8,8 @@ get_area(
   area_name,
   query_type = "eez",
   mregions_column = "territory1",
-  show_options = FALSE
+  show_value_options = FALSE,
+  show_column_options = FALSE
 )
 }
 \arguments{
@@ -18,17 +19,23 @@ get_area(
 
 \item{mregions_column}{string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (defaut is "territory1")}
 
-\item{show_options}{logical; whether to show all of the options available in `mregions2` or not; running this will not query `mregions2` (default is FALSE)}
+\item{show_value_options}{logical; whether to show all of the value options associated with your `mregions_column` selection that are available in `mregions2`; running this will not query `mregions2` (default is FALSE)}
+
+\item{show_column_options}{logical; whether to show all of the `mregions_column` options that are available in `mregions2`; running this will not query `mregions2` (default is FALSE)}
 }
 \value{
-if `show_options` = FALSE, returns the sf object of the area of interest; if `show_options` = TRUE, a named list will be returned. Names in the list correspond to options for `mregions_column` and values correspond to options for `area_name`
+if `show_options` = FALSE, returns the sf object of the area of interest; if `show_value_options` or `show_column_options` == TRUE, a named list will be returned. Names in the list correspond to options for `mregions_column` and values correspond to options for `area_name`
 }
 \description{
 This uses the `mrp_get` function from the `mregions2` package to retrieve an area object from Marine Regions (https://marineregions.org/gazetteer.php). You can filter using any column available in the `mregions2` database. To see all possible column names and codes, specify `show_options` = TRUE when you run the function.
 }
 \examples{
+# Show all possible column names 
+get_area(show_column_options = TRUE)
 # Show all possible EEZ areas
-get_area(show_options = TRUE)
+get_area(show_value_options = TRUE)
+# Show all possible options
+get_area(show_column_options = TRUE, show_value_options = TRUE)
 # Get EEZ area just for Bermuda
 get_area(area_name = "Bermuda")
 # Get EEZ areas for Kiribati (iso_ter1 = KIR)
