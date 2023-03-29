@@ -10,8 +10,8 @@ get_bathymetry(
   bathymetry_data_filepath = NULL,
   resolution = 1,
   keep = FALSE,
-  antimeridian = FALSE,
-  path = NULL
+  path = NULL,
+  download_timeout = 300
 )
 }
 \arguments{
@@ -25,9 +25,9 @@ get_bathymetry(
 
 \item{keep}{logical; whether to save the bathymetry data locally}
 
-\item{antimeridian}{logical; whether the area of interest crosses the antimeridian and you'd like results to be taped together (as opposed to being shown on opposite ends of the x axis)}
-
 \item{path}{string; the file path where you would like to save bathymetry data}
+
+\item{download_timeout}{numeric; the maximum number of seconds a query is allowed to run}
 }
 \value{
 A raster of bathymetry for the area of interest, rasterized to the planning grid resolution and CRS if supplied.
