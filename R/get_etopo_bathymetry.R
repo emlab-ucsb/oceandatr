@@ -33,7 +33,7 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
   
   # Make it so that the antimeridian is generated based on the data itself
   # (make it easier for the user)
-  if(lon1 == -180 & lon2 == 180) { antimeridian = TRUE }
+  if(lon1 == -180 & lon2 == 180) { antimeridian = TRUE } else { antimeridian = FALSE}
   
   # Tweak bounds if antimeridian 
   if(antimeridian) { 
