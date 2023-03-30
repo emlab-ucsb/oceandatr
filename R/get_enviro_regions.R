@@ -1,9 +1,6 @@
-#function for extracting Bio-Oracle environmental data for an area using a polygon
-# base case is using this list, but user can supply custom layer codes: "Chlorophyll Mean", "Dissolved oxygen Mean", "Nitrate Mean", "pH mean", "Phosphate Mean", "Phytoplankton Mean", "Primary productivity Mean", "Salinity Mean", "Silicate Mean", "Temperature Max", "Temperature Mean", "Temperature Min"
-#returns a raster stack of data
 #' Create environmental regions for area of interest
 #'
-#' @description This function extracts environmental data from Bio-Oracle for the area of interest and calculates environmental regions using a clustering algorithm
+#' @description This function extracts environmental data from Bio-Oracle for the area of interest and calculates environmental regions using a clustering algorithm. Details are described in Magris et al. (2020):https://doi.org/10.1111/ddi.13183
 #' 
 #' @details Environmental variables that are extracted include: mean carbon phytoplankton biomass, mean chlorophyll concentration, mean dissolved oxygen concentration, mean nitrate concentration, mean pH, mean phosphate concentration, mean primary production, mean sea surface salinity, maximum sea surface temperature, mean sea surface temperature, mininum sea surface temperature, and mean silicate concentration.
 #'  
@@ -26,6 +23,21 @@
 #' get_enviro_regions(bermuda_eez, num_clusters = 3)
 
 get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots = TRUE, raw_data = FALSE, num_clusters = NULL, max_num_clusters = 8){
+  
+  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+  
+  # Add error for cluster numbers
+  if(!is.null(num_clusters)) {
+    if(num_clusters < 1){ stop("num_clusters must be greater than 1 or NULL")}
+    if(!all.equal(num_clusters, round(num_clusters))){ stop("num_clusters must be a whole number")}} 
+  if(max_num_clusters < 1) { 
+    stop("max_num_clusters must be greater than 1")}
+  if(!all.equal(max_num_clusters, round(max_num_clusters))){ stop("max_num_clusters must be a whole number")}
   
   enviro_data <- get_enviro_data(area_polygon, planning_grid)
   

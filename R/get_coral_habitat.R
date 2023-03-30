@@ -24,6 +24,21 @@
 #' coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez)
 get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_threshold = 22, octocoral_threshold = 2){
  
+  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+  
+  # Add errors if the thresholds are not within the right area
+  if(antipatharia_threshold < 0 | antipatharia_threshold > 100) { 
+    stop("antipatharia_threshold must be between 0 and 100, as it represents the percent threshold of habitat suitability antipatharia to be considered present")
+  }
+  if(octocoral_threshold < 1 | octocoral_threshold > 7) { 
+    stop("octocoral_threshold must be between 1 and 7, as it represents the number of octocoral species (out of 7) must be present in an area for octocorals as a whole to be considered present")
+  }
+  
   antipatharia <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "offshoredatr", mustWork = TRUE) %>% 
     terra::rast() %>% 
     terra::crop(area_polygon, mask = TRUE) %>% 

@@ -21,6 +21,14 @@
 #' # Grab bathymetry data
 #' bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
 get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300){
+  
+  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+  
   if(is.null(bathymetry_data_filepath)){
     bathymetry <- get_etopo_bathymetry(area_polygon, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout)
   }
