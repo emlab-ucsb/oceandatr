@@ -16,6 +16,14 @@
 #' # Get geomorphology
 #' geomorphology <- get_geomorphology(area_polygon = bermuda_eez)
 get_geomorphology <- function(area_polygon, planning_grid = NULL){
+  
+  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+  
   geomorph_files <- c("Basins_Basins perched on the shelf.rds", "Basins_Basins perched on the slope.rds", 
                       "Basins_Large basins of seas and oceans.rds", "Basins_Major ocean basins.rds", 
                       "Basins_Small basins of seas and oceans.rds", "Bridges.rds", 
@@ -35,12 +43,14 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
   for (file_name in geomorph_file_paths) {
     feature_name <- gsub(pattern =  ".rds",replacement =  "", basename(file_name))
     
+    suppressMessages({
     area_polygon_sfc <- area_polygon %>% 
       sf::st_union()
     
     temp_file <- readRDS(file_name) %>%
       sf::st_crop(area_polygon_sfc) %>%
       sf::st_intersection(area_polygon_sfc)
+    })
 
     if(nrow(temp_file)>0)
     {
