@@ -30,7 +30,7 @@ get_enviro_regions(
 a raster stack with each layer representing a unique environmental region (if `raw_data == FALSE`); a raster stack with each layer representing a dataset pulled from Bio-Oracle (if `raw_data == TRUE`)
 }
 \description{
-This function extracts environmental data from Bio-Oracle for the area of interest and calculates environmental regions using a clustering algorithm
+This function extracts environmental data from Bio-Oracle for the area of interest and calculates environmental regions using a clustering algorithm. Details are described in Magris et al. (2020):https://doi.org/10.1111/ddi.13183
 }
 \details{
 Environmental variables that are extracted include: mean carbon phytoplankton biomass, mean chlorophyll concentration, mean dissolved oxygen concentration, mean nitrate concentration, mean pH, mean phosphate concentration, mean primary production, mean sea surface salinity, maximum sea surface temperature, mean sea surface temperature, mininum sea surface temperature, and mean silicate concentration.
