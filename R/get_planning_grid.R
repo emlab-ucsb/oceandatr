@@ -19,6 +19,11 @@
 #' planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 5)
 
 get_planning_grid <- function(area_polygon, projection_crs, resolution_km = 5){
+  
+  # Add repeated errors for area_polygon
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
   area_polygon %>% 
     sf::st_transform(projection_crs) %>% 
     terra::rast(resolution = resolution_km*1000) %>% 

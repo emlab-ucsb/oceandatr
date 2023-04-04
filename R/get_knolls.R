@@ -16,6 +16,14 @@
 #' # Get knolls
 #' knolls <- get_knolls(area_polygon = bermuda_eez)
 get_knolls <- function(area_polygon, planning_grid = NULL){
+  
+  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+  
     knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
       readRDS() %>% 
       sf::st_crop(area_polygon) %>%

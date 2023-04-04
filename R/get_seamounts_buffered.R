@@ -22,6 +22,14 @@
 #' # Get buffered seamount area within the planning grid with a 30 km buffer
 #' seamounts <- get_seamounts_buffered(area_polygon = bermuda_eez, planning_grid = planning_grid, buffer_km = 30)
 get_seamounts_buffered <- function(area_polygon, planning_grid, buffer_km = 30){
+  
+  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+  
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+  
   system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
     readRDS() %>% 
     sf::st_crop(area_polygon) %>%
