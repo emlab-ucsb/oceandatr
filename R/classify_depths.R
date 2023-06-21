@@ -48,8 +48,15 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
       setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
     
   } else{
-    depth_classification <- bathymetry_raster %>%
-      terra::project(planning_grid) %>% 
+    depth_classification <- if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
+      bathymetry_raster %>%
+        terra::project(planning_grid)
+      } else { 
+          bathymetry_raster %>%
+            terra::project(terra::crs(planning_grid))
+      }
+    
+    depth_classification <- depth_classification %>% 
       terra::mask(planning_grid) %>% 
       terra::classify(matrix(c(-200, Inf, 1, 
                                -1000, -200, 2,
@@ -57,9 +64,20 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
                                -6000, -4000, 4,
                                -12000, -6000, 5), ncol = 3, byrow = TRUE))
     
-    depth_zones_stack <- depth_classification %>% 
-      terra::segregate(other=NA) %>%  
-      setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
-  }
+    if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
+      depth_zones_stack <- depth_classification %>% 
+        terra::segregate(other=NA) %>%  
+        setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
+    } else { 
+      depth_classification_sf <- terra::as.polygons(depth_classification) %>% 
+        sf::st_as_sf() 
+      
+      depth_zones_stack <- sf::st_join(planning_grid, depth_classification_sf) %>% 
+        mutate(value = 1, 
+               bathymetry = depth_zone_names[bathymetry]) %>% 
+        pivot_wider(names_from = "bathymetry", values_from = "value", values_fn = mean) %>% 
+        dplyr::select(-`NA`)
+    } 
+} 
   return(depth_zones_stack)
 }
