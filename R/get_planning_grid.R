@@ -4,6 +4,7 @@
 #'
 #' @param area_polygon an sf polygon or multipolygon object of the area of interest (e.g., a country's EEZ)
 #' @param projection_crs a suitable crs for the area of interest (must be in meters); for prioritization work, best practices is to use a local, equal area projection in WKT format
+#' @param option the desired output format, either "raster", "sf_square" (vector), or "sf_hex" (vector); default is "raster"
 #' @param resolution_km numeric; the desired planning unit (grid cell) resolution in km
 #'
 #' @return A raster planning grid of the same resolution and crs provided
@@ -18,14 +19,31 @@
 #' # Create a planning grid with 5 km resolution; reproject the `bermuda_eez` object to the CRS defined in the `projection` object
 #' planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection, resolution_km = 5)
 
-get_planning_grid <- function(area_polygon, projection_crs, resolution_km = 5){
+get_planning_grid <- function(area_polygon, projection_crs, option = "raster", resolution_km = 5){
   
   # Add repeated errors for area_polygon
   if(!(class(area_polygon)[1] == "sf")) { 
     stop("area_polygon must be an sf object")}
   
-  area_polygon %>% 
-    sf::st_transform(projection_crs) %>% 
-    terra::rast(resolution = resolution_km*1000) %>% 
-    terra::rasterize(terra::vect(sf::st_transform(area_polygon, projection_crs)), ., touches=TRUE, field = 1)
-}
+  area_polygon <- area_polygon %>% 
+    sf::st_transform(projection_crs) 
+  
+  if(option == "raster") { 
+    grid_out <- area_polygon %>% 
+      terra::rast(resolution = resolution_km*1000) %>% 
+      terra::rasterize(terra::vect(sf::st_transform(area_polygon, projection_crs)), ., touches=TRUE, field = 1)
+  } else if (option == "sf_square") { 
+    grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = TRUE) %>% 
+      sf::st_as_sf()
+    overlap <- unlist(sf::st_intersects(area_trans, grid_out))
+    grid_out <- grid_out[overlap,]
+  } else if (option == "sf_hex") { 
+    grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = FALSE) %>% 
+      sf::st_as_sf()
+    overlap <- unlist(sf::st_intersects(area_trans, grid_out))
+    grid_out <- grid_out[overlap,]
+  } else { stop("option must be of either 'raster', 'sf_square' or 'sf_hex'")}
+  
+  return(grid_out)
+  
+} 

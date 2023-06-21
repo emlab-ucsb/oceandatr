@@ -4,12 +4,19 @@
 \alias{get_planning_grid}
 \title{Create a planning grid raster for an area of interest}
 \usage{
-get_planning_grid(area_polygon, projection_crs, resolution_km = 5)
+get_planning_grid(
+  area_polygon,
+  projection_crs,
+  option = "raster",
+  resolution_km = 5
+)
 }
 \arguments{
 \item{area_polygon}{an sf polygon or multipolygon object of the area of interest (e.g., a country's EEZ)}
 
 \item{projection_crs}{a suitable crs for the area of interest (must be in meters); for prioritization work, best practices is to use a local, equal area projection in WKT format}
+
+\item{option}{the desired output format, either "raster", "sf_square" (vector), or "sf_hex" (vector); default is "raster"}
 
 \item{resolution_km}{numeric; the desired planning unit (grid cell) resolution in km}
 }
