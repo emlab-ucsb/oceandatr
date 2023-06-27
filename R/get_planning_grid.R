@@ -35,12 +35,12 @@ get_planning_grid <- function(area_polygon, projection_crs, option = "raster", r
   } else if (option == "sf_square") { 
     grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = TRUE) %>% 
       sf::st_as_sf()
-    overlap <- unlist(sf::st_intersects(area_trans, grid_out))
+    overlap <- unlist(sf::st_intersects(area_polygon, grid_out))
     grid_out <- grid_out[overlap,]
   } else if (option == "sf_hex") { 
     grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = FALSE) %>% 
       sf::st_as_sf()
-    overlap <- unlist(sf::st_intersects(area_trans, grid_out))
+    overlap <- unlist(sf::st_intersects(area_polygon, grid_out))
     grid_out <- grid_out[overlap,]
   } else { stop("option must be of either 'raster', 'sf_square' or 'sf_hex'")}
   
