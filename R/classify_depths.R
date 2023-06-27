@@ -73,9 +73,9 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
         sf::st_as_sf() 
       
       depth_zones_stack <- sf::st_join(planning_grid, depth_classification_sf) %>% 
-        mutate(value = 1, 
+        dplyr::mutate(value = 1, 
                bathymetry = depth_zone_names[bathymetry]) %>% 
-        pivot_wider(names_from = "bathymetry", values_from = "value", values_fn = mean) %>% 
+        tidyr::pivot_wider(names_from = "bathymetry", values_from = "value", values_fn = mean) %>% 
         dplyr::select(-`NA`)
     } 
 } 
