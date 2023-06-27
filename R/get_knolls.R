@@ -32,13 +32,22 @@ get_knolls <- function(area_polygon, planning_grid = NULL){
     if(is.null(planning_grid)){
       return(knolls)
      }
-    else{
-    knolls <- knolls %>%
-      sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
-      terra::vect() %>% 
-      terra::rasterize(planning_grid, field = 1) %>% 
-      setNames("knolls")
-    
-    return(knolls)
+    else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) {
+      knolls <- knolls %>%
+        sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
+        terra::vect() %>% 
+        terra::rasterize(planning_grid, field = 1) %>% 
+        setNames("knolls")
+      
+      return(knolls) 
+    } else { 
+      knolls <- knolls %>% 
+        sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
+        sf::st_as_sf() %>% 
+        dplyr::mutate(knolls = 1)  %>%
+        dplyr::select(knolls) %>% 
+        sf::st_join(planning_grid, .) 
+      
+      return(knolls)
   }
 }
