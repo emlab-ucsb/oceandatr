@@ -24,6 +24,10 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
   if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
     stop("planning_grid must be a raster or sf object")}
   
+  if(class(planning_grid)[1] == "sf") { 
+    message("sf planning grids will take slightly longer to process")
+    }
+  
   geomorph_files <- c("Basins_Basins perched on the shelf.rds", "Basins_Basins perched on the slope.rds", 
                       "Basins_Large basins of seas and oceans.rds", "Basins_Major ocean basins.rds", 
                       "Basins_Small basins of seas and oceans.rds", "Bridges.rds", 
@@ -61,7 +65,7 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
   if(is.null(planning_grid)){
     return(geomorph_data)
   }
-  else{
+  else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
     geomorph_data_stack <- terra::rast()
     
     for (geomorph_feature in names(geomorph_data)) {
@@ -72,6 +76,25 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
         setNames(geomorph_feature) %>%
         c(geomorph_data_stack, .)
     }
-    return(geomorph_data_stack)
+    return(geomorph_data_stack) 
+  } else { 
+    
+    geomorph_data_stack <- NULL 
+    
+    for (geomorph_feature in names(geomorph_data)) {
+      geomorph_data_stack_temp <- geomorph_data[[geomorph_feature]] %>% 
+        sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
+        sf::st_as_sf() %>% 
+        dplyr::mutate(!!geomorph_feature := 1)  %>% 
+        sf::st_join(planning_grid, .) 
+      
+      if(geomorph_feature != names(geomorph_data)[1]){ 
+        geomorph_data_stack <- geomorph_data_stack_temp %>% 
+          sf::st_drop_geometry() %>% 
+          cbind(geomorph_data_stack, .)
+      } else { 
+        geomorph_data_stack <- geomorph_data_stack_temp}
+    } 
+      return(geomorph_data_stack)
   }
 }
