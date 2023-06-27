@@ -60,8 +60,20 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
       if(show_plots){
         enviro_regions_boxplot(enviro_regions, enviro_data)
       }
-      enviro_regions <- enviro_regions %>% 
-        terra::segregate(other=NA)
+      
+      if(is.null(planning_grid) | class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+        enviro_regions <- enviro_regions %>% 
+          terra::segregate(other=NA)
+      } else { 
+        enviro_regions <- enviro_regions %>%
+          terra::as.polygons(dissolve = FALSE) %>%
+          sf::st_as_sf() %>%
+          sf::st_join(planning_grid, .) %>% 
+          dplyr::filter(!is.na(enviro_region)) %>% 
+          dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
+                        value = 1) %>% 
+          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) 
+      } 
       
       return(enviro_regions)
     }
@@ -80,8 +92,19 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
         enviro_regions_boxplot(enviro_regions, enviro_data)
       }
       
-      enviro_regions <- enviro_regions %>% 
-        terra::segregate(other=NA)
+      if(is.null(planning_grid) | class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+        enviro_regions <- enviro_regions %>% 
+          terra::segregate(other=NA)
+      } else { 
+        enviro_regions <- enviro_regions %>%
+          terra::as.polygons(dissolve = FALSE) %>%
+          sf::st_as_sf() %>%
+          sf::st_join(planning_grid, .) %>% 
+          dplyr::filter(!is.na(enviro_region)) %>% 
+          dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
+                        value = 1) %>% 
+          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) 
+      } 
       
       return(enviro_regions)
     }
@@ -96,15 +119,17 @@ get_enviro_data <- function(area_polygon, planning_grid){
   
   if(is.null(planning_grid)){
     message("Data are not projected")
-    return(enviro_data) 
   } 
-  else{
+  else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
     enviro_data <- enviro_data %>% 
       terra::project(planning_grid) %>% 
       terra::mask(planning_grid)
-    
-    return(enviro_data)
+  } else {
+    enviro_data <- enviro_data %>% 
+      terra::project(terra::crs(planning_grid)) %>% 
+      terra::mask(planning_grid)
   }
+  return(enviro_data)
 }
 
 enviro_regions_boxplot <- function(enviro_regions, enviro_data){
