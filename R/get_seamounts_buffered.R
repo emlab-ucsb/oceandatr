@@ -30,16 +30,26 @@ get_seamounts_buffered <- function(area_polygon, planning_grid, buffer_km = 30){
   if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
     stop("planning_grid must be a raster or sf object")}
   
-  system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
+  buffered_seamounts <- system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
     readRDS() %>% 
     sf::st_crop(area_polygon) %>%
     sf::st_intersection(area_polygon) %>% 
     sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
     sf::st_buffer(buffer_km*1000) %>% 
     sf::st_union() %>% 
-    sf::st_as_sf() %>% 
-    terra::vect() %>% 
-    terra::rasterize(planning_grid, field = 1) %>% 
-    terra::mask(planning_grid) %>% 
-    setNames("seamounts")
+    sf::st_as_sf()
+  
+  if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) {
+    buffered_seamounts <- buffered_seamounts %>% 
+      terra::vect() %>% 
+      terra::rasterize(planning_grid, field = 1) %>% 
+      terra::mask(planning_grid) %>% 
+      setNames("seamounts")
+    } else { 
+      buffered_seamounts <- buffered_seamounts %>% 
+        dplyr::mutate(seamounts = 1) %>% 
+        sf::st_join(planning_grid, .) 
+    }
+  
+  return(buffered_seamounts)
 }
