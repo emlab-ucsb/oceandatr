@@ -67,7 +67,7 @@ get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_t
   if(is.null(planning_grid)){
     return(corals_stack)
   }
-  else{
+  else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
     antipatharia <- antipatharia %>%     
       terra::project(planning_grid) %>% 
       terra::mask(planning_grid) %>%
@@ -92,9 +92,43 @@ get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_t
     
     corals_stack <- c(antipatharia, cold_corals, octocorals) %>% 
       terra::subset(which(terra::global(., "sum", na.rm = TRUE) >1))
-    
-    return(corals_stack)
-  }
+    } else {
+      antipatharia <- antipatharia %>%     
+        terra::project(terra::crs(planning_grid)) %>% 
+        terra::mask(planning_grid) %>%
+        #convert antipatharia habitat suitability to presence/ absence map "by choosing a threshold value of habitat suitability based on the maximum sum of sensitivity and specificity (threshold mss = 0.23)". Text from the original source paper, Yesson et al. 2017
+        terra::classify(matrix(c(0, antipatharia_threshold, NA,
+                                 antipatharia_threshold, 100, 1), ncol = 3, byrow = TRUE)) %>%
+        terra::as.polygons() %>% 
+        sf::st_as_sf() %>% 
+        sf::st_join(planning_grid, .) %>% 
+        dplyr::rename(antipatharia = Antipatharia)
+      
+      cold_corals <- cold_corals %>% 
+        terra::project(terra::crs(planning_grid), method = 'near') %>% 
+        terra::mask(planning_grid) %>% 
+        terra::classify(matrix(c(0, 0.5, NA, 
+                                 0.5, 1.1, 1), ncol = 3, byrow = TRUE), include.lowest  =TRUE) %>%
+        terra::as.polygons() %>% 
+        sf::st_as_sf() %>% 
+        sf::st_join(planning_grid, .) %>% 
+        dplyr::rename(cold_coral = Cold_Corals)
+      
+      octocorals <- octocorals %>% 
+        terra::project(terra::crs(planning_grid), method = 'near') %>% 
+        terra::mask(planning_grid) %>% 
+        terra::classify(matrix(c(0, octocoral_threshold, NA,
+                                 octocoral_threshold,7, 1), ncol = 3, byrow = TRUE), include.lowest  =TRUE) %>% 
+        terra::as.polygons() %>% 
+        sf::st_as_sf() %>% 
+        sf::st_join(planning_grid, .) %>% 
+        dplyr::rename(octocorals = Octocoral)
   
+      corals_stack <- antipatharia %>% 
+        cbind(cold_corals %>% sf::st_drop_geometry()) %>% 
+        cbind(octocorals %>% sf::st_drop_geometry())
+      
+    } 
+  return(corals_stack)
   gc()
 }
