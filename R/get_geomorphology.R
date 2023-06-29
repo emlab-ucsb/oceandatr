@@ -66,17 +66,19 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
     return(geomorph_data)
   }
   else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
-    geomorph_data_stack <- terra::rast()
     
     for (geomorph_feature in names(geomorph_data)) {
+    
       geomorph_data_stack <- geomorph_data[[geomorph_feature]] %>%
         sf::st_transform(crs = sf::st_crs(planning_grid)) %>%
         terra::vect() %>% 
         terra::rasterize(planning_grid, field = 1) %>%
-        setNames(geomorph_feature) %>%
-        c(geomorph_data_stack, .)
+        setNames(geomorph_feature) %>% 
+        {if(geomorph_feature != names(geomorph_data)[1]) c(geomorph_data_stack, .)}
+      
     }
-    return(geomorph_data_stack) 
+    
+    return(terra::rast(geomorph_data_stack))
   } else { 
     
     geomorph_data_stack <- NULL 

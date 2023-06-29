@@ -13,8 +13,12 @@
 #' # Get seamount peak locations 
 #' seamount_peaks <- get_seamount_peaks(bermuda_eez)
 get_seamount_peaks <- function(area_polygon){
-  system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
-    readRDS() %>% 
-    sf::st_crop(area_polygon) %>%
-    sf::st_intersection(area_polygon)
+  
+  suppressMessages({
+    system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
+      readRDS() %>% 
+      sf::st_geometry() %>% 
+      sf::st_crop(area_polygon) %>%
+      sf::st_intersection(area_polygon)
+  })
 }

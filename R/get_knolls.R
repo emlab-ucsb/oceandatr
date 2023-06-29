@@ -24,10 +24,15 @@ get_knolls <- function(area_polygon, planning_grid = NULL){
   if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
     stop("planning_grid must be a raster or sf object")}
   
-    knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
-      readRDS() %>% 
-      sf::st_crop(area_polygon) %>%
-      sf::st_intersection(area_polygon)
+  suppressMessages({
+    suppressWarnings({
+      knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
+        readRDS() %>% 
+        sf::st_geometry() %>% 
+        sf::st_crop(area_polygon) %>%
+        sf::st_intersection(area_polygon)
+    }) 
+  })
     
     if(is.null(planning_grid)){
       return(knolls)
