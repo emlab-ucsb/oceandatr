@@ -76,7 +76,8 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
         dplyr::mutate(value = 1, 
                bathymetry = depth_zone_names[bathymetry]) %>% 
         tidyr::pivot_wider(names_from = "bathymetry", values_from = "value", values_fn = mean) %>% 
-        dplyr::select(-`NA`)
+        dplyr::select(-`NA`) %>% 
+        dplyr::relocate(geometry, .after = last_col())
     } 
 } 
   return(depth_zones_stack)

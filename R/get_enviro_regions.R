@@ -72,7 +72,8 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
           dplyr::filter(!is.na(enviro_region)) %>% 
           dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
                         value = 1) %>% 
-          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) 
+          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) %>% 
+          dplyr::relocate(geometry, .after = last_col())
       } 
       
       return(enviro_regions)
@@ -103,7 +104,8 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
           dplyr::filter(!is.na(enviro_region)) %>% 
           dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
                         value = 1) %>% 
-          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) 
+          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) %>% 
+          dplyr::relocate(geometry, .after = last_col())
       } 
       
       return(enviro_regions)
