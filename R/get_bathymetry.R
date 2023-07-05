@@ -34,7 +34,7 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
   }
   else{
     bathymetry <- terra::rast(bathymetry_data_filepath) %>% 
-      terra::crop(area_polygon, mask=TRUE)
+      terra::crop(sf::st_bbox(area_polygon)*1.01, mask=FALSE)
   }
   if(is.null(planning_grid)){
     return(bathymetry)
@@ -42,7 +42,6 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
   else{
     bathymetry_planning_grid <- bathymetry %>% 
       terra::project(planning_grid) %>%
-      terra::mask(planning_grid) %>%
       setNames("bathymetry")
     return(bathymetry_planning_grid)
   }
@@ -57,6 +56,12 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
   lon2 = as.numeric(sf::st_bbox(aoi)$xmax)
   lat1 = as.numeric(sf::st_bbox(aoi)$ymin)
   lat2 = as.numeric(sf::st_bbox(aoi)$ymax)
+  
+  # Expand range a little bit
+  lon1 = ifelse(lon1 < 0, lon1*1.01, lon1*0.99)
+  lon2 = ifelse(lon2 < 0, lon2*0.99, lon2*1.01)
+  lat1 = ifelse(lat1 < 0, lat1*1.01, lat1*0.99)
+  lat2 = ifelse(lat2 < 0, lat2*0.99, lat2*1.01)
   
   # Quick checks of specified lat/lons and resolution 
   if (lon1 == lon2) 
