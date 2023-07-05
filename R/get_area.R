@@ -1,12 +1,12 @@
 #' Get an a shapefile for the area of interest
 #' 
-#' This uses the `mrp_get` function from the `mregions2` package to retrieve an area object from Marine Regions (https://marineregions.org/gazetteer.php). You can filter using any column available in the `mregions2` database. To see all possible column names and codes, specify `show_options` = TRUE when you run the function. 
+#' This uses the `mrp_get` function from the `mregions2` package to retrieve an area object (e.g. an EEZ) from Marine Regions (https://marineregions.org/gazetteer.php). You can filter using any column available in the `mregions2` database. To see all possible column names and codes, specify `show_options` = TRUE when you run the function. 
 #'
 #' @param area_name string; the name of the country or area that you would like to query for; must match a name in `mregions2` for the `mregions_column` selected
-#' @param query_type string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list()` to see the full list of data_product options. (default is "eez")
-#' @param mregions_column string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (defaut is "territory1")
-#' @param show_value_options logical; whether to show all of the value options associated with your `mregions_column` selection that are available in `mregions2`; running this will not query `mregions2` (default is FALSE)
-#' @param show_column_options logical; whether to show all of the `mregions_column` options that are available in `mregions2`; running this will not query `mregions2` (default is FALSE)
+#' @param query_type string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list` to see the full list of data_product options. (default is "eez")
+#' @param mregions_column string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (default is "territory1")
+#' @param show_value_options logical; whether to show all of the value options associated with your `mregions_column` selection that are available in `mregions2`; running this will not return a spatial object (default is FALSE)
+#' @param show_column_options logical; whether to show all of the `mregions_column` options that are available in `mregions2`; running this will not return a spatial object (default is FALSE)
 #'
 #' @return if `show_options` = FALSE, returns the sf object of the area of interest; if `show_value_options` or `show_column_options` == TRUE, a named list will be returned. Names in the list correspond to options for `mregions_column` and values correspond to options for `area_name`
 #' @export
@@ -24,7 +24,7 @@
 #' get_area(area_name = "KIR", mregions_column = "iso_ter1")
 get_area <- function(area_name, query_type = "eez", mregions_column = "territory1", show_value_options = FALSE, show_column_options = FALSE){
   if(show_column_options) { 
-    cols_available <- mregions2::mrp_colnames(query_type)$column_name
+    cols_available <- mregions2::mrp_colnames(query_type)$colname
     if(!show_value_options) { 
       return(list("mregions_column" = cols_available))
     } else { 

@@ -10,11 +10,11 @@ test_that("returns SpatRaster object (planning grid)", {
                class(terra::rast(nrows=1, ncols=1, xmin=0, xmax=1)))
 })
 
-test_that("returns error, bathymetry raster is not a raster") { 
+test_that("returns error, bathymetry raster is not a raster", { 
   expect_error(classify_depths(bathymetry_raster = get_area(area_name = "Bermuda")))
-}
+})
 
-test_that("returns error, planning grid is not a raster or sf object") { 
+test_that("returns error, planning grid is not a raster or sf object", { 
   expect_error(classify_depths(get_bathymetry(get_area(area_name = "Bermuda")), 
                                planning_grid = "none"))
-}
+})
