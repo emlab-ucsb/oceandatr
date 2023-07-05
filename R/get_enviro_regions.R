@@ -61,18 +61,24 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
         enviro_regions_boxplot(enviro_regions, enviro_data)
       }
       
-      if(is.null(planning_grid) | class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+      if(is.null(planning_grid)) { 
         enviro_regions <- enviro_regions %>% 
           terra::segregate(other=NA)
+        } else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+        enviro_regions <- enviro_regions %>% 
+          terra::mask(planning_grid) %>% 
+          terra::segregate(other=NA)
       } else { 
-        enviro_regions <- enviro_regions %>%
-          terra::as.polygons(dissolve = FALSE) %>%
-          sf::st_as_sf() %>%
-          sf::st_join(planning_grid, .) %>% 
-          dplyr::filter(!is.na(enviro_region)) %>% 
+        enviro_regions_vec <- exactextractr::exact_extract(enviro_regions, planning_grid, 
+                                                           function(value, cov_frac) 
+                                                             value[cov_frac == max(cov_frac)])
+        enviro_regions <- 
+          planning_grid %>% 
+          cbind(data.frame("enviro_region" = enviro_regions_vec)) %>% 
           dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
                         value = 1) %>% 
           tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) %>% 
+          dplyr::rename(geometry = x) %>% 
           dplyr::relocate(geometry, .after = last_col())
       } 
       
@@ -93,18 +99,24 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
         enviro_regions_boxplot(enviro_regions, enviro_data)
       }
       
-      if(is.null(planning_grid) | class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+      if(is.null(planning_grid)) { 
         enviro_regions <- enviro_regions %>% 
           terra::segregate(other=NA)
+      } else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+        enviro_regions <- enviro_regions %>% 
+          terra::mask(planning_grid) %>% 
+          terra::segregate(other=NA)
       } else { 
-        enviro_regions <- enviro_regions %>%
-          terra::as.polygons(dissolve = FALSE) %>%
-          sf::st_as_sf() %>%
-          sf::st_join(planning_grid, .) %>% 
-          dplyr::filter(!is.na(enviro_region)) %>% 
+        enviro_regions_vec <- exactextractr::exact_extract(enviro_regions, planning_grid, 
+                                                           function(value, cov_frac) 
+                                                             max(value[cov_frac == max(cov_frac)]))
+        enviro_regions <- 
+          planning_grid %>% 
+          cbind(data.frame("enviro_region" = enviro_regions_vec)) %>% 
           dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
                         value = 1) %>% 
           tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) %>% 
+          dplyr::rename(geometry = x) %>% 
           dplyr::relocate(geometry, .after = last_col())
       } 
       
@@ -117,19 +129,17 @@ get_enviro_data <- function(area_polygon, planning_grid){
   tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
   
   enviro_data <- terra::rast(tif_list) %>% 
-    terra::crop(area_polygon, mask = TRUE)
+    terra::crop(area_polygon, mask = FALSE)
   
   if(is.null(planning_grid)){
     message("Data are not projected")
   } 
   else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
     enviro_data <- enviro_data %>% 
-      terra::project(planning_grid) %>% 
-      terra::mask(planning_grid)
+      terra::project(planning_grid) 
   } else {
     enviro_data <- enviro_data %>% 
-      terra::project(terra::crs(planning_grid)) %>% 
-      terra::mask(planning_grid)
+      terra::project(terra::crs(planning_grid))
   }
   return(enviro_data)
 }

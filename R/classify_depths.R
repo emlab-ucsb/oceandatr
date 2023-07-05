@@ -57,7 +57,6 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
       }
     
     depth_classification <- depth_classification %>% 
-      terra::mask(planning_grid) %>% 
       terra::classify(matrix(c(-200, Inf, 1, 
                                -1000, -200, 2,
                                -4000, -1000, 3,
@@ -66,17 +65,20 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
     
     if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
       depth_zones_stack <- depth_classification %>% 
+        terra::mask(planning_grid) %>% 
         terra::segregate(other=NA) %>%  
         setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
     } else { 
-      depth_classification_sf <- terra::as.polygons(depth_classification) %>% 
-        sf::st_as_sf() 
-      
-      depth_zones_stack <- sf::st_join(planning_grid, depth_classification_sf) %>% 
+      depth_classification_vec <- exactextractr::exact_extract(depth_classification, planning_grid, 
+                                                               function(value, cov_frac) 
+                                                                 max(value[cov_frac == max(cov_frac)]))
+      depth_zones_stack <- 
+        planning_grid %>% 
+        cbind(data.frame("bathymetry" = depth_classification_vec)) %>% 
         dplyr::mutate(value = 1, 
                bathymetry = depth_zone_names[bathymetry]) %>% 
         tidyr::pivot_wider(names_from = "bathymetry", values_from = "value", values_fn = mean) %>% 
-        dplyr::select(-`NA`) %>% 
+        dplyr::rename(geometry = x) %>% 
         dplyr::relocate(geometry, .after = last_col())
     } 
 } 
