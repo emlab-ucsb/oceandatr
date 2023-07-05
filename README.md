@@ -36,8 +36,6 @@ process a bit simpler.
 
 ``` r
 bermuda_eez <- get_area(area_name = "Bermuda")
-#> Loading ISO 19139 XML schemas...
-#> Loading ISO 19115 codelists...
 
 #plot to check we have Bermuda's EEZ
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
@@ -135,7 +133,6 @@ using a function borrowed from the `marmap` package.
 
 ``` r
 bathymetry <- get_bathymetry(area_polygon = bermuda_eez, planning_grid = planning_grid, keep = FALSE)
-#> [1] 300
 #> Querying NOAA database ...
 #> This may take seconds to minutes, depending on grid size
 #> x1 = -68.9 y1 = 28.9 x2 = -60.7 y2 = 35.8 ncell.lon = 492 ncell.lat = 414
@@ -262,15 +259,11 @@ al. 2020](https://doi.org/10.1111/ddi.13183)
 
 ``` r
 #cluster the data
-#start_time <- Sys.time()
-enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid)
+#set maximum number of clusters to 5 to reduce runtime and memory usage
+enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid, max_num_clusters = 5)
 ```
 
 <img src="man/figures/README-environmental regions-1.png" width="600" />
-
-``` r
-#end_time <- Sys.time()-start_time
-```
 
 ``` r
 #plot

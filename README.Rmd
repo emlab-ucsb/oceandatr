@@ -195,9 +195,9 @@ Bioregions are often included in spatial planning, but available bioregional cla
 
 ```{r environmental regions, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 #cluster the data
-#start_time <- Sys.time()
-enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid)
-#end_time <- Sys.time()-start_time
+#set maximum number of clusters to 5 to reduce runtime and memory usage
+enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, planning_grid = planning_grid, max_num_clusters = 5)
+
 ```
 
 
