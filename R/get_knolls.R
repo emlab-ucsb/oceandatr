@@ -46,12 +46,15 @@ get_knolls <- function(area_polygon, planning_grid = NULL){
       
       return(knolls) 
     } else { 
-      knolls <- knolls %>% 
-        sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
-        sf::st_as_sf() %>% 
-        dplyr::mutate(knolls = 1)  %>%
-        dplyr::select(knolls) %>% 
-        sf::st_join(planning_grid, .) 
+      
+      suppressWarnings({
+        knolls <- knolls %>% 
+          sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
+          sf::st_as_sf() %>% 
+          dplyr::mutate(knolls = 1)  %>%
+          dplyr::select(knolls) %>% 
+          sf::st_join(planning_grid, ., largest = TRUE) 
+      })
       
       return(knolls)
   }

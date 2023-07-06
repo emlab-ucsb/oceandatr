@@ -49,9 +49,11 @@ get_seamounts_buffered <- function(area_polygon, planning_grid, buffer_km = 30){
       terra::mask(planning_grid) %>% 
       setNames("seamounts")
     } else { 
-      buffered_seamounts <- buffered_seamounts %>% 
-        dplyr::mutate(seamounts = 1) %>% 
-        sf::st_join(planning_grid, .) 
+      suppressWarnings({
+        buffered_seamounts <- buffered_seamounts %>% 
+          dplyr::mutate(seamounts = 1) %>% 
+          sf::st_join(planning_grid, ., largest = TRUE) 
+      }) 
     }
   
   return(buffered_seamounts)
