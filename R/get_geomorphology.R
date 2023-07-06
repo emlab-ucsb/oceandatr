@@ -45,7 +45,8 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
   geomorph_data <- list()
 
   for (file_name in geomorph_file_paths) {
-    feature_name <- gsub(pattern =  ".rds",replacement =  "", basename(file_name))
+    feature_name <- tolower(gsub(pattern =  ".rds", replacement =  "", 
+                                 gsub(pattern = " ", replacement = "_", basename(file_name))))
     
     suppressMessages({
     area_polygon_sfc <- area_polygon %>% 
@@ -84,11 +85,13 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
     geomorph_data_stack <- NULL 
     
     for (geomorph_feature in names(geomorph_data)) {
-      geomorph_data_stack_temp <- geomorph_data[[geomorph_feature]] %>% 
-        sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
-        sf::st_as_sf() %>% 
-        dplyr::mutate(!!geomorph_feature := 1)  %>% 
-        sf::st_join(planning_grid, .) 
+      suppressWarnings({
+        geomorph_data_stack_temp <- geomorph_data[[geomorph_feature]] %>% 
+          sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
+          sf::st_as_sf() %>% 
+          dplyr::mutate(!!geomorph_feature := 1)  %>% 
+          sf::st_join(planning_grid, ., largest = TRUE) 
+      })
       
       if(geomorph_feature != names(geomorph_data)[1]){ 
         geomorph_data_stack <- geomorph_data_stack_temp %>% 
