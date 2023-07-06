@@ -81,8 +81,8 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
   
   # Tweak bounds if antimeridian 
   if(antimeridian) { 
-    aoi_left <- sf::st_crop(aoi, xmin = 0, xmax = 180, ymin = -90, ymax = 90)
-    aoi_right <- sf::st_crop(aoi, xmin = -180, xmax = 0, ymin = -90, ymax = 90)
+    aoi_left <- sf::st_crop(sf::st_geometry(aoi), xmin = 0, xmax = 180, ymin = -90, ymax = 90)
+    aoi_right <- sf::st_crop(sf::st_geometry(aoi), xmin = -180, xmax = 0, ymin = -90, ymax = 90)
     lon1_left <- as.numeric(sf::st_bbox(aoi_left)$xmin)
     lon2_left <- as.numeric(sf::st_bbox(aoi_left)$xmax)
     lon1_right <- as.numeric(sf::st_bbox(aoi_right)$xmin)
