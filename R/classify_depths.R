@@ -67,7 +67,7 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
       depth_zones_stack <- depth_classification %>% 
         terra::mask(planning_grid) %>% 
         terra::segregate(other=NA) %>%  
-        setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
+        setNames(depth_zone_names[as.numeric(names(.))])
     } else { 
       depth_classification_vec <- exactextractr::exact_extract(depth_classification, planning_grid, 
                                                                function(value, cov_frac) 
