@@ -63,11 +63,13 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
       
       if(is.null(planning_grid)) { 
         enviro_regions <- enviro_regions %>% 
-          terra::segregate(other=NA)
+          terra::segregate(other=NA) %>% 
+          setNames(paste0("environmental_region_", names(.)))
         } else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
         enviro_regions <- enviro_regions %>% 
           terra::mask(planning_grid) %>% 
-          terra::segregate(other=NA)
+          terra::segregate(other=NA) %>% 
+          setNames(paste0("environmental_region_", names(.)))
       } else { 
         enviro_regions_vec <- exactextractr::exact_extract(enviro_regions, planning_grid, 
                                                            function(value, cov_frac) 
@@ -101,11 +103,13 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
       
       if(is.null(planning_grid)) { 
         enviro_regions <- enviro_regions %>% 
-          terra::segregate(other=NA)
+          terra::segregate(other=NA) %>% 
+          setNames(paste0("environmental_region_", names(.)))
       } else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
         enviro_regions <- enviro_regions %>% 
           terra::mask(planning_grid) %>% 
-          terra::segregate(other=NA)
+          terra::segregate(other=NA) %>% 
+          setNames(paste0("environmental_region_", names(.)))
       } else { 
         enviro_regions_vec <- exactextractr::exact_extract(enviro_regions, planning_grid, 
                                                            function(value, cov_frac) 
