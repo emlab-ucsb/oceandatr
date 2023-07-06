@@ -38,13 +38,16 @@ get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_f
   }
   if(is.null(planning_grid)){
     return(bathymetry)
-  }
-  else{
+  } else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) {
     bathymetry_planning_grid <- bathymetry %>% 
       terra::project(planning_grid) %>%
       setNames("bathymetry")
     return(bathymetry_planning_grid)
-  }
+  } else { 
+    bathymetry_planning_grid <- bathymetry %>% 
+      terra::project(terra::crs(planning_grid)) %>%
+      setNames("bathymetry")
+    }
 }
 
 
