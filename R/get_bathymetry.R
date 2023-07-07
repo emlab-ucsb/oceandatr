@@ -84,8 +84,10 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
   
   # Tweak bounds if antimeridian 
   if(antimeridian) { 
-    aoi_left <- sf::st_crop(sf::st_geometry(aoi), xmin = 0, xmax = 180, ymin = -90, ymax = 90)
-    aoi_right <- sf::st_crop(sf::st_geometry(aoi), xmin = -180, xmax = 0, ymin = -90, ymax = 90)
+    suppressMessages({
+      aoi_left <- sf::st_crop(sf::st_geometry(aoi), xmin = 0, xmax = 180, ymin = -90, ymax = 90)
+      aoi_right <- sf::st_crop(sf::st_geometry(aoi), xmin = -180, xmax = 0, ymin = -90, ymax = 90)
+    })
     lon1_left <- as.numeric(sf::st_bbox(aoi_left)$xmin)
     lon2_left <- as.numeric(sf::st_bbox(aoi_left)$xmax)
     lon1_right <- as.numeric(sf::st_bbox(aoi_right)$xmin)
@@ -163,10 +165,10 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
     #increase timeout for download which is 60s by default; too short time to download largers files
     options(timeout = max(download_timeout, getOption("timeout")))
     
-    message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
+    # message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
     WEB.REQUEST <- paste0("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/DEM_all/ImageServer/exportImage?bbox=", x1, ",", y1, ",", x2, ",", y2, "&bboxSR=4326&size=", ncell.lon, ",", ncell.lat,"&imageSR=4326&format=tiff&pixelType=F32&interpolation=+RSP_NearestNeighbor&compression=LZ77&renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%", database, "%27%22}&f=image")
     filename <- gsub("[.]", "", paste(x1, x2, y1, y2, sep = "_"))
-    download.file(url = WEB.REQUEST, destfile = paste0(filename, "_tmp.tif"), mode = "wb")
+    download.file(url = WEB.REQUEST, destfile = paste0(filename, "_tmp.tif"), mode = "wb", quiet = TRUE)
     dat <- suppressWarnings(try(terra::rast(paste0(filename, "_tmp.tif")), silent = TRUE))
     return(dat)
   }
@@ -186,14 +188,14 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
     return(existing.bathy)
   } else { # otherwise, fetch it from the NOAA server
     if (antimeridian) {
-      message("Querying NOAA database ...")
+      # message("Querying NOAA database ...")
       message("This may take seconds to minutes, depending on grid size\n")
       left <- fetch(l1, y1, l2, y2, ncell.lon.left, ncell.lat)
       right <- fetch(l3, y1, l4, y2, ncell.lon.right, ncell.lat)
       if (is(left, "try-error") | is(right, "try-error")) {
         stop("The NOAA server cannot be reached\n")
       } else {
-        message("Got data crossing antimeridian")
+        # message("Got data crossing antimeridian")
         # resample so both are the same exact res (they're a little off)
         left <- terra::resample(left, 
                                 terra::rast(ymin = y1, ymax = y2, 
@@ -212,7 +214,7 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
         
       }
     } else {
-      message("Querying NOAA database ...")
+      # message("Querying NOAA database ...")
       message("This may take seconds to minutes, depending on grid size")
       bath <- fetch(x1, y1, x2, y2, ncell.lon, ncell.lat) %>% 
         setNames("bathymetry")
