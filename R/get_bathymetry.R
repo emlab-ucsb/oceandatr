@@ -61,10 +61,10 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
   lat2 = as.numeric(sf::st_bbox(aoi)$ymax)
   
   # Expand range a little bit
-  lon1 = max(c(-180, ifelse(lon1 < 0, lon1*1.01, lon1*0.99)))
-  lon2 = min(c(180, ifelse(lon2 < 0, lon2*0.99, lon2*1.01)))
-  lat1 = max(c(-90, ifelse(lat1 < 0, lat1*1.01, lat1*0.99)))
-  lat2 = min(c(90, ifelse(lat2 < 0, lat2*0.99, lat2*1.01)))
+  lon1 = max(c(-180, lon1-0.5))
+  lon2 = min(c(180, lon2+0.5))
+  lat1 = max(c(-90, lat1-0.5))
+  lat2 = min(c(90, lat2+0.5))
   
   # Quick checks of specified lat/lons and resolution 
   if (lon1 == lon2) 
@@ -88,10 +88,10 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
       aoi_left <- sf::st_crop(sf::st_geometry(aoi), xmin = 0, xmax = 180, ymin = -90, ymax = 90)
       aoi_right <- sf::st_crop(sf::st_geometry(aoi), xmin = -180, xmax = 0, ymin = -90, ymax = 90)
     })
-    lon1_left <- as.numeric(sf::st_bbox(aoi_left)$xmin)
-    lon2_left <- as.numeric(sf::st_bbox(aoi_left)$xmax)
-    lon1_right <- as.numeric(sf::st_bbox(aoi_right)$xmin)
-    lon2_right <- as.numeric(sf::st_bbox(aoi_right)$xmax) 
+    lon1_left <- max(c(-180, as.numeric(sf::st_bbox(aoi_left)$xmin-0.5)))
+    lon2_left <- min(c(180, as.numeric(sf::st_bbox(aoi_left)$xmax)+0.5))
+    lon1_right <- max(c(-180, as.numeric(sf::st_bbox(aoi_right)$xmin)-0.5))
+    lon2_right <- min(c(180, as.numeric(sf::st_bbox(aoi_right)$xmax)+0.5)) 
   }
   
   #here on copied directly from marmap package
