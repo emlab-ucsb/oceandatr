@@ -35,92 +35,34 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
   
   depth_zone_names <- c("epipelagic", "mesopelagic", "bathypelagic", "abyssopelagic", "hadopelagic")
   
-  # Set up classification function for later... 
-  classification_fx <- function(bath_rast_list) { 
-    
-    depth_classification <- if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
-      eval(as.name(bath_rast_list)) %>%
-        terra::project(planning_grid)
-    } else { 
-      eval(as.name(bath_rast_list)) %>%
-        terra::project(terra::crs(planning_grid))
-    }
-    
-    depth_classification <- depth_classification %>% 
-      terra::classify(matrix(c(-200, Inf, 1, 
-                               -1000, -200, 2,
-                               -4000, -1000, 3,
-                               -6000, -4000, 4,
-                               -12000, -6000, 5), ncol = 3, byrow = TRUE))
-    
-    if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
-      depth_zones_stack <- depth_classification %>% 
-        terra::mask(planning_grid) %>% 
-        terra::segregate(other=NA) %>%  
-        setNames(depth_zone_names[as.numeric(names(.))])
-    } else { 
-      depth_classification_vec <- exactextractr::exact_extract(depth_classification, planning_grid, 
-                                                               function(value, cov_frac) 
-                                                                 ifelse(length(value) > 0, 
-                                                                        max(value[cov_frac == max(cov_frac)]), 
-                                                                        NA))
-      depth_zones_stack <- 
-        planning_grid %>% 
-        cbind(data.frame("bathymetry" = depth_classification_vec)) %>% 
-        dplyr::mutate(value = 1, 
-                      bathymetry = depth_zone_names[bathymetry]) %>% 
-        tidyr::pivot_wider(names_from = "bathymetry", values_from = "value", values_fn = mean) %>% 
-        dplyr::rename(geometry = x) %>% 
-        dplyr::select(depth_zone_names[sort(unique(depth_classification_vec))], geometry)
-    } 
-    
-    depth_zones_stack
-  } 
+  bathymetry_matrix <- matrix(c(-200, Inf, 1, 
+                                -1000, -200, 2,
+                                -4000, -1000, 3,
+                                -6000, -4000, 4,
+                                -12000, -6000, 5), ncol = 3, byrow = TRUE)
   
   # Run classification
-  if(is.null(planning_grid)){
-    depth_classification <- eval(as.name(bath_rast_list)) %>%
-      terra::classify(matrix(c(-200, Inf, 1, 
-                               -1000, -200, 2,
-                               -4000, -1000, 3,
-                               -6000, -4000, 4,
-                               -12000, -6000, 5), ncol = 3, byrow = TRUE))
-    
-    depth_zones_stack <- depth_classification %>% 
-      terra::segregate(other=NA) %>%  
-      setNames(depth_zone_names[as.numeric(terra::global(depth_classification, "min", na.rm = TRUE)):as.numeric(terra::global(depth_classification, "max", na.rm=TRUE))])
-    
-    return(depth_zones_stack)
-  } else { 
-    if(round(terra::ext(bathymetry_raster)[1]) <= -180 & round(terra::ext(bathymetry_raster)[2]) >= 180) { 
-      message("Data crosses the antimeridian - completing this step in two parts") 
-      antimeridian = TRUE
-      left_template <- terra::rast(xmin = -180, xmax = 0, ymin = -90, ymax = 90)
-      right_template <- terra::rast(xmin = 0, xmax = 180, ymin = -90, ymax = 90)
-      bathymetry_raster_left <- terra::trim(terra::crop(bathymetry_raster, left_template))
-      bathymetry_raster_right <- terra::trim(terra::crop(bathymetry_raster, right_template))
-      bathymetry_list <- c("bathymetry_raster_left", "bathymetry_raster_right")
+  if(round(terra::ext(bathymetry_raster)[1]) <= -180 & round(terra::ext(bathymetry_raster)[2]) >= 180) { 
+      message("Data cross the antimeridian - completing this step in two parts") 
+      data_halves <- split_by_antimeridian(bathymetry_raster)
+      left_side <- classify_layers(data_halves[[1]], 
+                                   planning_grid = planning_grid, 
+                                   classification_matrix = bathymetry_matrix, 
+                                   classification_names = depth_zone_names)
+      right_side <- classify_layers(data_halves[[2]], 
+                                    planning_grid = planning_grid, 
+                                    classification_matrix = bathymetry_matrix, 
+                                    classification_names = depth_zone_names)
+      depth_zones_stack <- combine_antimeridian(data = list(left_side, right_side), 
+                                         planning_grid = planning_grid, 
+                                         classification_names = depth_zone_names)
     } else {
-      antimeridian = FALSE
-      bathymetry_list <- c("bathymetry_raster")
+      depth_zones_stack <- classify_layers(data = bathymetry_raster, 
+                                           planning_grid = planning_grid, 
+                                           classification_matrix = bathymetry_matrix, 
+                                           classification_names = depth_zone_names)
+      
     }
-    
-    depth_zones_stack <- lapply(bathymetry_list, classification_fx)
-    
-    if(antimeridian) { 
-      if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
-        depth_zones_stack <- terra::merge(depth_zones_stack[[1]], depth_zones_stack[[2]], na.rm = T)
-      } else { 
-        depth_zones_stack <- dplyr::bind_rows(depth_zones_stack[[1]], depth_zones_stack[[2]]) %>% 
-          dplyr::group_by(geometry) %>% 
-          dplyr::summarise_all(mean, na.rm = TRUE) %>% 
-          dplyr::ungroup() %>% 
-          dplyr::select(depth_zone_names[depth_zone_names %in% colnames(.)], geometry) %>% 
-          dplyr::mutate_at(colnames(.)[1:(ncol(.)-1)], ~ifelse(is.nan(.), NA, .))
-        }
-      return(depth_zones_stack)
-    } else {
-      return(depth_zones_stack[[1]])
-    }
-  } 
+  
+  return(depth_zones_stack)
 }
