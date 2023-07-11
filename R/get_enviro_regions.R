@@ -24,12 +24,8 @@
 
 get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots = TRUE, raw_data = FALSE, num_clusters = NULL, max_num_clusters = 8){
   
-  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
-  if(!(class(area_polygon)[1] == "sf")) { 
-    stop("area_polygon must be an sf object")}
-  
-  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
-    stop("planning_grid must be a raster or sf object")}
+  check_grid(planning_grid)
+  check_area(area_polygon)
   
   # Add error for cluster numbers
   if(!is.null(num_clusters)) {
@@ -61,30 +57,33 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
         enviro_regions_boxplot(enviro_regions, enviro_data)
       }
       
-      if(is.null(planning_grid)) { 
-        enviro_regions <- enviro_regions %>% 
-          terra::segregate(other=NA) %>% 
-          setNames(paste0("environmental_region_", names(.)))
-        } else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
-        enviro_regions <- enviro_regions %>% 
-          terra::mask(planning_grid) %>% 
-          terra::segregate(other=NA) %>% 
-          setNames(paste0("environmental_region_", names(.)))
-      } else { 
-        enviro_regions_vec <- exactextractr::exact_extract(enviro_regions, planning_grid, 
-                                                           function(value, cov_frac) 
-                                                             value[cov_frac == max(cov_frac)])
-        enviro_regions <- 
-          planning_grid %>% 
-          cbind(data.frame("enviro_region" = enviro_regions_vec)) %>% 
-          dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
-                        value = 1) %>% 
-          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) %>% 
-          dplyr::rename(geometry = x) %>% 
-          dplyr::select(paste0("environmental_region_", sort(unique(enviro_regions_vec))), geometry)
-      } 
+      enviro_matrix <- matrix(c(sort(unique(terra::values(enviro_regions))), 
+                                 sort(unique(terra::values(enviro_regions)))), ncol = 2, byrow = FALSE)
       
-      return(enviro_regions)
+      enviro_names <- paste0("environmental_region_", sort(unique(terra::values(enviro_regions))))
+      
+      if(round(sf::st_bbox(area_polygon)[1]) <= -180 & round(sf::st_bbox(area_polygon)[3]) >= 180) { 
+        message("Data cross the antimeridian - completing this step in two parts") 
+        data_halves <- split_by_antimeridian(enviro_regions)
+        left_side <- classify_layers(data_halves[[1]], 
+                                     planning_grid = planning_grid, 
+                                     classification_matrix = enviro_matrix, 
+                                     classification_names = enviro_names)
+        right_side <- classify_layers(data_halves[[2]], 
+                                      planning_grid = planning_grid, 
+                                      classification_matrix = enviro_matrix, 
+                                      classification_names = enviro_names)
+        enviro_regions_stack <- combine_antimeridian(data = list(left_side, right_side), 
+                                                  planning_grid = planning_grid, 
+                                                  classification_names = enviro_names)
+      } else {
+        enviro_regions_stack <- classify_layers(data = enviro_regions, 
+                                             planning_grid = planning_grid, 
+                                             classification_matrix = enviro_matrix, 
+                                             classification_names = enviro_names)
+        
+      }
+      return(enviro_regions_stack)
     }
     else{
       
@@ -100,36 +99,39 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
       if(show_plots){
         enviro_regions_boxplot(enviro_regions, enviro_data)
       }
+      enviro_matrix <- matrix(c(sort(unique(terra::values(enviro_regions))), 
+                                sort(unique(terra::values(enviro_regions)))), ncol = 2, byrow = FALSE)
       
-      if(is.null(planning_grid)) { 
-        enviro_regions <- enviro_regions %>% 
-          terra::segregate(other=NA) %>% 
-          setNames(paste0("environmental_region_", names(.)))
-      } else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
-        enviro_regions <- enviro_regions %>% 
-          terra::mask(planning_grid) %>% 
-          terra::segregate(other=NA) %>% 
-          setNames(paste0("environmental_region_", names(.)))
-      } else { 
-        enviro_regions_vec <- exactextractr::exact_extract(enviro_regions, planning_grid, 
-                                                           function(value, cov_frac) 
-                                                             max(value[cov_frac == max(cov_frac)]))
-        enviro_regions <- 
-          planning_grid %>% 
-          cbind(data.frame("enviro_region" = enviro_regions_vec)) %>% 
-          dplyr::mutate(enviro_region = paste0("environmental_region_", enviro_region), 
-                        value = 1) %>% 
-          tidyr::pivot_wider(names_from = "enviro_region", values_from = "value", values_fn = max) %>% 
-          dplyr::rename(geometry = x) %>% 
-          dplyr::select(paste0("environmental_region_", sort(unique(enviro_regions_vec))), geometry)
-      } 
+      enviro_names <- paste0("environmental_region_", sort(unique(terra::values(enviro_regions))))
       
-      return(enviro_regions)
+      if(round(sf::st_bbox(area_polygon)[1]) <= -180 & round(sf::st_bbox(area_polygon)[3]) >= 180) { 
+        message("Data cross the antimeridian - completing this step in two parts") 
+        data_halves <- split_by_antimeridian(enviro_regions)
+        left_side <- classify_layers(data_halves[[1]], 
+                                     planning_grid = planning_grid, 
+                                     classification_matrix = enviro_matrix, 
+                                     classification_names = enviro_names)
+        right_side <- classify_layers(data_halves[[2]], 
+                                      planning_grid = planning_grid, 
+                                      classification_matrix = enviro_matrix, 
+                                      classification_names = enviro_names)
+        enviro_regions_stack <- combine_antimeridian(data = list(left_side, right_side), 
+                                                     planning_grid = planning_grid, 
+                                                     classification_names = enviro_names)
+      } else {
+        enviro_regions_stack <- classify_layers(data = enviro_regions, 
+                                                planning_grid = planning_grid, 
+                                                classification_matrix = enviro_matrix, 
+                                                classification_names = enviro_names)
+        
+      }
+      
+      return(enviro_regions_stack)
     }
   }
 }
 
-get_enviro_data <- function(area_polygon, planning_grid){
+get_enviro_data <- function(area_polygon, planning_grid = NULL){
   tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
   
   enviro_data <- terra::rast(tif_list) %>% 
@@ -138,7 +140,7 @@ get_enviro_data <- function(area_polygon, planning_grid){
   if(is.null(planning_grid)){
     message("Data are not projected")
   } 
-  else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+  else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) {
     enviro_data <- enviro_data %>% 
       terra::project(planning_grid) 
   } else {
