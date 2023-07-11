@@ -30,8 +30,7 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
   if(!(class(bathymetry_raster)[1] %in% c("RasterLayer", "SpatRaster"))) { 
     stop("bathymetry_raster must be a raster object")}
   
-  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
-    stop("planning_grid must be a raster or sf object")}
+  check_grid(planning_grid)
   
   depth_zone_names <- c("epipelagic", "mesopelagic", "bathypelagic", "abyssopelagic", "hadopelagic")
   

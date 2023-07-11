@@ -1,6 +1,19 @@
 # A file of little functions that we use across the board. 
 
-# Data cross the antimeridian
+# Function to return errors for incorrect planning_grid input
+check_grid <- function(planning_grid) { 
+  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
+    stop("planning_grid must be a raster or sf object")}
+}
+
+# Function to return errors for incorrect area input
+check_area <- function(area_polygon) { 
+  if(!(class(area_polygon)[1] == "sf")) { 
+    stop("area_polygon must be an sf object")}
+} 
+
+
+# Function to split data that crosses the antimeridian into two parts
 split_by_antimeridian <- function(data) {
   
   # Clip the data into two halves
@@ -12,6 +25,7 @@ split_by_antimeridian <- function(data) {
   return(list(data_raster_left, data_raster_right))
 } 
 
+# Function to classify data layers
 classify_layers <- function(data, planning_grid = NULL, classification_matrix = NULL, classification_names = NULL){ 
   
   # Project
@@ -89,6 +103,7 @@ classify_layers <- function(data, planning_grid = NULL, classification_matrix = 
   
 }
 
+# Function to stitch outputs that cross the antimeridian back together
 combine_antimeridian <- function(data, planning_grid, classification_names = NULL) { 
   if(is.null(planning_grid)) { 
     spatrast <- terra::sprc(data[[1]], data[[2]])
