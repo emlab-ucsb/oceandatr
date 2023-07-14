@@ -19,12 +19,13 @@ enviro_data <- sdmpredictors::load_layers(layercodes = bo_layer_codes, datadir =
 download_time <- Sys.time() - start_time
 
 enviro_data_names <- sdmpredictors::list_layers() %>% 
-  filter(layer_code %in% bo_layer_codes) %>% 
+  dplyr::filter(layer_code %in% bo_layer_codes) %>%
+  dplyr::arrange(factor(layer_code, levels = bo_layer_codes)) %>% 
   dplyr::select(name) %>%
-  mutate(name = gsub(" ", "_", name)) %>% 
-  pull()
+  dplyr::mutate(name = gsub(" ", "_", name)) %>% 
+  dplyr::pull()
 
-#pH has a non-standard name as of 2023-3-24, rename manually
+#pH has a non-standard name as of 2023-7-14, rename manually
 enviro_data_names[enviro_data_names == "BO_ph"] <- "pH_(mean)"
  
 names(enviro_data) <- enviro_data_names
