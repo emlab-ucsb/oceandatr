@@ -21,7 +21,7 @@ get_bathymetry(
 
 \item{bathymetry_data_filepath}{string; the file path (including file name and extension) where bathymetry raster data are saved locally}
 
-\item{resolution}{numeric; the resolution (in decimal degrees) of data to pull from the ETOPO 2022 Global Relief model}
+\item{resolution}{numeric; the resolution (in minutes) of data to pull from the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)}
 
 \item{keep}{logical; whether to save the bathymetry data locally}
 
