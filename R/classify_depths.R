@@ -44,10 +44,12 @@ classify_depths <- function(bathymetry_raster, planning_grid = NULL){
   if(round(terra::ext(bathymetry_raster)[1]) <= -180 & round(terra::ext(bathymetry_raster)[2]) >= 180) { 
       message("Data cross the antimeridian - completing this step in two parts") 
       data_halves <- split_by_antimeridian(bathymetry_raster)
+      message("Processing first half...")
       left_side <- classify_layers(data_halves[[1]], 
                                    planning_grid = planning_grid, 
                                    classification_matrix = bathymetry_matrix, 
                                    classification_names = depth_zone_names)
+      message("Processing second half...")
       right_side <- classify_layers(data_halves[[2]], 
                                     planning_grid = planning_grid, 
                                     classification_matrix = bathymetry_matrix, 
