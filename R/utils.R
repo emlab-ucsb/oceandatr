@@ -41,7 +41,7 @@ classify_layers <- function(data, planning_grid = NULL, classification_matrix = 
   
   if(!is.null(classification_matrix)) { 
     classification <- projected_raster %>% 
-      terra::classify(classification_matrix)
+      terra::classify(classification_matrix, include.lowest = TRUE)
     
     if(is.null(planning_grid)) { 
       stack_out <- classification %>% 
