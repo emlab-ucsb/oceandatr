@@ -6,9 +6,9 @@ check_grid <- function(planning_grid) {
     stop("planning_grid must be a raster or sf object")}
 }
 
-# Function to return errors for incorrect area input
+# Function to return errors for incorrect area polygon input
 check_area <- function(area_polygon) { 
-  if(!(class(area_polygon)[1] == "sf")) { 
+  if(!is.null(area_polygon) & !(class(area_polygon)[1] == "sf")) { 
     stop("area_polygon must be an sf object")}
 } 
 
