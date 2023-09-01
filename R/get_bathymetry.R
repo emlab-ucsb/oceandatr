@@ -20,45 +20,86 @@
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Grab bathymetry data
 #' bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
-get_bathymetry <- function(area_polygon, planning_grid = NULL, bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300){
+get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300){
+  
+  if(is.null(area_polygon) & is.null(planning_grid)){
+    stop("an area polygon or planning grid must be supplied")
+  }
+  
+  if(!is.null(area_polygon) & !is.null(planning_grid)){
+    stop("please supply either an area polygon or a planning grid, not both")
+  }
   
   # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
-  if(!(class(area_polygon)[1] == "sf")) { 
-    stop("area_polygon must be an sf object")}
+  check_area(area_polygon)
+  check_grid(planning_grid)
   
-  if(!is.null(planning_grid) & !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) { 
-    stop("planning_grid must be a raster or sf object")}
+  if(!is.null(planning_grid)){
+    area_polygon_for_cropping <- planning_grid_to_polygon(planning_grid)
+  }
+  
+  if(!is.null(area_polygon)){
+    if(sf::st_crs(area_polygon) == sf::st_crs(4326)){
+      area_polygon_for_cropping <- area_polygon
+    } else{
+      area_polygon_for_cropping <- sf::st_transform(area_polygon, 4326)
+    }
+  }
   
   if(is.null(bathymetry_data_filepath)){
-    bathymetry <- get_etopo_bathymetry(area_polygon, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout)
-  }
-  else{
+    bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout)
+  } else{
     bathymetry <- terra::rast(bathymetry_data_filepath) %>% 
-      terra::crop(sf::st_bbox(area_polygon)*1.01, mask=FALSE)
-  }
-  if(is.null(planning_grid)){
-    return(bathymetry)
-  } else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) {
-    bathymetry_planning_grid <- bathymetry %>% 
-      terra::project(planning_grid) %>%
-      setNames("bathymetry")
-    return(bathymetry_planning_grid)
-  } else { 
-    bathymetry_planning_grid <- bathymetry %>% 
-      terra::project(terra::crs(planning_grid)) %>%
-      setNames("bathymetry")
+      terra::crop(sf::st_bbox(sf::st_transform(area_polygon, .))*1.01) 
+    
+    if(!sf::st_crs(bathymetry) == sf::st_crs(area_polygon)){
+      bathymetry <- terra::project(bathymetry, terra::crs(area_polygon))
     }
+  }
+  
+  if(is.null(planning_grid)){
+    if(sf::st_crs(bathymetry) == sf::st_crs(area_polygon)){
+      bathymetry <- terra::crop(bathymetry, area_polygon, mask = TRUE) %>% 
+        setNames(name)
+    }else{
+      bathymetry <- bathymetry %>% 
+        terra::project(area_polygon, method = 'average') %>% 
+        terra::crop(area_polygon, mask = TRUE) %>% 
+        setNames(name)
+    }
+    
+  } else {
+    bathymetry <- raster_to_planning_grid(bathymetry, planning_grid, name)
+  }
+  
+  if(classify_bathymetry){
+    reclass_var <- ifelse(above_sea_level_isNA, NA, 0)
+    
+    if(class(bathymetry)[1] == "sf"){
+      depth_zones <- bathymetry %>% 
+        dplyr::mutate(bathymetry = dplyr::case_when(bathymetry >=0 ~ reclass_var,
+                                             .default = as.numeric(bathymetry))) %>% 
+        classify_depths()
+    }else{
+      depth_zones <- bathymetry %>%
+        terra::classify(matrix(c(0,5000, reclass_var), ncol = 3), include.lowest = TRUE) %>% 
+        classify_depths() 
+    }
+    
+    return(depth_zones)
+    
+  }else{
+    return(bathymetry)
+  }
 }
-
-
 #This function extracts bathymetry data for the area of interest from the ETOPO 2022 Global Relief model, using a script similar to that from `marmap::getNOAA.bathy()`. This is a helper function for get_bathymetry()
 
 get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
-  
-  lon1 = as.numeric(sf::st_bbox(aoi)$xmin)
-  lon2 = as.numeric(sf::st_bbox(aoi)$xmax)
-  lat1 = as.numeric(sf::st_bbox(aoi)$ymin)
-  lat2 = as.numeric(sf::st_bbox(aoi)$ymax)
+  b_box <- sf::st_bbox(aoi)
+  lon1 = as.numeric(b_box$xmin)
+  lon2 = as.numeric(b_box$xmax)
+  lat1 = as.numeric(b_box$ymin)
+  lat2 = as.numeric(b_box$ymax)
   
   # Expand range a little bit
   lon1 = max(c(-180, lon1-0.5))
