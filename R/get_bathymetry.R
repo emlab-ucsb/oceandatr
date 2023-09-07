@@ -22,13 +22,7 @@
 #' bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
 get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300){
   
-  if(is.null(area_polygon) & is.null(planning_grid)){
-    stop("an area polygon or planning grid must be supplied")
-  }
-  
-  if(!is.null(area_polygon) & !is.null(planning_grid)){
-    stop("please supply either an area polygon or a planning grid, not both")
-  }
+
   
   # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
   check_area(area_polygon)
