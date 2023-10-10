@@ -1,5 +1,7 @@
 ras_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name){
   
+  if(is.null(name)) name <- names(dat) 
+  
   if(check_raster(planning_grid)) {
     if(matching_crs){
       ras_dat <- dat %>% 
@@ -19,16 +21,18 @@ ras_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name){
   } else {
     if(matching_crs){
       ras_dat <- dat %>% 
-        exactextractr::exact_extract(sf::st_geometry(planning_grid), 'mean', force_df = TRUE) %>% 
+        exactextractr::exact_extract(sf::st_geometry(planning_grid), meth , force_df = TRUE) %>% 
         setNames(name) %>% 
-        cbind(planning_grid, .)
+        data.frame(planning_grid, .) %>% 
+        sf::st_sf()
     }else{
       p_grid_transformed <- sf::st_transform(sf::st_geometry(planning_grid), sf::st_crs(dat))
       
       ras_dat <- dat %>% 
-        exactextractr::exact_extract(p_grid_transformed, 'mean', force_df = TRUE) %>% 
+        exactextractr::exact_extract(p_grid_transformed, meth , force_df = TRUE) %>% 
         setNames(name) %>%
-        cbind(p_grid_transformed, .) %>% 
+        data.frame(p_grid_transformed, .) %>%
+        sf::st_sf() %>% 
         sf::st_transform(sf::st_crs(planning_grid))
     }
   }

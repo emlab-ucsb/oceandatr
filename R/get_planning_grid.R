@@ -26,12 +26,14 @@ get_planning_grid <- function(area_polygon, projection_crs, option = "raster", r
     stop("area_polygon must be an sf object")}
   
   area_polygon <- area_polygon %>% 
-    sf::st_transform(projection_crs) 
+    sf::st_geometry() %>% 
+    sf::st_as_sf() %>% 
+    {if(sf::st_crs(area_polygon) == projection_crs) . else sf::st_transform(., projection_crs)}
   
   if(option == "raster") { 
     grid_out <- area_polygon %>% 
       terra::rast(resolution = resolution_km*1000) %>% 
-      terra::rasterize(terra::vect(sf::st_transform(area_polygon, projection_crs)), ., touches=TRUE, field = 1)
+      terra::rasterize(area_polygon, ., touches=FALSE, field = 1)
   } else if (option == "sf_square") { 
     grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = TRUE) %>% 
       sf::st_as_sf()
