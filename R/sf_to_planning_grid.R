@@ -1,15 +1,16 @@
 sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf_col_layer_names){
 
-  #1st option: the sf data object is polygons showing a single feature presence or there is a column with the each feature named, e.g. sand, seagrass, coral
+  #1st option: the sf data object is polygons showing a single feature presence or sf_col_layer_names is names of each habitat/ species/ other feature
   
-  if(is.null(name)) name <- as.character(substitute(dat))
+  if(is.null(name)) name <- "data"
   
   if(is.null(sf_col_layer_names)){
     dat <- dat %>% 
       sf::st_geometry() %>% 
-      sf::st_as_sf()
+      sf::st_as_sf() %>% 
+      dplyr::mutate(sf_col_layer_names = 1, .before = 1)
   }  else {
-    dat <- data %>% 
+    dat <- dat %>% 
       dplyr::select(dplyr::all_of(sf_col_layer_names))
   }
   
@@ -32,15 +33,28 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
     }
   } else{ #this is for sf planning grid output
     if(matching_crs){
-      sf_dat <- dat %>% 
+      presence_absence <- dat %>% 
         sf::st_crop(planning_grid) %>%
-        sf::st_intersection(planning_grid, .) #this isn't doing what I think it should: check spatialplanr
-    }else {
+        sf::st_intersects(planning_grid, .) %>% 
+        {lengths(.)>0} %>% 
+        as.integer()
+      
       sf_dat <- planning_grid %>% 
+        dplyr::mutate("{name}" := presence_absence, .before = 1) %>% 
+        {if(check_antimeridian(planning_grid)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
+      
+    }else {
+      presence_absence <- planning_grid %>% 
         sf::st_transform(sf::st_crs(dat)) %>% 
         sf::st_crop(dat, .) %>% 
         sf::st_transform(sf::st_crs(planning_grid)) %>% 
-        sf::st_intersection(planning_grid, .)
+        sf::st_intersects(planning_grid, .) %>% 
+        {lengths(.)>0} %>% 
+        as.integer() 
+      
+      sf_dat <- planning_grid %>% 
+        dplyr::mutate("{name}" := presence_absence, .before = 1) %>% 
+        {if(check_antimeridian(planning_grid)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
     }
   }
   

@@ -16,13 +16,15 @@ get_raw_data <- function(area_polygon, dat, meth, matching_crs){
     }
   }else{
     if(matching_crs){
-      raw_data_masked <- sf::st_intersection(dat, sf::st_geometry(area_polygon))
+      raw_data_masked <- sf::st_intersection(dat, sf::st_geometry(area_polygon)) %>% 
+        {if(check_antimeridian(.)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
       return(raw_data_masked)
     }else{
       raw_data_masked <- area_polygon %>% 
         sf::st_transform(sf::st_crs(dat)) %>% 
         sf::st_intersection(dat, sf::st_geometry(.)) %>% 
-        sf::st_transform(sf::st_crs(area_polygon))
+        sf::st_transform(sf::st_crs(area_polygon)) %>% 
+        {if(check_antimeridian(.)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
       return(raw_data_masked)
     }
   }

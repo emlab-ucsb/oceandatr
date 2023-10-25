@@ -1,4 +1,4 @@
-#function to check if an sf polygon cross the antimeridian
+#function to check if an sf polygon crosses the antimeridian
 
 check_antimeridian <- function(sf_object){
   if(sf::st_crs(sf_object) != sf::st_crs(4326)){
