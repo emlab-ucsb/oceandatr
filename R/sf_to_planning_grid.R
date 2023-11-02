@@ -16,12 +16,12 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
   
   if(check_raster(planning_grid)){
     if(matching_crs){
-      sf_dat <- dat %>% 
+      dat %>% 
         terra::rasterize(planning_grid, field = 1, by = sf_col_layer_names) %>% 
         terra::mask(planning_grid) %>% 
         setNames(name)
     }else{
-      sf_dat <- planning_grid %>%
+      planning_grid %>%
                 terra::as.polygons() %>%
                 sf::st_as_sf() %>% 
                 sf::st_transform(sf::st_crs(dat)) %>%
@@ -39,7 +39,7 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
         {lengths(.)>0} %>% 
         as.integer()
       
-      sf_dat <- planning_grid %>% 
+     planning_grid %>% 
         dplyr::mutate("{name}" := presence_absence, .before = 1) %>% 
         {if(check_antimeridian(planning_grid)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
       
@@ -52,11 +52,10 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
         {lengths(.)>0} %>% 
         as.integer() 
       
-      sf_dat <- planning_grid %>% 
+      planning_grid %>% 
         dplyr::mutate("{name}" := presence_absence, .before = 1) %>% 
         {if(check_antimeridian(planning_grid)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
     }
   }
-  
-  return(sf_dat)
+
 }

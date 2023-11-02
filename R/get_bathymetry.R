@@ -63,7 +63,7 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
     }
     
   } else {
-    bathymetry <- raster_to_planning_grid(bathymetry, planning_grid, name)
+    bathymetry <- ras_to_planning_grid(bathymetry, planning_grid, name)
   }
   
   if(classify_bathymetry){
