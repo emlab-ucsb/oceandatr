@@ -101,11 +101,22 @@ test <- planning_rast_fiji %>%
   terra::rotate(normalize = TRUE) %>% 
   terra::crop(antipatharia, ., snap = 'out') %>% 
   terra::trim() %>% 
-  terra::plot()
+  #terra::plot()
   terra::project("+proj=moll +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m no_defs", method = 'average') %>%
-  terra::mask(planning_rast_fiji %>% project("+proj=moll +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m no_defs")) %>% 
+  terra::mask(planning_rast_fiji %>% terra::project("+proj=moll +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m no_defs")) %>% 
+  plot()
   setNames(name)
 
-fiji_extent_antipatharia <- antipatharia %>% 
+fiji_extent_antipatharia <- planning_rast_fiji %>% 
+  terra::as.polygons() %>% 
+  terra::project(terra::crs(antipatharia)) %>% 
+  terra::rotate(normalize  = TRUE) %>% 
+  antimeridian_l_r_bbox() %>% 
+  lapply(., function(x) plot(x))
+  sf::st_as_sf() %>% 
+  sf::st_geometry() %>% 
+  sf::st_break_antimeridian() %>% 
+  sf::st_crop(sf::st_bbox(c(xmin = -180, ymin = -90, xmax = 0, ymax = 90))) %>% 
+  plot()
   
   "+proj=moll +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m no_defs"
