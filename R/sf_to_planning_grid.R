@@ -28,19 +28,30 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
       setNames(name)
     
   } else{ #this is for sf planning grid output
-    dat_cropped <- if(matching_crs) dat %>% sf::st_crop(planning_grid) else{planning_grid %>% 
+    if(antimeridian){
+      p_grid <- sf::st_geometry(planning_grid) %>%
         sf::st_transform(sf::st_crs(dat)) %>% 
-        sf::st_crop(dat, .) %>% 
-        sf::st_transform(sf::st_crs(planning_grid))}
-    
+        sf::st_shift_longitude()
+      
+      dat_cropped <- dat %>% 
+        sf::st_shift_longitude() %>% 
+        sf::st_crop(p_grid) %>% 
+        sf::st_wrap_dateline() %>% 
+        sf::st_transform(sf::st_crs(planning_grid))
+    }else{
+      dat_cropped <- if(matching_crs) dat %>% sf::st_crop(planning_grid) else{planning_grid %>% 
+          sf::st_transform(sf::st_crs(dat)) %>% 
+          sf::st_crop(dat, .) %>% 
+          sf::st_transform(sf::st_crs(planning_grid))}
+      
+    }
     presence_absence <- dat_cropped %>% 
       sf::st_intersects(planning_grid, .) %>% 
       {lengths(.)>0} %>% 
       as.integer()
     
     planning_grid %>% 
-      dplyr::mutate("{name}" := presence_absence, .before = 1) #%>% 
-      #{if(check_antimeridian(planning_grid)) sf::st_wrap_dateline(.) %>% sf::st_make_valid() else .}
+      dplyr::mutate("{name}" := presence_absence, .before = 1) 
   }
 
 }

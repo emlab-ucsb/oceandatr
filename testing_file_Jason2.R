@@ -91,7 +91,7 @@ plot(fiji_knolls)
 fiji_knoll_pu <- get_data(planning_grid = planning_rast_fiji, dat = knolls)
 terra::plot(fiji_knoll_pu)
 
-fiji_knolls_pu_sf <- get_data(planning_grid = planning_sf_fiji, dat = knolls)
+fiji_knolls_pu_sf <- get_data(planning_grid = planning_sf_fiji, dat = knolls, antimeridian = TRUE)
 plot(fiji_knolls_pu_sf, border = FALSE)
 
 ##############################################################
