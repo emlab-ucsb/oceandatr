@@ -1,6 +1,6 @@
 #generic get data function
 
-get_data <- function(planning_grid = NULL, area_polygon = NULL, dat = NULL, binary = TRUE, meth = NULL, name = NULL, sf_col_layer_names = NULL){
+get_data <- function(planning_grid = NULL, area_polygon = NULL, dat = NULL, binary = TRUE, meth = NULL, name = NULL, sf_col_layer_names = NULL, antimeridian = FALSE){
   if(is.null(dat)){
     stop("Please provide some input data")
   }
@@ -43,9 +43,9 @@ get_data <- function(planning_grid = NULL, area_polygon = NULL, dat = NULL, bina
     raw_data_masked <- get_raw_data(area_polygon, dat, meth, matching_crs)
     return(raw_data_masked)
   } else if(check_raster(dat)){
-    ras_to_planning_grid(dat, planning_grid, matching_crs, meth, name)
+    ras_to_planning_grid(dat, planning_grid, matching_crs, meth, name, antimeridian)
     } else {
-    sf_to_planning_grid(dat, planning_grid, matching_crs, meth, name, sf_col_layer_names)
+    sf_to_planning_grid(dat, planning_grid, matching_crs, meth, name, sf_col_layer_names, antimeridian)
   }
   
 }
