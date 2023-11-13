@@ -1,6 +1,6 @@
 #generic get data function
 
-get_data <- function(planning_grid = NULL, area_polygon = NULL, dat = NULL, binary = TRUE, meth = NULL, name = NULL, sf_col_layer_names = NULL, antimeridian = FALSE){
+data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat = NULL, meth = NULL, name = NULL, sf_col_layer_names = NULL, antimeridian = NULL){
   if(is.null(dat)){
     stop("Please provide some input data")
   }
@@ -10,11 +10,25 @@ get_data <- function(planning_grid = NULL, area_polygon = NULL, dat = NULL, bina
   
   dat <- data_from_filepath(dat)
   
-  matching_crs <- if(is.null(planning_grid)){
-    ifelse(sf::st_crs(area_polygon) == sf::st_crs(dat), TRUE, FALSE) 
-  }else{
-    ifelse(sf::st_crs(planning_grid) == sf::st_crs(dat), TRUE, FALSE)
-  }
+  matching_crs <- check_matching_crs(area_polygon, planning_grid, dat)
+  
+  antimeridian <- if(is.null(antimeridian)){
+    sf_object <- if(is.null(planning_grid)) area_polygon else{
+      if(check_sf(planning_grid)) planning_grid else terra::as.polygons(planning_grid) %>% sf::st_as_sf()
+    }
+    if(sf::st_crs(sf_object) != sf::st_crs(4326)){
+      b_box <- sf::st_transform(sf_object, 4326) %>%
+        sf::st_bbox()
+    } else{
+      b_box <- sf::st_bbox(sf_object)
+    }
+
+    if(round(b_box$xmin) == -180 & round(b_box$xmax) == 180){
+      TRUE
+    } else{
+      FALSE
+    }
+  } else antimeridian
 
 #setting method for resampling, projecting, etc. a raster - should be 'near' for binary raster otherwise end up with non-binary values
 #previously checking for unique values 0,1,NA, NaN but this is time consuming for global raster so get user to define if binary or not
@@ -36,12 +50,10 @@ get_data <- function(planning_grid = NULL, area_polygon = NULL, dat = NULL, bina
           }
     }
   }
-  
-  
-  
+
   if(!is.null(area_polygon)){
-    raw_data_masked <- get_raw_data(area_polygon, dat, meth, matching_crs)
-    return(raw_data_masked)
+    get_raw_data(area_polygon, dat, meth, matching_crs, antimeridian)
+    
   } else if(check_raster(dat)){
     ras_to_planning_grid(dat, planning_grid, matching_crs, meth, name, antimeridian)
     } else {

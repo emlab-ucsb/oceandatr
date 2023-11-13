@@ -20,51 +20,29 @@
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Grab bathymetry data
 #' bathymetry <- get_bathymetry(area_polygon = bermuda_eez)
-get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300){
-  
+get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300, antimeridian = NULL){
 
+  check_grid_or_polygon(planning_grid, area_polygon)
   
-  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
-  check_area(area_polygon)
-  check_grid(planning_grid)
+  meth <- if(check_sf(planning_grid)) 'mean' else 'average'
+  
+  matching_crs <- check_matching_crs(area_polygon, planning_grid, sf::st_crs(4326))
   
   if(!is.null(planning_grid)){
-    area_polygon_for_cropping <- planning_grid_to_polygon(planning_grid)
-  }
-  
-  if(!is.null(area_polygon)){
-    if(sf::st_crs(area_polygon) == sf::st_crs(4326)){
-      area_polygon_for_cropping <- area_polygon
-    } else{
-      area_polygon_for_cropping <- sf::st_transform(area_polygon, 4326)
-    }
+    area_polygon_for_cropping <- planning_grid_to_polygon(planning_grid, matching_crs)
+  }else{
+    area_polygon_for_cropping <- area_polygon %>% 
+      sf::st_geometry() %>% 
+      sf::st_as_sf() %>% 
+      {if(matching_crs) . else sf::st_transform(., 4326)}
   }
   
   if(is.null(bathymetry_data_filepath)){
-    bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout)
+    bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout) %>% 
+      data_to_planning_grid(area_polygon, planning_grid, dat = ., meth, name, antimeridian)
   } else{
-    bathymetry <- terra::rast(bathymetry_data_filepath) %>% 
-      terra::crop(sf::st_bbox(sf::st_transform(area_polygon, .))*1.01) 
-    
-    if(!sf::st_crs(bathymetry) == sf::st_crs(area_polygon)){
-      bathymetry <- terra::project(bathymetry, terra::crs(area_polygon))
+    bathymetry <- data_to_planning_grid(area_polygon, planning_grid, dat = bathymetry_data_filepath, meth, name, antimeridian) 
     }
-  }
-  
-  if(is.null(planning_grid)){
-    if(sf::st_crs(bathymetry) == sf::st_crs(area_polygon)){
-      bathymetry <- terra::crop(bathymetry, area_polygon, mask = TRUE) %>% 
-        setNames(name)
-    }else{
-      bathymetry <- bathymetry %>% 
-        terra::project(area_polygon, method = 'average') %>% 
-        terra::crop(area_polygon, mask = TRUE) %>% 
-        setNames(name)
-    }
-    
-  } else {
-    bathymetry <- ras_to_planning_grid(bathymetry, planning_grid, name)
-  }
   
   if(classify_bathymetry){
     reclass_var <- ifelse(above_sea_level_isNA, NA, 0)

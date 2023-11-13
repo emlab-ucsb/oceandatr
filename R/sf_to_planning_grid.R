@@ -15,21 +15,29 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
   }
   
   if(check_raster(planning_grid)){
-    dat <- if(matching_crs) dat else {planning_grid %>%
-          terra::as.polygons() %>%
-          sf::st_as_sf() %>% 
-          sf::st_transform(sf::st_crs(dat)) %>%
-          sf::st_crop(dat, .) %>%
-          sf::st_transform(sf::st_crs(planning_grid))}
     
-    dat %>% 
-      terra::rasterize(planning_grid, field = 1, by = sf_col_layer_names) %>% 
-      terra::mask(planning_grid) %>% 
-      setNames(name)
+    if(matching_crs) dat_cropped <- dat else{
+      p_grid <- planning_grid %>% 
+        terra::as.polygons() %>% 
+        sf::st_as_sf() %>%
+        sf::st_transform(sf::st_crs(dat)) %>% 
+        {if(antimeridian) sf::st_shift_longitude(.) else .}
+      
+      dat_cropped <- dat %>% 
+        {if(antimeridian) sf::st_shift_longitude(.) else .} %>% 
+        sf::st_crop(p_grid) %>% 
+        {if(antimeridian) sf::st_wrap_dateline(.) else .} %>% 
+        sf::st_transform(sf::st_crs(planning_grid)) 
+    }
+      dat_cropped %>% 
+        terra::rasterize(planning_grid, field = 1, by = sf_col_layer_names) %>% 
+        terra::mask(planning_grid) %>% 
+        setNames(name)
     
   } else{ #this is for sf planning grid output
     if(antimeridian){
-      p_grid <- sf::st_geometry(planning_grid) %>%
+      p_grid <- planning_grid %>% 
+        sf::st_geometry() %>%
         sf::st_transform(sf::st_crs(dat)) %>% 
         sf::st_shift_longitude()
       
@@ -53,5 +61,4 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf
     planning_grid %>% 
       dplyr::mutate("{name}" := presence_absence, .before = 1) 
   }
-
 }

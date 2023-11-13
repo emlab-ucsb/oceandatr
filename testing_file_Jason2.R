@@ -19,23 +19,29 @@ bermuda_eez <- get_area("Bermuda")
 planning_rast_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, resolution_km = 5)
 planning_sf_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, resolution_km = 5, option = "sf_square")
 
-ber_antipatharia <- get_data(area_polygon = bermuda_eez, dat = antipatharia)
+ber_antipatharia <- data_to_planning_grid(area_polygon = bermuda_eez, dat = antipatharia)
 terra::plot(ber_antipatharia)
 
-ber_antipatharia_pu <- get_data(planning_grid = planning_rast_ber, dat = antipatharia)
+ber_antipatharia_pu <- data_to_planning_grid(planning_grid = planning_rast_ber, dat = antipatharia)
 terra::plot(ber_antipatharia_pu)
 
-ber_antipatharia_pu_sf <- get_data(planning_grid = planning_sf_ber, dat = antipatharia)
+ber_antipatharia_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_ber, dat = antipatharia)
 plot(ber_antipatharia_pu_sf, border = FALSE)
 
-ber_knolls <- get_data(area_polygon = bermuda_eez, dat = knolls)
+ber_knolls <- data_to_planning_grid(area_polygon = bermuda_eez, dat = knolls)
 plot(ber_knolls)
 
-ber_knoll_pu <- get_data(planning_grid = planning_rast_ber, dat = knolls)
+ber_knoll_pu <- data_to_planning_grid(planning_grid = planning_rast_ber, dat = knolls)
 terra::plot(ber_knoll_pu)
 
-ber_knolls_pu_sf <- get_data(planning_grid = planning_sf_ber, dat = knolls)
+ber_knolls_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_ber, dat = knolls)
 plot(ber_knolls_pu_sf, border = FALSE)
+
+ber_bathy <- get_bathymetry(bermuda_eez)
+terra::plot(ber_bathy)
+
+ber_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_ber, classify_bathymetry = FALSE)
+terra::plot(ber_bathy_pu_ras)
 
 ##################################################################
 #Maldives
@@ -44,23 +50,23 @@ planning_rast_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon
 planning_sf_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution_km = 5, option = "sf_square")
 
 
-mld_antipatharia <- get_data(area_polygon = mld_eez, dat = antipatharia)
+mld_antipatharia <- data_to_planning_grid(area_polygon = mld_eez, dat = antipatharia)
 terra::plot(mld_antipatharia)
 
-mld_antipatharia_pu <- get_data(planning_grid = planning_rast_mld, dat = antipatharia)
+mld_antipatharia_pu <- data_to_planning_grid(planning_grid = planning_rast_mld, dat = antipatharia)
 terra::plot(mld_antipatharia_pu)
 
-mld_antipatharia_pu_sf <- get_data(planning_grid = planning_sf_mld, dat = antipatharia)
+mld_antipatharia_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_mld, dat = antipatharia)
 plot(mld_antipatharia_pu_sf, border = FALSE)
 
-mld_knolls <- get_data(area_polygon = mld_eez, dat = knolls)
+mld_knolls <- data_to_planning_grid(area_polygon = mld_eez, dat = knolls)
 plot(mld_knolls)
 
-mld_knoll_pu <- get_data(planning_grid = planning_rast_mld, dat = knolls)
+mld_knoll_pu <- data_to_planning_grid(planning_grid = planning_rast_mld, dat = knolls)
 terra::plot(mld_knoll_pu)
 terra::lines(terra::vect(mld_eez) %>% terra::project("+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs"))
 
-mld_knolls_pu_sf <- get_data(planning_grid = planning_sf_mld, dat = knolls)
+mld_knolls_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_mld, dat = knolls)
 plot(mld_knolls_pu_sf, border = FALSE)
 #plot(mld_eez %>% sf::st_transform("+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs"), add=TRUE)
 
@@ -73,28 +79,28 @@ fiji_eez <- get_area("Fiji")
 planning_rast_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution_km = 20)
 planning_sf_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution_km = 20, option = "sf_square")
 
-fiji_antipatharia <- get_data(area_polygon = fiji_eez, dat = antipatharia)
+fiji_antipatharia <- data_to_planning_grid(area_polygon = fiji_eez, dat = antipatharia)
 terra::plot(fiji_antipatharia %>% terra::rotate(left = FALSE) %>% terra::trim())
 
-fiji_sst <- get_data(area_polygon = fiji_eez, dat = sst_mean)
-terra::plot(fiji_sst)
+fiji_sst <- data_to_planning_grid(area_polygon = fiji_eez, dat = sst_mean, antimeridian = TRUE)
+terra::plot(fiji_sst %>% terra::rotate(left = FALSE) %>% terra::trim())
 
-fiji_antipatharia_pu <- get_data(planning_grid = planning_rast_fiji, dat = antipatharia, antimeridian = TRUE)
+fiji_antipatharia_pu <- data_to_planning_grid(planning_grid = planning_rast_fiji, dat = antipatharia, antimeridian = TRUE)
 terra::plot(fiji_antipatharia_pu)
 
-fiji_antipatharia_pu_sf <- get_data(planning_grid = planning_sf_fiji, dat = antipatharia, antimeridian = TRUE)
+fiji_antipatharia_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_fiji, dat = antipatharia, antimeridian = TRUE)
 plot(fiji_antipatharia_pu_sf, border = FALSE)
 
-fiji_knolls <- get_data(area_polygon = fiji_eez, dat = knolls)
+fiji_knolls <- data_to_planning_grid(area_polygon = fiji_eez, dat = knolls)
 plot(fiji_knolls)
 
-fiji_knoll_pu <- get_data(planning_grid = planning_rast_fiji, dat = knolls)
+fiji_knoll_pu <- data_to_planning_grid(planning_grid = planning_rast_fiji, dat = knolls, antimeridian = TRUE)
 terra::plot(fiji_knoll_pu)
 
-fiji_knolls_pu_sf <- get_data(planning_grid = planning_sf_fiji, dat = knolls, antimeridian = TRUE)
+fiji_knolls_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_fiji, dat = knolls, antimeridian = TRUE)
 plot(fiji_knolls_pu_sf, border = FALSE)
 
+fiji_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_fiji, classify_bathymetry = FALSE)
+terra::plot(fiji_bathy_pu_ras)
+
 ##############################################################
-
-
-
