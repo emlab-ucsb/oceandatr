@@ -9,8 +9,8 @@ check_antimeridian <- function(sf_object){
   }
 
   if(round(b_box$xmin) == -180 & round(b_box$xmax) == 180){
-    return(TRUE)
+    TRUE
   } else{
-    return(FALSE)
+    FALSE
   }
 }

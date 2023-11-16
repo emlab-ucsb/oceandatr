@@ -40,9 +40,11 @@ plot(ber_knolls_pu_sf, border = FALSE)
 ber_bathy <- get_bathymetry(bermuda_eez)
 terra::plot(ber_bathy)
 
-ber_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_ber, classify_bathymetry = FALSE)
+ber_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_ber, classify_bathymetry = TRUE)
 terra::plot(ber_bathy_pu_ras)
 
+ber_bathy_pu_sf <- get_bathymetry(planning_grid = planning_sf_ber, classify_bathymetry = TRUE)
+plot(ber_bathy_pu_sf, border = FALSE)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
@@ -104,3 +106,5 @@ fiji_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_fiji, classify
 terra::plot(fiji_bathy_pu_ras)
 
 ##############################################################
+
+terra::rast(nrows=1, ncols = 3, res = 1)

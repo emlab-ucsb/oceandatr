@@ -24,7 +24,7 @@
 #' coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez)
 get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_threshold = 22, octocoral_threshold = 2){
  
-  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
+  heck_grid_or_polygon(planning_grid, area_polygon)
   check_area(area_polygon)
   check_grid(planning_grid)
   

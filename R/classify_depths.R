@@ -27,7 +27,7 @@
 #' depth_zones
 classify_depths <- function(bathymetry_raster, planning_grid = NULL){
   
-  if(!(class(bathymetry_raster)[1] %in% c("RasterLayer", "SpatRaster"))) { 
+  if(!check_raster(bathymetry_raster)) { 
     stop("bathymetry_raster must be a raster object")}
   
   check_grid(planning_grid)

@@ -27,11 +27,14 @@ split_by_antimeridian <- function(data) {
 
 # Function to classify data layers
 classify_layers <- function(data, planning_grid = NULL, classification_matrix = NULL, classification_names = NULL){ 
+  #data passed in is already cropped to planning grid, then data is:
+  # 1. Projected to same crs as planning grid
+  # 2. If there is a classification matrix it is classified and if there is a 
   
   # Project
   projected_raster <- if(is.null(planning_grid)) {
     data
-  } else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
+  } else if(check_raster(planning_grid)) { 
     data %>%
       terra::project(planning_grid)
   } else { 
@@ -51,7 +54,7 @@ classify_layers <- function(data, planning_grid = NULL, classification_matrix = 
         stack_out <- stack_out %>%  
           setNames(classification_names[as.numeric(names(.))])
       } 
-    } else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
+    } else if(check_raster(planning_grid)) { 
       stack_out <- classification %>% 
           terra::mask(planning_grid) %>% 
           terra::segregate(other=NA)
@@ -67,13 +70,13 @@ classify_layers <- function(data, planning_grid = NULL, classification_matrix = 
       if(is.null(planning_grid)) { 
         stack_out <- classification %>% 
           terra::segregate(other=NA)
-      } else if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
+      } else if(check_raster(planning_grid)) { 
         stack_out <- classification %>% 
           terra::mask(planning_grid)
       } 
   }
 
-  if(!is.null(planning_grid) & !class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")) { 
+  if(!is.null(planning_grid) & !check_raster(planning_grid)) { 
     classification_vec <- exactextractr::exact_extract(classification, planning_grid, 
                                                        function(value, cov_frac) 
                                                          ifelse(length(value) > 0, 

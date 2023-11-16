@@ -37,6 +37,8 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
       {if(matching_crs) . else sf::st_transform(., 4326)}
   }
   
+  antimeridian <- check_antimeridian(area_polygon_for_cropping)
+  
   if(is.null(bathymetry_data_filepath)){
     bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout) %>% 
       data_to_planning_grid(area_polygon, planning_grid, dat = ., meth, name, antimeridian)
@@ -47,18 +49,16 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
   if(classify_bathymetry){
     reclass_var <- ifelse(above_sea_level_isNA, NA, 0)
     
-    if(class(bathymetry)[1] == "sf"){
-      depth_zones <- bathymetry %>% 
+    if(check_sf(bathymetry)){
+      bathymetry %>% 
         dplyr::mutate(bathymetry = dplyr::case_when(bathymetry >=0 ~ reclass_var,
-                                             .default = as.numeric(bathymetry))) %>% 
+                                                    .default = as.numeric(bathymetry))) %>% 
         classify_depths()
     }else{
-      depth_zones <- bathymetry %>%
-        terra::classify(matrix(c(0,5000, reclass_var), ncol = 3), include.lowest = TRUE) %>% 
+      bathymetry %>%
+        terra::classify(matrix(c(0, 5000, reclass_var), ncol = 3), include.lowest = TRUE) %>%
         classify_depths() 
     }
-    
-    return(depth_zones)
     
   }else{
     return(bathymetry)

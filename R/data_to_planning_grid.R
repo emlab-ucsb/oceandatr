@@ -16,18 +16,7 @@ data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat
     sf_object <- if(is.null(planning_grid)) area_polygon else{
       if(check_sf(planning_grid)) planning_grid else terra::as.polygons(planning_grid) %>% sf::st_as_sf()
     }
-    if(sf::st_crs(sf_object) != sf::st_crs(4326)){
-      b_box <- sf::st_transform(sf_object, 4326) %>%
-        sf::st_bbox()
-    } else{
-      b_box <- sf::st_bbox(sf_object)
-    }
-
-    if(round(b_box$xmin) == -180 & round(b_box$xmax) == 180){
-      TRUE
-    } else{
-      FALSE
-    }
+    check_antimeridian(sf_object)
   } else antimeridian
 
 #setting method for resampling, projecting, etc. a raster - should be 'near' for binary raster otherwise end up with non-binary values
