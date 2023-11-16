@@ -67,7 +67,7 @@ get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_t
   octocoral_matrix <- matrix(c(0, octocoral_threshold, NA,
                                octocoral_threshold,7, 1), ncol = 3, byrow = TRUE)
   
-  if(round(sf::st_bbox(area)[1]) <= -180 & round(sf::st_bbox(area)[3]) >= 180) { 
+  if(round(sf::st_bbox(area_polygon)[1]) <= -180 & round(sf::st_bbox(area_polygon)[3]) >= 180) { 
     message("Data cross the antimeridian - completing this step in two parts") 
     # Antipatharia 
     report_message("antipatharia")
