@@ -26,55 +26,32 @@ split_by_antimeridian <- function(data) {
 } 
 
 # Function to classify data layers
-classify_layers <- function(data, planning_grid = NULL, classification_matrix = NULL, classification_names = NULL){ 
-  #data passed in is already cropped to planning grid, then data is:
-  # 1. Projected to same crs as planning grid
-  # 2. If there is a classification matrix it is classified and if there is a 
+classify_layers <- function(dat, classification_matrix = NULL, classification_names = NULL){ 
   
-  # Project
-  projected_raster <- if(is.null(planning_grid)) {
-    data
-  } else if(check_raster(planning_grid)) { 
-    data %>%
-      terra::project(planning_grid)
-  } else { 
-    data %>%
-      terra::project(terra::crs(planning_grid))
-  }
-  
-  if(!is.null(classification_matrix)) { 
-    classification <- projected_raster %>% 
+  if(is.null(classification_matrix)) stop("Please supply a classification matrix")
+    
+  if(check_raster(dat)){
+      dat %>% 
       terra::classify(classification_matrix, include.lowest = TRUE)
-    
-    if(is.null(planning_grid)) { 
-      stack_out <- classification %>% 
-        terra::segregate(other=NA)
-      
-      if(!is.null(classification_names)){ 
-        stack_out <- stack_out %>%  
-          setNames(classification_names[as.numeric(names(.))])
-      } 
-    } else if(check_raster(planning_grid)) { 
-      stack_out <- classification %>% 
-          terra::mask(planning_grid) %>% 
-          terra::segregate(other=NA)
-  
-      if(!is.null(classification_names)){ 
-        stack_out <- stack_out %>%  
-          setNames(classification_names[as.numeric(names(.))])
-      } 
+        terra::segregate(other=NA) %>% 
+        {if(!is.null(classification_names)) setNames(classification_names[as.numeric(names(.))]) else .}
+  } else{
+    if(!is.null(classification_names)) { 
+      dat %>% 
+        dplyr::mutate(value = 1, 
+                      classification = classification_names[classification_vec]) %>% 
+        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fn = ~mean(.x, na.rm = T)) %>% 
+        dplyr::rename(geometry = x) %>% 
+        dplyr::select(classification_names[sort(unique(classification_vec))], geometry)
+    } else { 
+      stack_out <- stack_out %>% 
+        dplyr::mutate(value = 1) %>% 
+        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fn = ~mean(.x, na.rm = T)) %>% 
+        dplyr::rename(geometry = x) %>% 
+        dplyr::select(as.character(sort(unique(classification_vec[!is.na(classification_vec)]))), geometry)
     }
-  } else { 
-      classification <- projected_raster 
-    
-      if(is.null(planning_grid)) { 
-        stack_out <- classification %>% 
-          terra::segregate(other=NA)
-      } else if(check_raster(planning_grid)) { 
-        stack_out <- classification %>% 
-          terra::mask(planning_grid)
       } 
-  }
+
 
   if(!is.null(planning_grid) & !check_raster(planning_grid)) { 
     classification_vec <- exactextractr::exact_extract(classification, planning_grid, 
