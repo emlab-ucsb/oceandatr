@@ -25,20 +25,16 @@
 #' # Classify depths 
 #' depth_zones <- classify_depths(bathymetry)
 #' depth_zones
-classify_depths <- function(bathymetry_raster, planning_grid = NULL){
+classify_depths <- function(bathymetry){
   
-  if(!check_raster(bathymetry_raster)) { 
-    stop("bathymetry_raster must be a raster object")}
+  depth_zones <- c("hadopelagic", "abyssopelagic", "bathypelagic", "mesopelagic", "epipelagic" )
   
-  check_grid(planning_grid)
+  bathymetry_cuts <- c(-12000, -6000, -4000, -1000, -200, 10)
   
-  depth_zone_names <- c("epipelagic", "mesopelagic", "bathypelagic", "abyssopelagic", "hadopelagic")
+  #get only the depth zone names needed for this classification
+  depth_zone_names <- if(check_raster(bathymetry)) depth_zones[global(bathymetry, min, na.rm=TRUE)[1,1] < bathymetry_cuts[2:6]] else depth_zones[min(bathymetry[[1]]) < bathymetry_cuts[2:6]] 
   
-  bathymetry_matrix <- matrix(c(-200, Inf, 1, 
-                                -1000, -200, 2,
-                                -4000, -1000, 3,
-                                -6000, -4000, 4,
-                                -12000, -6000, 5), ncol = 3, byrow = TRUE)
+  bathymetry_cuts <- bathymetry_cuts[(6-length(depth_zone_names)):6]
   
   # Run classification
   if(round(terra::ext(bathymetry_raster)[1]) <= -180 & round(terra::ext(bathymetry_raster)[2]) >= 180) { 

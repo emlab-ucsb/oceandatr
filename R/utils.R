@@ -26,61 +26,23 @@ split_by_antimeridian <- function(data) {
 } 
 
 # Function to classify data layers
-classify_layers <- function(dat, classification_matrix = NULL, classification_names = NULL){ 
+classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL){ 
   
-  if(is.null(classification_matrix)) stop("Please supply a classification matrix")
-    
+  if(is.null(dat_breaks)) stop("Please supply data breaks")
+
   if(check_raster(dat)){
       dat %>% 
-      terra::classify(classification_matrix, include.lowest = TRUE)
+      terra::classify(dat_breaks) %>% 
         terra::segregate(other=NA) %>% 
-        {if(!is.null(classification_names)) setNames(classification_names[as.numeric(names(.))]) else .}
+        {if(!is.null(classification_names)) setNames(., classification_names) else .}
   } else{
-    if(!is.null(classification_names)) { 
       dat %>% 
-        dplyr::mutate(value = 1, 
-                      classification = classification_names[classification_vec]) %>% 
-        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fn = ~mean(.x, na.rm = T)) %>% 
-        dplyr::rename(geometry = x) %>% 
-        dplyr::select(classification_names[sort(unique(classification_vec))], geometry)
-    } else { 
-      stack_out <- stack_out %>% 
-        dplyr::mutate(value = 1) %>% 
-        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fn = ~mean(.x, na.rm = T)) %>% 
-        dplyr::rename(geometry = x) %>% 
-        dplyr::select(as.character(sort(unique(classification_vec[!is.na(classification_vec)]))), geometry)
-    }
-      } 
-
-
-  if(!is.null(planning_grid) & !check_raster(planning_grid)) { 
-    classification_vec <- exactextractr::exact_extract(classification, planning_grid, 
-                                                       function(value, cov_frac) 
-                                                         ifelse(length(value) > 0, 
-                                                                max(value[cov_frac == max(cov_frac)]), 
-                                                                NA))
-    stack_out <- 
-      planning_grid %>% 
-      cbind(data.frame("classification" = classification_vec))
-    
-    if(!is.null(classification_names)) { 
-      stack_out <- stack_out %>% 
-        dplyr::mutate(value = 1, 
-                      classification = classification_names[classification_vec]) %>% 
-        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fn = ~mean(.x, na.rm = T)) %>% 
-        dplyr::rename(geometry = x) %>% 
-        dplyr::select(classification_names[sort(unique(classification_vec))], geometry)
-    } else { 
-      stack_out <- stack_out %>% 
-        dplyr::mutate(value = 1) %>% 
-        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fn = ~mean(.x, na.rm = T)) %>% 
-        dplyr::rename(geometry = x) %>% 
-        dplyr::select(as.character(sort(unique(classification_vec[!is.na(classification_vec)]))), geometry)
-    }
+        dplyr::mutate(classification = cut(.[[1]], dat_breaks, labels = classification_names), 
+                      value = 1, 
+                      .before = 1) %>% 
+        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = NA) %>% 
+        dplyr::select(if(!is.null(classification_names)) classification_names else dplyr::select(3:ncol(.)))
   }
-  
-  return(stack_out)
-  
 }
 
 # Function to stitch outputs that cross the antimeridian back together

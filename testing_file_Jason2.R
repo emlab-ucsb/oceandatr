@@ -37,7 +37,7 @@ terra::plot(ber_knoll_pu)
 ber_knolls_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_ber, dat = knolls)
 plot(ber_knolls_pu_sf, border = FALSE)
 
-ber_bathy <- get_bathymetry(bermuda_eez)
+ber_bathy <- get_bathymetry(bermuda_eez, classify_bathymetry = FALSE)
 terra::plot(ber_bathy)
 
 ber_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_ber, classify_bathymetry = TRUE)
@@ -102,8 +102,15 @@ terra::plot(fiji_knoll_pu)
 fiji_knolls_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_fiji, dat = knolls, antimeridian = TRUE)
 plot(fiji_knolls_pu_sf, border = FALSE)
 
-fiji_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_fiji, classify_bathymetry = FALSE)
+
+fiji_bathy <- get_bathymetry(fiji_eez, classify_bathymetry = FALSE)
+terra::plot(fiji_bathy)
+
+fiji_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_fiji, classify_bathymetry = T)
 terra::plot(fiji_bathy_pu_ras)
+
+fiji_bathy_pu_sf <- get_bathymetry(planning_grid = planning_sf_fiji, classify_bathymetry = T)
+plot(fiji_bathy_pu_sf, border = FALSE)
 
 ##############################################################
 

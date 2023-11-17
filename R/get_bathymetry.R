@@ -47,17 +47,28 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
     }
   
   if(classify_bathymetry){
+    depth_zones <- c("hadopelagic", "abyssopelagic", "bathypelagic", "mesopelagic", "epipelagic" )
+    
+    bathymetry_cuts <- c(-12000, -6000, -4000, -1000, -200, 10)
+    
+    #get only the depth zone names needed for this classification
+    depth_zone_names <- if(check_raster(bathymetry)) depth_zones[terra::global(bathymetry, min, na.rm=TRUE)[1,1] < bathymetry_cuts[2:6]] else depth_zones[min(bathymetry[[1]]) < bathymetry_cuts[2:6]] 
+    
+    bathymetry_cuts <- bathymetry_cuts[(6-length(depth_zone_names)):6]
+    
     reclass_var <- ifelse(above_sea_level_isNA, NA, 0)
     
     if(check_sf(bathymetry)){
       bathymetry %>% 
         dplyr::mutate(bathymetry = dplyr::case_when(bathymetry >=0 ~ reclass_var,
                                                     .default = as.numeric(bathymetry))) %>% 
-        classify_depths()
+        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zone_names) %>% 
+        dplyr::select((ncol(.)-1):1) #reorder shallowest to deepest depth zones
     }else{
       bathymetry %>%
-        terra::classify(matrix(c(0, 5000, reclass_var), ncol = 3), include.lowest = TRUE) %>%
-        classify_depths() 
+        terra::classify(matrix(c(0, 1e4, reclass_var), ncol = 3), include.lowest = TRUE) %>%
+        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zone_names) %>% 
+        terra::subset(terra::nlyr(.):1) #reorder shallowest to deepest depth zones
     }
     
   }else{
