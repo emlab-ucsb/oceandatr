@@ -1,0 +1,65 @@
+---
+title: "Selecting areas with offshoredatr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Selecting areas with offshoredatr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The `get_area` function is used to generate a shapefile of the area of interest. However, using this particular function can be a bit confusing if the area of interest is not a well-defined EEZ. Here, we walk through a few examples to make this function a little bit easier to use and understand. 
+
+In the back-end, `get_area` uses the `mrp_get` function from the `mregions2` package - the R package for [Marine Regions](https://marineregions.org/gazetteer.php). This database is quite extensive and has several options for querying areas. Two things to keep in mind when querying from this database - the query type and the column of interest within that query. 
+
+We can get an idea of the possible query types using the following: 
+
+```{r possible query types}
+mregions2::mrp_list[,c("layer", "abstract")]
+```
+
+Attributes in the "layer" column can be used to inform the `query_type` in `get_area`. From here, we can look at the list of possible column names to choose from. Let's use the "eez" option as the layer of interest and allow `show_column_options` to equal `TRUE`. 
+
+```{r possible column names}
+get_area(query_type = "eez", show_column_options = TRUE)
+```
+Each of these columns has values of ocean areas that we can choose from. A full explanation of what the columns mean can be found [here](https://marineregions.org/eezattribute.php). The column we choose depends on how we want to refer to the area that we choose. Perhaps the most common column we might use is "territory1", which allows us to provide a specific country name by which to query. For example: 
+
+```{r country example - australia}
+australia_eez <- get_area(area_name = "Australia", query_type = "eez", mregions_column = "territory1")
+
+ggplot2::ggplot() + 
+  ggplot2::geom_sf(data = australia_eez)
+```
+Alternatively, we might know the ISO3 code for a territory and wish to query the database that way; we would use the "iso_ter1" column to filter for the ISO3 code we desire. Below, we use the ISO3 code for Australia to grab the EEZ. 
+
+```{r iso3 code example - australia}
+australia_eez <- get_area(area_name = "AUS", query_type = "eez", mregions_column = "iso_ter1")
+
+ggplot2::ggplot() + 
+  ggplot2::geom_sf(data = australia_eez)
+```
+
+Of course, maybe we aren't memorizing ISO3 codes, but we would recognize the code we wanted if we saw it. We can get a list of possible values to choose from for each `mregions_column` by setting `show_value_options` to `TRUE`: 
+
+```{r list of possible values in iso_ter1}
+get_area(query_type = "eez", mregions_column = "iso_ter1", show_value_options =  TRUE)
+```
+
+```{r}
+# get_area(query_type = "high_seas", show_column_options = TRUE, show_value_options = TRUE)
+
+high_seas <- get_area("63203", query_type = "high_seas", mregions_column = "mrgid")
+```
+
+
+
+
+
+
