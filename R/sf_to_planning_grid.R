@@ -1,4 +1,4 @@
-sf_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, sf_col_layer_names, antimeridian){
+sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_layer_names, antimeridian){
 
   #1st option: the sf data object is polygons showing a single feature presence or sf_col_layer_names is names of each habitat/ species/ other feature
   

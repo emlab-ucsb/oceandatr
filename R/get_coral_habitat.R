@@ -22,11 +22,9 @@
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Get coral habitat
 #' coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez)
-get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_threshold = 22, octocoral_threshold = 2){
+get_coral_habitat <- function(area_polygon = NULL, planning_grid = NULL, antipatharia_threshold = 22, octocoral_threshold = 2, antimeridian = NULL){
  
-  heck_grid_or_polygon(planning_grid, area_polygon)
-  check_area(area_polygon)
-  check_grid(planning_grid)
+  check_grid_or_polygon(planning_grid, area_polygon)
   
   # Add errors if the thresholds are not within the right area
   if(antipatharia_threshold < 0 | antipatharia_threshold > 100) { 
@@ -36,123 +34,70 @@ get_coral_habitat <- function(area_polygon, planning_grid = NULL, antipatharia_t
     stop("octocoral_threshold must be between 1 and 7, as it represents the number of octocoral species (out of 7) must be present in an area for octocorals as a whole to be considered present")
   }
   
+  
   # Data message 
-  report_message <- function(coral_data) { 
-    if (terra::global(eval(as.name(coral_data)), "sum", na.rm = TRUE) < 1) { 
-      message(paste0("No ", gsub("_", " ", coral_data), "in area of interest. Processing output..."))
-    } else {
-      message(paste0("Data found for ", gsub("_", " ", coral_data), ". Processing output...")) 
-    }
-  }
-  
-  antipatharia <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-    terra::rast() %>% 
-    terra::crop(area_polygon, mask = TRUE) %>% 
+  # report_message <- function(coral_data) { 
+  #   if (terra::global(eval(as.name(coral_data)), "sum", na.rm = TRUE) < 1) { 
+  #     message(paste0("No ", gsub("_", " ", coral_data), "in area of interest. Processing output..."))
+  #   } else {
+  #     message(paste0("Data found for ", gsub("_", " ", coral_data), ". Processing output...")) 
+  #   }
+  # }
+
+  antipatharia_global <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "offshoredatr", mustWork = TRUE) %>%
+    terra::rast() %>%
     setNames("antipatharia")
+
+  meth <- if(check_sf(planning_grid)) "mean" else "average"
+
+  antipatharia <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = antipatharia_global, name = "antipatharia", meth = meth, antimeridian = antimeridian)
+  rm(antipatharia_global)
   
-  cold_corals <- system.file("extdata", "binary_grid_figure7.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-    terra::rast() %>% 
-    terra::crop(area_polygon, mask = TRUE) %>% 
+  #same method for cold water corals and octocorals since these are integer values
+  meth <- if(check_sf(planning_grid)) "mode" else "near"
+
+  cold_corals_global <- system.file("extdata", "binary_grid_figure7.tif", package = "offshoredatr", mustWork = TRUE) %>%
+    terra::rast() %>%
     setNames("cold_corals")
 
-  octocorals <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-    terra::rast() %>% 
-    terra::crop(area_polygon, mask = TRUE) %>% 
-    setNames("octocoral")
+  cold_corals <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = cold_corals_global, name = "cold_corals", meth = meth, antimeridian = antimeridian)
+  rm(cold_corals_global)
+
+  octocorals_global <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "offshoredatr", mustWork = TRUE) %>%
+    terra::rast() %>%
+    setNames("octocorals")
+
+  octocorals <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = octocorals_global, name = "octocorals", meth = meth, antimeridian = antimeridian)
+  rm(octocorals_global)
   
-  antipatharia_matrix <- matrix(c(0, antipatharia_threshold, NA,
-                                  antipatharia_threshold, 100, 1), ncol = 3, byrow = TRUE)
-  cold_corals_matrix <- matrix(c(0, 0.5, NA, 
-                                 0.5, 1.1, 1), ncol = 3, byrow = TRUE)
-  octocoral_matrix <- matrix(c(0, octocoral_threshold, NA,
-                               octocoral_threshold,7, 1), ncol = 3, byrow = TRUE)
-  
-  if(round(sf::st_bbox(area_polygon)[1]) <= -180 & round(sf::st_bbox(area_polygon)[3]) >= 180) { 
-    message("Data cross the antimeridian - completing this step in two parts") 
-    # Antipatharia 
-    report_message("antipatharia")
-    antipatharia_halves <- split_by_antimeridian(antipatharia)
-    message("Processing first half...")
-    antipatharia_left_side <- classify_layers(antipatharia_halves[[1]], 
-                                              planning_grid = planning_grid, 
-                                              classification_matrix = antipatharia_matrix, 
-                                              classification_names = "antipatharia")
-    message("Processing second half...")
-    antipatharia_right_side <- classify_layers(antipatharia_halves[[2]], 
-                                               planning_grid = planning_grid, 
-                                               classification_matrix = antipatharia_matrix, 
-                                               classification_names = "antipatharia")
-    antipatharia_stack <- combine_antimeridian(data = list(antipatharia_left_side, antipatharia_right_side), 
-                                              planning_grid = planning_grid, 
-                                              classification_names = "antipatharia")
+  if(!is.null(area_polygon)){
+    c(antipatharia, cold_corals, octocorals) %>% 
+      terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
+  }else{
+    antipatharia_breaks <- c(0, antipatharia_threshold, 100)
+    antipatharia_class_names <- c(NA, "antipatharia_coral")
     
-    # Cold corals
-    report_message("cold_corals")
-    cold_corals_halves <- split_by_antimeridian(cold_corals)
-    message("Processing first half...")
-    cold_corals_left_side <- classify_layers(cold_corals_halves[[1]], 
-                                             planning_grid = planning_grid,  
-                                              classification_matrix = cold_corals_matrix, 
-                                              classification_names = "cold_corals")
-    message("Processing second half...")
-    cold_corals_right_side <- classify_layers(cold_corals_halves[[2]], 
-                                              planning_grid = planning_grid,  
-                                               classification_matrix = cold_corals_matrix, 
-                                               classification_names = "cold_corals")
-    cold_corals_stack <- combine_antimeridian(data = list(cold_corals_left_side, cold_corals_right_side), 
-                                               planning_grid = planning_grid, 
-                                               classification_names = "cold_corals")
+    cold_corals_breaks <- c(0, 0.5, 1.1)
+    cold_corals_class_names <- c(NA, "cold_coral")
     
-    # Octocoral
-    report_message("octocorals")
-    octocorals_halves <- split_by_antimeridian(octocorals)
-    message("Processing first half...")
-    octocorals_left_side <- classify_layers(octocorals_halves[[1]], 
-                                              planning_grid = planning_grid, 
-                                              classification_matrix = octocoral_matrix, 
-                                              classification_names = "octocoral")
-    message("Processing second half...")
-    octocorals_right_side <- classify_layers(octocorals_halves[[2]], 
-                                               planning_grid = planning_grid,  
-                                               classification_matrix = octocoral_matrix, 
-                                               classification_names = "octocoral")
-    octocorals_stack <- combine_antimeridian(data = list(octocorals_left_side, octocorals_right_side), 
-                                               planning_grid = planning_grid, 
-                                               classification_names = "octocoral")
-  } else {
+    octocoral_breaks <- c(0, octocoral_threshold, 8)
+    octocoral_class_names <- c(NA, "octocoral")
     
-    # Antipatharia
-    report_message("antipatharia")
-    antipatharia_stack <- classify_layers(data = antipatharia, 
-                                         planning_grid = planning_grid, 
-                                         classification_matrix = antipatharia_matrix, 
-                                         classification_names = "antipatharia")
-    
-    # Cold corals
-    report_message("cold_corals")
-    cold_corals_stack <- classify_layers(data = cold_corals, 
-                                         planning_grid = planning_grid, 
-                                         classification_matrix = cold_corals_matrix, 
-                                         classification_names = "cold_corals")
-    
-    # Octocoral
-    report_message("octocorals")
-    octocorals_stack <- classify_layers(data = octocorals, 
-                                          planning_grid = planning_grid, 
-                                          classification_matrix = octocoral_matrix, 
-                                          classification_names = "octocoral")
-    
+    antipatharia <- classify_layers(dat = antipatharia, dat_breaks = antipatharia_breaks, classification_names = antipatharia_class_names) %>%
+     {if(check_raster(.)) terra::subset(., "antipatharia_coral") else dplyr::select(., "antipatharia_coral")}
+
+    cold_corals <- classify_layers(dat = cold_corals, dat_breaks = cold_corals_breaks, classification_names = cold_corals_class_names) %>%
+     {if(check_raster(.)) terra::subset(., "cold_coral") else dplyr::select(., "cold_coral")}
+
+    octocorals <- classify_layers(dat = octocorals, dat_breaks = octocoral_breaks, classification_names = octocoral_class_names) %>%
+      {if(check_raster(.)) terra::subset(., "octocoral") else dplyr::select(., "octocoral")}
+
+    if(check_raster(antipatharia)){
+      c(antipatharia, cold_corals, octocorals) %>%
+        terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
+    }else{
+      cbind(sf::st_drop_geometry(antipatharia), sf::st_drop_geometry(cold_corals), octocorals) %>%
+        sf::st_sf()
+    }
   }
-  
-  if(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster") | is.null(planning_grid)) { 
-    corals_stack <- c(antipatharia_stack, cold_corals_stack, octocorals_stack) %>% 
-      terra::subset(which(terra::global(., "sum", na.rm = TRUE) >1))
-  } else { 
-    corals_stack <- antipatharia_stack %>% 
-      cbind(cold_corals_stack %>% sf::st_drop_geometry()) %>% 
-      cbind(octocorals_stack %>% sf::st_drop_geometry())
-  }
-  
-  return(corals_stack)
-  gc()
 }

@@ -1,4 +1,4 @@
-#function to check to retrieve data if a file is not already loaded 
+#function to check and retrieve data if a file is not already loaded 
 
 data_from_filepath <- function(dat){
   ## First deal with whether the input is a file or a dataset

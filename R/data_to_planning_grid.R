@@ -46,7 +46,7 @@ data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat
   } else if(check_raster(dat)){
     ras_to_planning_grid(dat, planning_grid, matching_crs, meth, name, antimeridian)
     } else {
-    sf_to_planning_grid(dat, planning_grid, matching_crs, meth, name, sf_col_layer_names, antimeridian)
+    sf_to_planning_grid(dat, planning_grid, matching_crs, name, sf_col_layer_names, antimeridian)
   }
   
 }

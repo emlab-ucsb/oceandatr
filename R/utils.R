@@ -31,17 +31,28 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
   if(is.null(dat_breaks)) stop("Please supply data breaks")
 
   if(check_raster(dat)){
-      dat %>% 
-      terra::classify(dat_breaks) %>% 
-        terra::segregate(other=NA) %>% 
-        {if(!is.null(classification_names)) setNames(., classification_names) else .}
+    #create a classification matrix
+    class_matrix <- dat_breaks %>%
+      .[2:(length(.) - 1)] %>%
+      rep(times = rep(2, times = length(.))) %>%
+      append(dat_breaks[length(dat_breaks)]) %>%
+      append(dat_breaks[1], after = 0) %>%
+      matrix(ncol = 2, byrow = TRUE) %>%
+      cbind(c(1:nrow(.)))
+  
+      dat %>%
+      terra::classify(class_matrix, include.lowest = TRUE) %>%
+        terra::segregate(other=NA) %>%
+        {if(!is.null(classification_names)) setNames(., classification_names[as.numeric(names(.))]) else .} 
+      
   } else{
-      dat %>% 
-        dplyr::mutate(classification = cut(.[[1]], dat_breaks, labels = classification_names), 
-                      value = 1, 
-                      .before = 1) %>% 
-        tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = NA) %>% 
-        dplyr::select(if(!is.null(classification_names)) classification_names else dplyr::select(3:ncol(.)))
+      dat %>%
+        dplyr::mutate(classification = cut(.[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE),
+                      classification = droplevels(classification),
+                      value = 1,
+                      .after = 1) %>%
+         tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = NA) %>%
+         dplyr::select(3:ncol(.), 2) #put classification before geometry and drop original values
   }
 }
 
