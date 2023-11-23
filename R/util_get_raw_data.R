@@ -30,7 +30,7 @@ get_raw_data <- function(area_polygon, dat, meth, matching_crs, antimeridian){
           sf::st_shift_longitude() %>% 
           sf::st_intersection(dat %>% sf::st_shift_longitude()) %>% 
           sf::st_wrap_dateline() %>% 
-          sf::st_transform(sf::st_crs(planning_grid))
+          sf::st_transform(sf::st_crs(area_polygon))
       }else{
         area_polygon %>% 
           sf::st_transform(sf::st_crs(dat)) %>% 

@@ -35,7 +35,7 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
         setNames(name)
     
   } else{ #this is for sf planning grid output
-    if(antimeridian){
+    if(antimeridian & (sf::st_crs(dat) == sf::st_crs(4326))){
       p_grid <- planning_grid %>% 
         sf::st_geometry() %>%
         sf::st_transform(sf::st_crs(dat)) %>% 

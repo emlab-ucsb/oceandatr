@@ -63,6 +63,28 @@ terra::plot(ber_geomorph_pu_ras)
 
 ber_geomorph_pu_sf <- get_geomorphology(planning_grid = planning_sf_ber)
 plot(ber_geomorph_pu_sf, border = F)
+
+ber_seamounts <- get_seamount_peaks(area_polygon = bermuda_eez)
+plot(sf::st_geometry(bermuda_eez))
+plot(sf::st_geometry(ber_seamounts), pch = 2, col = "brown4", add=T)
+
+ber_seamounts_pu_ras <- get_seamount_peaks(planning_grid = planning_rast_ber)
+terra::plot(ber_seamounts_pu_ras)
+
+ber_seamounts_pu_sf <- get_seamount_peaks(planning_grid = planning_sf_ber)
+plot(sf::st_geometry(bermuda_eez))
+plot(ber_seamounts_pu_sf, border = F)
+
+ber_seamounts_buffered <- get_seamounts_buffered(area_polygon = bermuda_eez)
+plot(sf::st_geometry(bermuda_eez))
+plot(ber_seamounts_buffered, add=T)
+
+ber_seamounts_buffered_pu_ras <- get_seamounts_buffered(planning_grid = planning_rast_ber)
+terra::plot(ber_seamounts_buffered_pu_ras)
+terra::lines(terra::vect(bermuda_eez %>% sf::st_transform(sf::st_crs(ber_seamounts_buffered_pu_ras))))
+
+ber_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_ber)
+plot(ber_seamounts_buffered_pu_sf, border = F)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
@@ -146,4 +168,25 @@ terra::plot(fiji_geomorph_pu_ras)
 
 fiji_geomorph_pu_sf <- get_geomorphology(planning_grid = planning_sf_fiji)
 plot(fiji_geomorph_pu_sf, border = F)
+
+fiji_seamounts <- get_seamount_peaks(area_polygon = fiji_eez)
+plot(sf::st_geometry(fiji_eez) %>% sf::st_shift_longitude())
+plot(sf::st_geometry(fiji_seamounts) %>% sf::st_shift_longitude(), pch = 2, col = "brown4", add=T)
+
+fiji_seamounts_pu_ras <- get_seamount_peaks(planning_grid = planning_rast_fiji)
+terra::plot(fiji_seamounts_pu_ras)
+
+fiji_seamounts_pu_sf <- get_seamount_peaks(planning_grid = planning_sf_fiji)
+plot(fiji_seamounts_pu_sf, border = F)
+
+fiji_seamounts_buffered <- get_seamounts_buffered(area_polygon = fiji_eez, buffer = 0.5)
+plot(sf::st_geometry(fiji_eez) %>% sf::st_shift_longitude())
+plot(fiji_seamounts_buffered %>% sf::st_shift_longitude(), add=T)
+
+fiji_seamounts_buffered_pu_ras <- get_seamounts_buffered(planning_grid = planning_rast_fiji, buffer = 3e4)
+terra::plot(fiji_seamounts_buffered_pu_ras)
+terra::lines(terra::vect(fiji_eez %>% sf::st_transform(sf::st_crs(fiji_seamounts_buffered_pu_ras))))
+
+fiji_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_fiji, buffer = 3e4)
+plot(fiji_seamounts_buffered_pu_sf, border = F)
 ##############################################################
