@@ -15,15 +15,9 @@
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Get geomorphology
 #' geomorphology <- get_geomorphology(area_polygon = bermuda_eez)
-get_geomorphology <- function(area_polygon, planning_grid = NULL){
+get_geomorphology <- function(area_polygon = NULL, planning_grid = NULL, antimeridian = FALSE){
   
-  # Add repeated errors for area_polygon and planning_grid (these are present for nearly all functions)
-  check_grid(planning_grid)
-  check_area(area_polygon)
-  
-  if(class(planning_grid)[1] == "sf") { 
-    message("sf planning grids will take slightly longer to process")
-    }
+  check_grid_or_polygon(planning_grid, area_polygon)
   
   geomorph_files <- c("Basins_Basins perched on the shelf.rds", "Basins_Basins perched on the slope.rds", 
                       "Basins_Large basins of seas and oceans.rds", "Basins_Major ocean basins.rds", 
@@ -40,63 +34,43 @@ get_geomorphology <- function(area_polygon, planning_grid = NULL){
   sf::sf_use_s2(FALSE)
 
   geomorph_data <- list()
+  
+  meth <- if(check_raster(planning_grid)) 'near' else 'mode'
 
-  for (file_name in geomorph_file_paths) {
+  for (i in 1:length(geomorph_file_paths)) {
     feature_name <- tolower(gsub(pattern =  ".rds", replacement =  "", 
-                                 gsub(pattern = " ", replacement = "_", basename(file_name))))
+                                 gsub(pattern = " ", replacement = "_", basename(geomorph_file_paths[i]))))
     
-    suppressMessages({
-    area_polygon_sfc <- area_polygon %>% 
-      sf::st_union()
+    geomorph_layer <- geomorph_file_paths[i] %>% 
+      readRDS() %>% 
+      dplyr::mutate(geomorph_type = feature_name, .before = 1)
     
-    temp_file <- readRDS(file_name) %>%
-      sf::st_crop(area_polygon_sfc) %>%
-      sf::st_intersection(area_polygon_sfc)
-    })
-
-    if(nrow(temp_file)>0)
-    {
-      geomorph_data[[feature_name]] <- temp_file
-    }
+    geomorph_data[[i]] <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = geomorph_layer, meth = meth, name = feature_name, antimeridian = antimeridian)
+    
   }
-
-  if(is.null(planning_grid)){
-    return(geomorph_data)
-  }
-  else if (class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster")){
+  sf::sf_use_s2(TRUE)
+ 
+  if(!is.null(area_polygon)){
+    do.call(rbind, geomorph_data) %>% 
+      sf::st_cast(to = "MULTIPOLYGON")
+  } else if(check_raster(geomorph_data[[1]])){
+    geomorph_ras <- terra::rast(geomorph_data)
     
-    for (geomorph_feature in names(geomorph_data)) {
-    
-      geomorph_data_stack <- geomorph_data[[geomorph_feature]] %>%
-        sf::st_transform(crs = sf::st_crs(planning_grid)) %>%
-        terra::vect() %>% 
-        terra::rasterize(planning_grid, field = 1) %>%
-        setNames(geomorph_feature) %>% 
-        {if(geomorph_feature != names(geomorph_data)[1]) c(geomorph_data_stack, .)}
+    na_index <- is.na(terra::minmax(geomorph_ras)[1,])
+    if(all(na_index == TRUE)){
+      stop("No data present in the planning grid")
+    }else geomorph_ras[[!na_index]]
+  }else{ #sf planning grid case
+    non_zero_index <- (sapply(geomorph_data, function(x) sum(x[[1]], na.rm = TRUE)) >0)
+    if(all(non_zero_index == FALSE)){
+      stop("No data present in the planning grid")
+    }else{
+      geomorph_data <- geomorph_data[non_zero_index] 
       
+      lapply(geomorph_data[1:(length(geomorph_data)-1)], function(x) sf::st_drop_geometry(x)) %>% 
+        do.call(cbind, .) %>% 
+        cbind(geomorph_data[[length(geomorph_data)]]) %>% 
+        sf::st_sf()
     }
-    
-    return(terra::rast(geomorph_data_stack))
-  } else { 
-    
-    geomorph_data_stack <- NULL 
-    
-    for (geomorph_feature in names(geomorph_data)) {
-      suppressWarnings({
-        geomorph_data_stack_temp <- geomorph_data[[geomorph_feature]] %>% 
-          sf::st_transform(crs = sf::st_crs(planning_grid)) %>% 
-          sf::st_as_sf() %>% 
-          dplyr::mutate(!!geomorph_feature := 1)  %>% 
-          sf::st_join(planning_grid, ., largest = TRUE) 
-      })
-      
-      if(geomorph_feature != names(geomorph_data)[1]){ 
-        geomorph_data_stack <- geomorph_data_stack_temp %>% 
-          sf::st_drop_geometry() %>% 
-          cbind(geomorph_data_stack, .)
-      } else { 
-        geomorph_data_stack <- geomorph_data_stack_temp}
-    } 
-      return(geomorph_data_stack)
   }
 }

@@ -54,6 +54,15 @@ terra::plot(ber_corals_pu_ras)
 
 ber_corals_pu_sf <- get_coral_habitat(planning_grid = planning_sf_ber)
 plot(ber_corals_pu_sf, border = F)
+
+ber_geomorph <- get_geomorphology(area_polygon = bermuda_eez)
+plot(ber_geomorph)
+
+ber_geomorph_pu_ras <- get_geomorphology(planning_grid = planning_rast_ber)
+terra::plot(ber_geomorph_pu_ras)
+
+ber_geomorph_pu_sf <- get_geomorphology(planning_grid = planning_sf_ber)
+plot(ber_geomorph_pu_sf, border = F)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
@@ -120,44 +129,21 @@ terra::plot(fiji_bathy_pu_ras)
 fiji_bathy_pu_sf <- get_bathymetry(planning_grid = planning_sf_fiji, classify_bathymetry = T)
 plot(fiji_bathy_pu_sf, border = FALSE)
 
+fiji_corals <- get_coral_habitat(area_polygon = fiji_eez)
+terra::plot(fiji_corals %>% terra::rotate(left = FALSE) %>% terra::trim())
+
+fiji_corals_pu_ras <- get_coral_habitat(planning_grid = planning_rast_fiji) 
+terra::plot(fiji_corals_pu_ras)
+
+fiji_corals_pu_sf <- get_coral_habitat(planning_grid = planning_sf_fiji)
+plot(fiji_corals_pu_sf, border = F)
+
+fiji_geomorph <- get_geomorphology(area_polygon = fiji_eez)
+plot(fiji_geomorph %>% sf::st_shift_longitude())
+
+fiji_geomorph_pu_ras <- get_geomorphology(planning_grid = planning_rast_fiji)
+terra::plot(fiji_geomorph_pu_ras)
+
+fiji_geomorph_pu_sf <- get_geomorphology(planning_grid = planning_sf_fiji)
+plot(fiji_geomorph_pu_sf, border = F)
 ##############################################################
-
-data_breaks <- c(0,5,8,14)
-
-classification_names <- c("one", "two", "three")
-
-r <- terra::rast(nrows=3, ncols = 3, xmin=0, xmax=3, ymin=0, ymax=3)
-
-terra::values(r) <- c(0:4, 9:11, 14)
-
-terra::plot(r)
-
-#create a classification matrix
-class_matrix <- data_breaks %>% 
-  .[2:(length(.)-1)] %>% 
-  rep(times = rep(2, times = length(.))) %>% 
-  append(data_breaks[length(data_breaks)]) %>% 
-  append(data_breaks[1], after = 0) %>% 
-  matrix(ncol = 2, byrow = TRUE) %>% 
-  cbind(c(1:nrow(.)))
-
-rr <- terra::classify(r, class_matrix, include.lowest=TRUE) %>% 
-  terra::segregate(other=NA) %>% 
-  setNames(classification_names[as.numeric(names(.))])
-terra::plot(rr)
-
-data.frame(a = c(1:5, 9:12)) |>
-  dplyr::mutate(b = cut(a, breaks = data_breaks, labels = c("one", "two", "three")))
-
-terra::values(r) |>
-  findInterval(data_breaks, left.open = TRUE)
-  
-ber_bathy_sf <- get_bathymetry(planning_grid = planning_sf_ber, classify_bathymetry = FALSE)
-
-ber_bathy_sf %>% 
-  dplyr::mutate(classification = cut(.[[1]], bathymetry_cuts, labels = depth_zones), 
-                value = 1, 
-                .before = 1) %>% 
-  tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = NA) %>% 
-  dplyr::select(3:ncol(.), 2) %>% 
-  dplyr::select((ncol(.)-1):1)
