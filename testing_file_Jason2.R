@@ -85,6 +85,8 @@ terra::lines(terra::vect(bermuda_eez %>% sf::st_transform(sf::st_crs(ber_seamoun
 
 ber_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_ber)
 plot(ber_seamounts_buffered_pu_sf, border = F)
+
+ber_enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, raw_data = TRUE, num_clusters = 3)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
@@ -143,7 +145,7 @@ fiji_knolls_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_fiji, dat
 plot(fiji_knolls_pu_sf, border = FALSE)
 
 fiji_bathy <- get_bathymetry(fiji_eez, classify_bathymetry = FALSE)
-terra::plot(fiji_bathy)
+terra::plot(fiji_bathy %>% terra::rotate(left = FALSE) %>% terra::trim())
 
 fiji_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_fiji, classify_bathymetry = T)
 terra::plot(fiji_bathy_pu_ras)

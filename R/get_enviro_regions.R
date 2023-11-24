@@ -22,10 +22,9 @@
 #' # Calculate three environmental regions from the data
 #' get_enviro_regions(bermuda_eez, num_clusters = 3)
 
-get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots = TRUE, raw_data = FALSE, num_clusters = NULL, max_num_clusters = 8){
+get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, show_plots = TRUE, raw_data = FALSE, num_clusters = NULL, max_num_clusters = 8){
   
-  check_grid(planning_grid)
-  check_area(area_polygon)
+  check_grid_or_polygon(planning_grid, area_polygon)
   
   # Add error for cluster numbers
   if(!is.null(num_clusters)) {
@@ -35,7 +34,11 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
     stop("max_num_clusters must be greater than 1")}
   if(!all.equal(max_num_clusters, round(max_num_clusters))){ stop("max_num_clusters must be a whole number")}
   
-  enviro_data <- get_enviro_data(area_polygon, planning_grid)
+  matching_crs <- check_matching_crs(area_polygon, planning_grid, sf::st_crs(4326))
+  
+  area_polygon_for_cropping <- area_polygon_lonlat(area_polygon, planning_grid, matching_crs)
+  
+  enviro_data <- get_enviro_data(area_polygon_for_cropping, planning_grid)
   
  if(raw_data){
    return(enviro_data)
@@ -77,10 +80,9 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
                                                   planning_grid = planning_grid, 
                                                   classification_names = enviro_names)
       } else {
-        enviro_regions_stack <- classify_layers(data = enviro_regions, 
-                                             planning_grid = planning_grid, 
-                                             classification_matrix = enviro_matrix, 
-                                             classification_names = enviro_names)
+        enviro_regions_stack <- classify_layers(dat = enviro_regions, 
+                                                dat_breaks = enviro_matrix, 
+                                                classification_names = enviro_names)
         
       }
       return(enviro_regions_stack)
@@ -131,11 +133,11 @@ get_enviro_regions <- function(area_polygon,  planning_grid = NULL, show_plots =
   }
 }
 
-get_enviro_data <- function(area_polygon, planning_grid = NULL){
+get_enviro_data <- function(area_polygon_for_cropping, planning_grid){
   tif_list <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE)
   
   enviro_data <- terra::rast(tif_list) %>% 
-    terra::crop(area_polygon, mask = FALSE)
+    terra::crop(area_polygon_for_cropping)
   
   if(is.null(planning_grid)){
     message("Data are not projected")

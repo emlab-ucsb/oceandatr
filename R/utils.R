@@ -146,7 +146,40 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
       dplyr::select(3:ncol(.), 2) #put classification before geometry and drop original values
   }
 }
-
+area_polygon_lonlat <-
+  function(area_polygon, planning_grid, matching_crs) {
+    if (!is.null(planning_grid)) {
+      if (check_raster(planning_grid)) {
+        planning_grid %>%
+          terra::as.polygons() %>%
+          {
+            if (matching_crs)
+              .
+            else
+              terra::project(., "epsg:4326")
+          } %>%
+          sf::st_as_sf()
+      } else{
+        planning_grid %>%
+          {
+            if (matching_crs)
+              .
+            else
+              sf::st_transform(., 4326)
+          }
+      }
+    } else{
+      area_polygon %>%
+        sf::st_geometry() %>%
+        sf::st_as_sf() %>%
+        {
+          if (matching_crs)
+            .
+          else
+            sf::st_transform(., 4326)
+        }
+    }
+  }
 
 #Probably don't need the following functions, but keeping them for the moment just in cases....
 
