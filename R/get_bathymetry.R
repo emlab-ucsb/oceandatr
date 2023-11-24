@@ -43,13 +43,36 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
   
   matching_crs <- check_matching_crs(area_polygon, planning_grid, sf::st_crs(4326))
   
-  if(!is.null(planning_grid)){
-    area_polygon_for_cropping <- planning_grid_to_polygon(planning_grid, matching_crs)
-  }else{
-    area_polygon_for_cropping <- area_polygon %>% 
-      sf::st_geometry() %>% 
-      sf::st_as_sf() %>% 
-      {if(matching_crs) . else sf::st_transform(., 4326)}
+  if (!is.null(planning_grid)) {
+    area_polygon_for_cropping <- if (check_raster(planning_grid)) {
+      planning_grid %>%
+        terra::as.polygons() %>%
+        {
+          if (matching_crs)
+            .
+          else
+            terra::project(., "epsg:4326")
+        } %>%
+        sf::st_as_sf()
+    } else{
+      planning_grid %>%
+        {
+          if (matching_crs)
+            .
+          else
+            sf::st_transform(., 4326)
+        }
+    }
+  } else{
+    area_polygon_for_cropping <- area_polygon %>%
+      sf::st_geometry() %>%
+      sf::st_as_sf() %>%
+      {
+        if (matching_crs)
+          .
+        else
+          sf::st_transform(., 4326)
+      }
   }
   
   antimeridian <- check_antimeridian(area_polygon_for_cropping)

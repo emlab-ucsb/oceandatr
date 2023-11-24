@@ -1,5 +1,18 @@
-#generic get data function
-
+#' Get gridded or cropped data from input data
+#'
+#' @param area_polygon `sf` polygon
+#' @param planning_grid `sf` or `terra::rast()` planning grid
+#' @param dat `sf` or `terra::rast()` data to be gridded/ cropped
+#' @param meth `character` method to use for for gridding/ resampling/ reprojecting raster data. If NULL (default), function checks if data values are binary (all 0, 1, NA, or NaN) in which case method is set to "mode" for sf output or "near" for raster output. If data is non-binary, method is set to "average" for sf output or "mean" for raster output. Note that different methods are used for sf and raster as `exactextractr::exact_extract()` is used for gridding to sf planning grid, whereas `terra::project()`/`terra::resample()` is used for transforming/ gridding raster data.
+#' @param name `character` to name the data output
+#' @param sf_col_layer_names `character` vector; name(s) of columns that contain the data to be gridded/ cropped in `sf` input data; defaults to first column
+#' @param antimeridian `logical` can be set to true if the data to be extracted crosses the antimeridian and is in lon-lat (EPSG:4326) format
+#'
+#' @return `sf` or `terra::rast()` object; cropped and intersected data in same format as `dat` if  an `area_polygon` is provided. `sf` or `terra::rast()` planning gridded data depending on the format of the planning grid provided
+#' 
+#' @export
+#'
+#' @examples
 data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat = NULL, meth = NULL, name = NULL, sf_col_layer_names = NULL, antimeridian = NULL){
   if(is.null(dat)){
     stop("Please provide some input data")
