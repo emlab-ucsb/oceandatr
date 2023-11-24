@@ -5,8 +5,6 @@ data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat
     stop("Please provide some input data")
   }
   check_grid_or_polygon(planning_grid, area_polygon)
-  check_area(area_polygon)
-  check_grid(planning_grid)
   
   dat <- data_from_filepath(dat)
   

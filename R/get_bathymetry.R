@@ -65,11 +65,7 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
     depth_zones <- c("hadopelagic", "abyssopelagic", "bathypelagic", "mesopelagic", "epipelagic" )
     
     bathymetry_cuts <- c(-12000, -6000, -4000, -1000, -200, 10)
-    
-    #get only the depth zone names needed for this classification
-    # depth_zone_names <- if(check_raster(bathymetry)) depth_zones[terra::global(bathymetry, min, na.rm=TRUE)[1,1] < bathymetry_cuts[2:6]] else depth_zones[min(bathymetry[[1]]) < bathymetry_cuts[2:6]] 
-    # 
-    # bathymetry_cuts <- bathymetry_cuts[(6-length(depth_zone_names)):6]
+  
     
     reclass_var <- ifelse(above_sea_level_isNA, NA, 0)
     
