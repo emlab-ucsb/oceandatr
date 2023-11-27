@@ -1,5 +1,16 @@
-#return data intersected with a polygon
-
+#' Crop and mask/ intersect data
+#'
+#' @description
+#' Called by `data_to_planning_grid` when needed
+#' 
+#' @param area_polygon `sf` polygon to crop/ mask/ intersect with
+#' @param dat `terra::rast()` or `sf` data
+#' @param meth `string` name of method to use for raster projection if data is raster
+#' @param matching_crs `logical` TRUE if `area_polygon` and `dat` have the same crs
+#' @param antimeridian `logical` TRUE if cropping area crosses the antimeridian
+#'
+#' @return `terra::rast()` or `sf` 
+#' @noRd
 get_raw_data <- function(area_polygon, dat, meth, matching_crs, antimeridian){
   area_polygon <- area_polygon %>% 
     sf::st_geometry() %>% 

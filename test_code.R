@@ -1,17 +1,5 @@
 devtools::load_all()
 
-#vector data
-knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
-  readRDS() %>% 
-  sf::st_geometry()
-
-#raster data
-antipatharia <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "offshoredatr", mustWork = TRUE) %>% 
-  terra::rast()
-
-sst_mean <- system.file("extdata/bio_oracle/Sea_surface_temperature_(mean).tif", package = "offshoredatr", mustWork = TRUE) %>% 
-  terra::rast()
-
 #Bermuda
 ber_proj_wiz <- "+proj=laea +lon_0=-64.8220825 +lat_0=32.2530756 +datum=WGS84 +units=m +no_defs"
 
@@ -19,14 +7,6 @@ bermuda_eez <- get_area("Bermuda")
 planning_rast_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, resolution_km = 5)
 planning_sf_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, resolution_km = 5, option = "sf_square")
 
-ber_antipatharia <- data_to_planning_grid(area_polygon = bermuda_eez, dat = antipatharia)
-terra::plot(ber_antipatharia)
-
-ber_antipatharia_pu <- data_to_planning_grid(planning_grid = planning_rast_ber, dat = antipatharia)
-terra::plot(ber_antipatharia_pu)
-
-ber_antipatharia_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_ber, dat = antipatharia)
-plot(ber_antipatharia_pu_sf, border = FALSE)
 
 ber_knolls <- data_to_planning_grid(area_polygon = bermuda_eez, dat = knolls)
 plot(ber_knolls)
@@ -86,22 +66,25 @@ terra::lines(terra::vect(bermuda_eez %>% sf::st_transform(sf::st_crs(ber_seamoun
 ber_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_ber)
 plot(ber_seamounts_buffered_pu_sf, border = F)
 
-ber_enviro_regions <- get_enviro_regions(area_polygon = bermuda_eez, raw_data = TRUE, num_clusters = 3)
+ber_enviro_data <- get_enviro_regions(area_polygon = bermuda_eez, raw_data = TRUE)
+
+ber_enviro_data_rast_pu <- get_enviro_regions(planning_grid = planning_rast_ber, raw_data = TRUE)
+terra::plot(ber_enviro_data_rast_pu)
+
+ber_enviro_data_sf_pu <- get_enviro_regions(planning_grid = planning_sf_ber, raw_data = TRUE)
+plot(ber_enviro_data_sf_pu, border = FALSE)
+
+ber_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_ber, num_clusters = 3, show_plots = T)
+terra::plot(ber_enviro_regions_rast_pu)
+
+ber_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_ber, num_clusters = 3, show_plots = T)
+plot(ber_enviro_regions_sf_pu, border = F)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
 planning_rast_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution_km = 5)
 planning_sf_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution_km = 5, option = "sf_square")
 
-
-mld_antipatharia <- data_to_planning_grid(area_polygon = mld_eez, dat = antipatharia)
-terra::plot(mld_antipatharia)
-
-mld_antipatharia_pu <- data_to_planning_grid(planning_grid = planning_rast_mld, dat = antipatharia)
-terra::plot(mld_antipatharia_pu)
-
-mld_antipatharia_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_mld, dat = antipatharia)
-plot(mld_antipatharia_pu_sf, border = FALSE)
 
 mld_knolls <- data_to_planning_grid(area_polygon = mld_eez, dat = knolls)
 plot(mld_knolls)
@@ -123,17 +106,6 @@ fiji_eez <- get_area("Fiji")
 planning_rast_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution_km = 20)
 planning_sf_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution_km = 20, option = "sf_square")
 
-fiji_antipatharia <- data_to_planning_grid(area_polygon = fiji_eez, dat = antipatharia)
-terra::plot(fiji_antipatharia %>% terra::rotate(left = FALSE) %>% terra::trim())
-
-fiji_sst <- data_to_planning_grid(area_polygon = fiji_eez, dat = sst_mean, antimeridian = TRUE)
-terra::plot(fiji_sst %>% terra::rotate(left = FALSE) %>% terra::trim())
-
-fiji_antipatharia_pu <- data_to_planning_grid(planning_grid = planning_rast_fiji, dat = antipatharia, antimeridian = TRUE)
-terra::plot(fiji_antipatharia_pu)
-
-fiji_antipatharia_pu_sf <- data_to_planning_grid(planning_grid = planning_sf_fiji, dat = antipatharia, antimeridian = TRUE)
-plot(fiji_antipatharia_pu_sf, border = FALSE)
 
 fiji_knolls <- data_to_planning_grid(area_polygon = fiji_eez, dat = knolls)
 plot(fiji_knolls |> sf::st_shift_longitude())
@@ -191,4 +163,28 @@ terra::lines(terra::vect(fiji_eez %>% sf::st_transform(sf::st_crs(fiji_seamounts
 
 fiji_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_fiji, buffer = 3e4)
 plot(fiji_seamounts_buffered_pu_sf, border = F)
+
+fiji_enviro_data <- get_enviro_regions(area_polygon = fiji_eez, raw_data = TRUE)
+terra::plot(fiji_enviro_data %>% terra::rotate(left=FALSE) %>% terra::trim())
+
+fiji_enviro_data_sf_grid <- get_enviro_regions(planning_grid = planning_sf_fiji, raw_data = TRUE)
+
+fiji_enviro_data_rast_pu <- get_enviro_regions(planning_grid = planning_rast_fiji, raw_data = TRUE)
+terra::plot(fiji_enviro_data_rast_pu)
+
+fiji_enviro_data_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, raw_data = TRUE)
+plot(fiji_enviro_data_sf_pu, border = FALSE)
+
+#why are there 2 NaN cells?
+fiji_enviro_data_sf_grid %>% 
+  dplyr::filter(dplyr::if_any(dplyr::everything(), is.na))
+
+tmap::tm_shape(fiji_enviro_data_sf_grid) +
+  tmap::tm_fill(col = "Sea_surface_temperature_.minimum.")
+
+fiji_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_fiji, num_clusters = 3)
+terra::plot(fiji_enviro_regions_rast_pu)
+
+fiji_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, num_clusters = 3)
+plot(fiji_enviro_regions_sf_pu)
 ##############################################################

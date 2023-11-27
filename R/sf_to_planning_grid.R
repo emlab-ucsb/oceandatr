@@ -1,3 +1,17 @@
+#' Internal helper function for gridding sf input data
+#'
+#' @description
+#' Called from `data_to_planning_grid` when needed
+#' 
+#' @param dat `terra::rast()` input data
+#' @param planning_grid `terra::rast()` or `sf` planning grid
+#' @param matching_crs `logical` TRUE if crs of data and planning grid match, else FASE
+#' @param name `string` name of returned raster or if sf, column name in sf object
+#' @param sf_col_layer_names `string` names of columns in sf data that will be gridded
+#' @param antimeridian `logical` TRUE if data to be gridded cross the antimeridian
+#'
+#' @return `terra::rast()` or `sf` gridded data, depending on `planning_grid` format
+#' @noRd
 sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_layer_names, antimeridian){
 
   #1st option: the sf data object is polygons showing a single feature presence or sf_col_layer_names is names of each habitat/ species/ other feature
