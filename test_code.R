@@ -175,16 +175,9 @@ terra::plot(fiji_enviro_data_rast_pu)
 fiji_enviro_data_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, raw_data = TRUE)
 plot(fiji_enviro_data_sf_pu, border = FALSE)
 
-#why are there 2 NaN cells?
-fiji_enviro_data_sf_grid %>% 
-  dplyr::filter(dplyr::if_any(dplyr::everything(), is.na))
-
-tmap::tm_shape(fiji_enviro_data_sf_grid) +
-  tmap::tm_fill(col = "Sea_surface_temperature_.minimum.")
-
 fiji_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_fiji, num_clusters = 3)
 terra::plot(fiji_enviro_regions_rast_pu)
 
 fiji_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, num_clusters = 3)
-plot(fiji_enviro_regions_sf_pu)
+plot(fiji_enviro_regions_sf_pu, border = F)
 ##############################################################

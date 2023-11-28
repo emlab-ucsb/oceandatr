@@ -59,7 +59,7 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
   }
   else{
     
-    df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) else terra::as.data.frame(enviro_data, na.rm = NA)
+    df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
     
    if(is.null(num_clusters)){
       message("This could several minutes")
@@ -70,7 +70,6 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
       clust_partition <- clust_result$Best.partition
       }else {
         #k-means clustering for specific number of clusters
-        return(df_for_clustering)
         clust_result <- kmeans(x = df_for_clustering, centers = num_clusters, nstart = 10)
       
         clust_partition <- clust_result$cluster
@@ -81,11 +80,14 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
     if(check_sf(enviro_data)){
       enviro_region_cols <- model.matrix(~ as.factor(clust_partition) - 1) %>% 
         as.data.frame() %>%   
-        setNames(paste0("enviro_region_", 1:ncol(.)))
+        setNames(paste0("enviro_region_", 1:ncol(.))) %>% 
+        dplyr::mutate(row_id = as.numeric(names(clust_partition)))
       
-      sf::st_geometry(ber_enviro_data_sf_pu) %>% 
+      sf::st_geometry(enviro_data) %>% 
         sf::st_as_sf() %>% 
-        cbind(enviro_region_cols) 
+        dplyr::mutate(row_id = 1:nrow(.)) %>% 
+        dplyr::left_join(enviro_region_cols) %>% 
+        dplyr::select(-row_id)
     }else{
       #create environmental regions raster, filled with NAs to start with
       enviro_regions <- terra::rast(enviro_data, nlyrs=1, vals = NA, names = "enviro_region")

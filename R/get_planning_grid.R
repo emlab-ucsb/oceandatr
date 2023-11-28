@@ -22,8 +22,10 @@
 get_planning_grid <- function(area_polygon, projection_crs, option = "raster", resolution_km = 5){
   
   # Add repeated errors for area_polygon
-  if(!(class(area_polygon)[1] == "sf")) { 
+  if(!check_sf(area_polygon)) { 
     stop("area_polygon must be an sf object")}
+  
+  if(!(option %in% c("raster", "sf_square", "sf_hex"))) stop("option must be either 'raster', 'sf_square' or 'sf_hex'")
   
   area_polygon <- area_polygon %>% 
     sf::st_geometry() %>% 
@@ -31,21 +33,17 @@ get_planning_grid <- function(area_polygon, projection_crs, option = "raster", r
     {if(sf::st_crs(area_polygon) == projection_crs) . else sf::st_transform(., projection_crs)}
   
   if(option == "raster") { 
-    grid_out <- area_polygon %>% 
+    area_polygon %>% 
       terra::rast(resolution = resolution_km*1000) %>% 
       terra::rasterize(area_polygon, ., touches=FALSE, field = 1)
-  } else if (option == "sf_square") { 
-    grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = TRUE) %>% 
-      sf::st_as_sf()
-    overlap <- unlist(sf::st_intersects(area_polygon, grid_out))
-    grid_out <- grid_out[overlap,]
-  } else if (option == "sf_hex") { 
-    grid_out <- sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = FALSE) %>% 
-      sf::st_as_sf()
-    overlap <- unlist(sf::st_intersects(area_polygon, grid_out))
-    grid_out <- grid_out[overlap,]
-  } else { stop("option must be of either 'raster', 'sf_square' or 'sf_hex'")}
+    
+  } else{
+    grid_out <- if(option == "sf_square") sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = TRUE) %>% sf::st_as_sf() else sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = FALSE) %>% sf::st_as_sf() 
   
-  return(grid_out)
-  
+    grid_centroids <- sf::st_centroid(grid_out)
+    
+    overlap <- sf::st_intersects(grid_centroids, area_polygon) %>% 
+      lengths() > 0
+    grid_out[overlap,]
+  } 
 } 
