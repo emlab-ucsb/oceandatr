@@ -14,7 +14,8 @@ Imports:
     terra,
     dplyr,
     tidyr,
-    exactextractr
+    exactextractr,
+    glue
 Remotes:
     lifewatch/mregions2
 RoxygenNote: 7.2.3
