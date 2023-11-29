@@ -42,18 +42,17 @@ ber_seamounts_pu_ras <- get_seamount_peaks(planning_grid = planning_rast_ber)
 terra::plot(ber_seamounts_pu_ras)
 
 ber_seamounts_pu_sf <- get_seamount_peaks(planning_grid = planning_sf_ber)
-plot(sf::st_geometry(bermuda_eez))
 plot(ber_seamounts_pu_sf, border = F)
 
-ber_seamounts_buffered <- get_seamounts_buffered(area_polygon = bermuda_eez)
+ber_seamounts_buffered <- get_seamounts_buffered(area_polygon = bermuda_eez, buffer = 0.25)
 plot(sf::st_geometry(bermuda_eez))
 plot(ber_seamounts_buffered, add=T)
 
-ber_seamounts_buffered_pu_ras <- get_seamounts_buffered(planning_grid = planning_rast_ber)
+ber_seamounts_buffered_pu_ras <- get_seamounts_buffered(planning_grid = planning_rast_ber, buffer = 30000)
 terra::plot(ber_seamounts_buffered_pu_ras)
 terra::lines(terra::vect(bermuda_eez %>% sf::st_transform(sf::st_crs(ber_seamounts_buffered_pu_ras))))
 
-ber_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_ber)
+ber_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_sf_ber, buffer = 30000)
 plot(ber_seamounts_buffered_pu_sf, border = F)
 
 ber_enviro_data <- get_enviro_regions(area_polygon = bermuda_eez, raw_data = TRUE)
