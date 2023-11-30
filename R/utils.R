@@ -158,7 +158,8 @@ area_polygon_lonlat <-
             else
               terra::project(., "epsg:4326")
           } %>%
-          sf::st_as_sf()
+          sf::st_as_sf() %>% 
+          {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
       } else{
         planning_grid %>%
           {
