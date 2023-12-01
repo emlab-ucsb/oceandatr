@@ -68,6 +68,12 @@ terra::plot(ber_enviro_regions_rast_pu)
 
 ber_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_ber, num_clusters = 3, show_plots = T)
 plot(ber_enviro_regions_sf_pu, border = F)
+
+ber_feature_set_rast <- get_features(planning_grid = planning_rast_ber, enviro_clusters = 3)
+terra::plot(ber_feature_set_rast)
+
+ber_feature_set_sf <- get_features(planning_grid = planning_sf_ber, enviro_clusters = 3)
+plot(ber_feature_set_sf)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
