@@ -75,7 +75,7 @@ projection_bermuda <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WG
 A planning grid is needed for spatial prioritization. This divides the area of interest into grid cells. The `planning_grid` function will return a planning grid for the specified area of interest (polygon), projected into the coordinate reference system specified, at the cell resolution specified in kilometres.
 
 ```{r planning grid, warning=FALSE, fig.height=h, fig.width=w, out.width=ow}
-planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution_km = 5)
+planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution = 5000)
 
 #project the eez into same projection as planning grid for plotting
 bermuda_eez_projected <- bermuda_eez %>% 
@@ -90,7 +90,7 @@ plot(bermuda_eez_projected, add=TRUE)
 The raster covers Bermuda's EEZ. The grid cells would be too small to see if we plotted them, but here is a coarser grid (lower resolution) visualized so we can see what the grid cells look like.
 
 ```{r planning grid cells, fig.height=h, fig.width=w, out.width=ow}
-planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution_km = 20)
+planning_grid_coarse <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution = 20000)
 
 plot(bermuda_eez_projected, axes = FALSE)
 terra::plot(terra::as.polygons(planning_grid_coarse, dissolve = FALSE), add=TRUE)
@@ -148,9 +148,10 @@ plot(bermuda_eez_projected, add=TRUE)
 
 ## Get seamount areas
 
-Seamounts, classified as peaks at least 1000m higher than the surrounding seafloor [Morato et al. 2008](https://doi.org/10.3354/meps07268). These data are from [Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030). Each peak is buffered to the distance specified in the function call (in units of kilometres)
+Seamounts, classified as peaks at least 1000m higher than the surrounding seafloor [Morato et al. 2008](https://doi.org/10.3354/meps07268). These data are from [Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030). Each peak is buffered to the distance specified in the function call. The units of the buffer are in the same units as the area polygon or planning grid, which can be checked using, e.g. `sf::st_crs(planning_grid, parameters = TRUE)$units_gdal`
 
 ```{r seamounts, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
+#planning grid units are metres, so set buffer to 30000 m = 30 km
 seamounts <- get_seamounts_buffered(planning_grid = planning_grid, buffer = 30000)
 
 terra::plot(seamounts, col = "saddlebrown", axes = FALSE, legend = FALSE)
