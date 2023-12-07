@@ -20,12 +20,10 @@
 #' @examples
 #' # Grab EEZ data first 
 #' bermuda_eez <- get_area(area_name = "Bermuda")
-#' # Specify projection
-#' projection <- 'PROJCS["ProjWiz_Custom_Lambert_Azimuthal", GEOGCS["GCS_WGS_1984", DATUM["D_WGS_1984", SPHEROID["WGS_1984",6378137.0,298.257223563]], PRIMEM["Greenwich",0.0], UNIT["Degree",0.0174532925199433]], PROJECTION["Lambert_Azimuthal_Equal_Area"], PARAMETER["False_Easting",0.0], PARAMETER["False_Northing",0.0], PARAMETER["Central_Meridian",-64.5], PARAMETER["Latitude_Of_Origin",32], UNIT["Meter",1.0]]'
-#' # Create planning area
-#' bermuda_planning_area <- get_planning_grid(bermuda_eez, projection)
+#' Get a gridded feature set
+#' planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
 #' # Grab all the data
-#' data <- get_features(area_polygon = bermuda_eez, planning_grid = bermuda_planning_area)
+#' features <- get_features(planning_grid = planning_grid)
 
 get_features <- function(area_polygon = NULL, planning_grid = NULL, features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_regions"), seamount_buffer = 30000, bathy_resolution = 1, antipatharia_threshold = 22, octocoral_threshold = 2, enviro_clusters = NULL, max_enviro_clusters = 8){
   
