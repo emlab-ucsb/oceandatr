@@ -6,13 +6,17 @@
 #' @param meth `character` method to use for for gridding/ resampling/ reprojecting raster data. If NULL (default), function checks if data values are binary (all 0, 1, NA, or NaN) in which case method is set to "mode" for sf output or "near" for raster output. If data is non-binary, method is set to "average" for sf output or "mean" for raster output. Note that different methods are used for sf and raster as `exactextractr::exact_extract()` is used for gridding to sf planning grid, whereas `terra::project()`/`terra::resample()` is used for transforming/ gridding raster data.
 #' @param name `character` to name the data output
 #' @param sf_col_layer_names `character` vector; name(s) of columns that contain the data to be gridded/ cropped in `sf` input data; defaults to first column
-#' @param antimeridian `logical` can be set to true if the data to be extracted crosses the antimeridian and is in lon-lat (EPSG:4326) format
+#' @param antimeridian `logical` can be set to true if the data to be extracted crosses the antimeridian and is in lon-lat (EPSG:4326) format. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately. 
 #'
-#' @return `sf` or `terra::rast()` object; cropped and intersected data in same format as `dat` if  an `area_polygon` is provided. `sf` or `terra::rast()` planning gridded data depending on the format of the planning grid provided
+#' @return `sf` or `terra::rast()` object; cropped and intersected data in same format as `dat` if  an `area_polygon` is provided, otherwise `sf` or `terra::rast()` planning gridded data depending on the format of the planning grid provided
 #' 
 #' @export
 #'
 #' @examples
+#' # Get knolls data in a planning grid
+#' knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>% readRDS() 
+#' planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
+#' knolls_gridded <- data_to_planning_grid(planning_grid = planning_grid, dat = knolls)
 data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat = NULL, meth = NULL, name = NULL, sf_col_layer_names = NULL, antimeridian = NULL){
   if(is.null(dat)){
     stop("Please provide some input data")

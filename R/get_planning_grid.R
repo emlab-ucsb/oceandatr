@@ -38,7 +38,7 @@ get_planning_grid <- function(area_polygon, projection_crs, option = "raster", r
       terra::rasterize(area_polygon, ., touches=FALSE, field = 1)
     
   } else{
-    grid_out <- if(option == "sf_square") sf::st_make_grid(area_polygon, cellsize = resolution_km*1000, square = TRUE) %>% sf::st_as_sf() else sf::st_make_grid(area_polygon, cellsize = resolution, square = FALSE) %>% sf::st_as_sf() 
+    grid_out <- if(option == "sf_square") sf::st_make_grid(area_polygon, cellsize = resolution, square = TRUE) %>% sf::st_as_sf() else sf::st_make_grid(area_polygon, cellsize = resolution, square = FALSE) %>% sf::st_as_sf() 
   
     grid_centroids <- sf::st_centroid(grid_out)
     

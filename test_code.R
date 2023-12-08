@@ -4,8 +4,8 @@ devtools::load_all()
 ber_proj_wiz <- "+proj=laea +lon_0=-64.8220825 +lat_0=32.2530756 +datum=WGS84 +units=m +no_defs"
 
 bermuda_eez <- get_area("Bermuda")
-planning_rast_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, resolution_km = 5)
-planning_sf_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, resolution_km = 5, option = "sf_square")
+planning_rast_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz)
+planning_sf_ber <- get_planning_grid(bermuda_eez, projection_crs = ber_proj_wiz, option = "sf_square")
 
 ber_bathy <- get_bathymetry(bermuda_eez, classify_bathymetry = FALSE)
 terra::plot(ber_bathy)
@@ -73,7 +73,7 @@ ber_feature_set_rast <- get_features(planning_grid = planning_rast_ber, enviro_c
 terra::plot(ber_feature_set_rast)
 
 ber_feature_set_sf <- get_features(planning_grid = planning_sf_ber, enviro_clusters = 3)
-plot(ber_feature_set_sf)
+plot(ber_feature_set_sf, border=F)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
@@ -87,8 +87,8 @@ planning_sf_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0
 fiji_crs <- "+proj=laea +lon_0=-181.8896484 +lat_0=-17.73775 +datum=WGS84 +units=m +no_defs"
 
 fiji_eez <- get_area("Fiji")
-planning_rast_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution_km = 20)
-planning_sf_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution_km = 20, option = "sf_square")
+planning_rast_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution = 20e3)
+planning_sf_fiji <- get_planning_grid(fiji_eez, projection_crs = fiji_crs, resolution = 20e3, option = "sf_square")
 
 
 fiji_bathy <- get_bathymetry(fiji_eez, classify_bathymetry = FALSE)
@@ -155,4 +155,10 @@ terra::plot(fiji_enviro_regions_rast_pu)
 
 fiji_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, num_clusters = 3)
 plot(fiji_enviro_regions_sf_pu, border = F)
+
+fiji_feature_set_rast <- get_features(planning_grid = planning_rast_fiji, enviro_clusters = 3, antimeridian = TRUE)
+terra::plot(fiji_feature_set_rast)
+
+fiji_feature_set_sf <- get_features(planning_grid = planning_sf_fiji, enviro_clusters = 3)
+plot(fiji_feature_set_sf, border=F)
 ##############################################################
