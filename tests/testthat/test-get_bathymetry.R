@@ -1,7 +1,7 @@
 test_that("returns SpatRaster object - normal", {
-  expect_equal(class(get_bathymetry(get_area(area_name = "Bermuda"))), class(terra::rast(nrows=1, ncols=1, xmin=0, xmax=1)))
+  expect_s4_class(get_bathymetry(get_area(area_name = "Bermuda")), class = c("SpatRaster"))
 })
 
 test_that("returns SpatRaster object - antimeridian", {
-  expect_equal(class(get_bathymetry(get_area(area_name = "KIR", mregions_column = "iso_ter1"))), class(terra::rast(nrows=1, ncols=1, xmin=0, xmax=1)))
+  expect_s4_class(get_bathymetry(get_area(area_name = "KIR", mregions_column = "iso_ter1")), class = c("SpatRaster"))
 })
