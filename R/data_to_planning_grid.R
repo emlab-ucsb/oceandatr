@@ -13,9 +13,13 @@
 #' @export
 #'
 #' @examples
-#' # Get knolls data in a planning grid
+#' # Get knolls data
 #' knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>% readRDS() 
+#' # Get EEZ data
+#' bermuda_eez <- get_area(area_name = "Bermuda")
+#' # Create a planning grid
 #' planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
+#' # Get knolls data into the planning grid
 #' knolls_gridded <- data_to_planning_grid(planning_grid = planning_grid, dat = knolls)
 data_to_planning_grid <- function(area_polygon = NULL, planning_grid = NULL, dat = NULL, meth = NULL, name = NULL, sf_col_layer_names = NULL, antimeridian = NULL){
   if(is.null(dat)){

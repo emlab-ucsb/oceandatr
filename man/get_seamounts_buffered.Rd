@@ -38,7 +38,7 @@ Seamounts are classified as peaks at least 1000m higher than the surrounding sea
 bermuda_eez <- get_area(area_name = "Bermuda")
 # Get buffered seamounts in Bermuda's EEZ
 seamounts_buffered <- get_seamounts_buffered(area_polygon = bermuda_eez)
-Get seamounts buffered to 30 km, in a planning grid
+# Get seamounts buffered to 30 km, in a planning grid
 planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
 seamounts_buffered_gridded <- get_seamounts_buffered(planning_grid = planning_grid, buffer = 30000)
 }

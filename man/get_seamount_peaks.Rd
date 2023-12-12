@@ -34,7 +34,7 @@ Seamounts are classified as peaks at least 1000m higher than the surrounding sea
 bermuda_eez <- get_area(area_name = "Bermuda")
 # Get seamount peaks
 seamount_peaks <- get_seamount_peaks(area_polygon = bermuda_eez)
-Get seamounts in a planning grid
+# Get seamounts in a planning grid
 planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
 seamounts_gridded <- get_seamount_peaks(planning_grid = planning_grid)
 }

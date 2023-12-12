@@ -17,7 +17,7 @@
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Get knolls
 #' knolls <- get_knolls(area_polygon = bermuda_eez)
-#' Get knolls in a planning grid
+#' # Get knolls in a planning grid
 #' planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
 #' knolls_gridded <- get_knolls(planning_grid = planning_grid)
 get_knolls <- function(area_polygon = NULL, planning_grid = NULL, name = "knolls", antimeridian = NULL){
