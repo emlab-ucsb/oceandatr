@@ -16,10 +16,10 @@ test_that("all options match mregions2", {
 })
 
 test_that("bermuda example", { 
-  expect_s3_class(get_area("Bermuda"), class = c("sf", "tbl_df", "tbl", "data.frame"))
+  expect_s3_class(get_area("Bermuda"), class = "sf")
 })
 
 test_that("kiribati example", { 
-  expect_s3_class(get_area(area_name = "KIR", mregions_column = "iso_ter1"), class = c("sf", "tbl_df", "tbl", "data.frame"))
+  expect_s3_class(get_area(area_name = "KIR", mregions_column = "iso_ter1"), class = "sf")
 })
 

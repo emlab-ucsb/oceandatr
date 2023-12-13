@@ -1,5 +1,5 @@
 test_that("returns coral habitat layer with 3 species", {
-  expect_s4_class(get_coral_habitat(area_polygon = get_area(area_name = "Bermuda")), class = c("SpatRaster"))
+  expect_s4_class(get_coral_habitat(area_polygon = get_area(area_name = "Bermuda")), class = "SpatRaster")
 })
 
 test_that("returns error - antipatharia threshold too low", {
