@@ -1,5 +1,25 @@
-test_that("returns enviro regions as raster with 3 layers", {
+test_that("returns enviro regions as raster with 3 layers - bermuda", {
   expect_equal(terra::nlyr(get_enviro_regions(get_area(area_name = "Bermuda"), num_clusters = 3)), 3)
+})
+
+test_that("returns enviro regions as raster with 3 layers - kiribati", {
+  expect_equal(terra::nlyr(get_enviro_regions(get_area(area_name = "KIR", mregions_column = "iso_ter1"), num_clusters = 3, 
+                                              antimeridian = TRUE)), 3)
+})
+
+test_that("returns enviro regions as raster with 3 layers - bermuda gridded", {
+  expect_equal(terra::nlyr(get_enviro_regions(planning_grid = get_planning_grid(area_polygon = get_area(area_name = "Bermuda"), 
+                                                                                projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+                                                                                resolution = 5000),
+                                              num_clusters = 3)), 3)
+})
+
+test_that("returns enviro regions as raster with 3 layers - kiribati", {
+  expect_equal(terra::nlyr(get_enviro_regions(planning_grid = get_planning_grid(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1"), 
+                                                                                projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
+                                                                                resolution = 5000),
+                                              antimeridian = TRUE, 
+                                              num_clusters = 3)), 3)
 })
 
 test_that("returns raw data as raster with 12 layers", {
