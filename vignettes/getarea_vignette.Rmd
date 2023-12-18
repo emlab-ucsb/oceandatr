@@ -5,6 +5,10 @@ vignette: >
   %\VignetteIndexEntry{Selecting areas with offshoredatr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+Suggests:
+    knitr
+VignetteBuilder:
+    knitr
 ---
 
 ```{r setup, include = FALSE}
@@ -148,16 +152,15 @@ projection <- 'PROJCS["ProjWiz_Custom_Albers",
 # Create a planning grid 
 planning_grid <- get_planning_grid(area_polygon = australia_indonesia, 
                                    projection_crs = projection, 
-                                   resolution_km = 10)
+                                   resolution = 10000)
 
 # Plot the planning grid
 terra::plot(planning_grid, box = FALSE, axes = FALSE, legend = FALSE)
 ```
 ```{r proceed with offshoredatr data, fig.align= "center", fig.cap="Seamounts within the Indonesian and Australian EEZs."}
 # Get seamount locations with a 30 km buffer
-seamounts <- get_seamounts_buffered(area_polygon = australia_indonesia, 
-                                planning_grid = planning_grid, 
-                                buffer_km = 30)
+seamounts <- get_seamounts_buffered(planning_grid = planning_grid, 
+                                    buffer = 30000)
 # Plot seamount data
 terra::plot(seamounts, box = FALSE, axes = FALSE, legend = FALSE)
 ```
