@@ -77,8 +77,8 @@ plot(ber_feature_set_sf, border=F)
 ##################################################################
 #Maldives
 mld_eez <- get_area("Maldives")
-planning_rast_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution_km = 5)
-planning_sf_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution_km = 5, option = "sf_square")
+planning_rast_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution = 5000)
+planning_sf_mld <- get_planning_grid(mld_eez, projection_crs = "+proj=cea +lon_0=73.1558817 +datum=WGS84 +units=m +no_defs", resolution = 5000, option = "sf_square")
 
 
 
@@ -162,3 +162,10 @@ terra::plot(fiji_feature_set_rast)
 fiji_feature_set_sf <- get_features(planning_grid = planning_sf_fiji, enviro_clusters = 3)
 plot(fiji_feature_set_sf, border=F)
 ##############################################################
+
+#Kiribati
+
+planning_grid <- get_planning_grid(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1"), 
+                                   projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', resolution = 5000)
+
+get_knolls(planning_grid = planning_grid, antimeridian = TRUE)

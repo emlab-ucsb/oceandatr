@@ -50,7 +50,6 @@ get_geomorphology <- function(area_polygon = NULL, planning_grid = NULL, antimer
       dplyr::mutate(geomorph_type = feature_name, .before = 1)
     
     geomorph_data[[i]] <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = geomorph_layer, meth = meth, name = feature_name, antimeridian = antimeridian)
-    
   }
   sf::sf_use_s2(TRUE)
  
