@@ -23,17 +23,9 @@ get_geomorphology <- function(area_polygon = NULL, planning_grid = NULL, antimer
   
   check_grid_or_polygon(planning_grid, area_polygon)
   
-  geomorph_files <- c("Basins_Basins perched on the shelf.rds", "Basins_Basins perched on the slope.rds", 
-                      "Basins_Large basins of seas and oceans.rds", "Basins_Major ocean basins.rds", 
-                      "Basins_Small basins of seas and oceans.rds", "Bridges.rds", 
-                      "Canyons_blind.rds", "Canyons_shelf incising.rds", "Escarpments.rds", 
-                      "Fans.rds", "Glacial_troughs.rds", "Guyots.rds", "Plateaus.rds", 
-                      "Ridges.rds", "Rift_valleys.rds", "Rises.rds", "Shelf_valleys_Large shelf valleys and glacial troughs.rds", 
-                      "Shelf_valleys_Moderate size shelf valley.rds", "Shelf_valleys_Small shelf valley.rds", 
-                      "Sills.rds", "Spreading_ridges.rds", "Terraces.rds", "Trenches.rds", 
-                      "Troughs.rds")
-  
-  geomorph_file_paths <- system.file("extdata", geomorph_files, package = "offshoredatr", mustWork = TRUE)
+  geomorph_file_paths <- system.file("extdata/geomorphology", package = "offshoredatr") %>% 
+  list.files() %>% 
+  system.file("extdata/geomorphology", ., package = "offshoredatr")
 
   sf::sf_use_s2(FALSE)
 
@@ -42,12 +34,10 @@ get_geomorphology <- function(area_polygon = NULL, planning_grid = NULL, antimer
   meth <- if(check_raster(planning_grid)) 'near' else 'mode'
 
   for (i in 1:length(geomorph_file_paths)) {
-    feature_name <- tolower(gsub(pattern =  ".rds", replacement =  "", 
-                                 gsub(pattern = " ", replacement = "_", basename(geomorph_file_paths[i]))))
+    feature_name <- gsub(pattern =  ".rds", replacement =  "", basename(geomorph_file_paths[i]))
     
     geomorph_layer <- geomorph_file_paths[i] %>% 
-      readRDS() %>% 
-      dplyr::mutate(geomorph_type = feature_name, .before = 1)
+      readRDS() 
     
     geomorph_data[[i]] <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = geomorph_layer, meth = meth, name = feature_name, antimeridian = antimeridian)
   }

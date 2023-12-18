@@ -27,12 +27,15 @@ for (file_name in geomorph_files) {
   
   if(any(grepl("type", names(geomorph_sf_object)))) {
     for (geomorph_type in unique(geomorph_sf_object$type)) {
+      
+      naming <- paste0(ifelse(feature_name == "Canyons", paste0("Canyons_", gsub(pattern = " ", replacement = "_", geomorph_type)), gsub(pattern = " ", replacement = "_", geomorph_type)))
       geomorph_sf_object %>% 
         filter(type == geomorph_type) %>% 
         st_union() %>% 
         st_as_sf() %>% 
-        st_make_valid() %>% 
-        saveRDS(file = file.path("inst/extdata", paste0(feature_name, "_", geomorph_type, ".rds")))
+        dplyr::mutate(geomorph_type = naming, .before = 1) %>% 
+        st_set_geometry("geometry") %>% 
+        saveRDS(file = file.path("inst/extdata/geomorphology", paste0(naming, ".rds")))
         # assign(paste0(feature_name, "_", geomorph_type), ., pos = 1)
         # 
         # do.call("use_data", list(as.name(paste0(feature_name, "_", geomorph_type)), overwrite = TRUE))
@@ -41,8 +44,9 @@ for (file_name in geomorph_files) {
     geomorph_sf_object %>%  
       st_union() %>% 
       st_as_sf() %>% 
-      st_make_valid() %>% 
-      saveRDS(file = file.path("inst/extdata", paste0(feature_name, ".rds")))
+      dplyr::mutate(geomorph_type = feature_name, .before = 1) %>% 
+      st_set_geometry("geometry") %>% 
+      saveRDS(file = file.path("inst/extdata/geomorphology", paste0(feature_name, ".rds")))
       # assign(feature_name, ., pos = 1)
       # 
       # do.call("use_data", list(as.name(feature_name), overwrite = TRUE))
