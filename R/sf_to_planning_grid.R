@@ -38,10 +38,10 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
         {if(antimeridian) sf::st_shift_longitude(.) else .}
       
       dat_cropped <- dat %>% 
-        {if(antimeridian) sf::st_shift_longitude(.) else .} %>% 
+        {if(antimeridian) sf::st_break_antimeridian(., lon_0 = 180) %>% sf::st_shift_longitude() else .} %>% 
         sf::st_crop(p_grid) %>% 
-        {if(antimeridian) sf::st_wrap_dateline(.) else .} %>% 
-        sf::st_transform(sf::st_crs(planning_grid)) 
+        sf::st_transform(sf::st_crs(planning_grid)) %>% 
+        {if(antimeridian) sf::st_union(.) %>% sf::st_as_sf() else .}
     }
       dat_cropped %>% 
         terra::rasterize(planning_grid, field = 1, by = sf_col_layer_names) %>% 
@@ -56,10 +56,12 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
         sf::st_shift_longitude()
       
       dat_cropped <- dat %>% 
+        sf::st_break_antimeridian(lon_0 = 180) %>% 
         sf::st_shift_longitude() %>% 
         sf::st_crop(p_grid) %>% 
-        sf::st_wrap_dateline() %>% 
-        sf::st_transform(sf::st_crs(planning_grid))
+        sf::st_transform(sf::st_crs(planning_grid)) %>% 
+        sf::st_union() %>% 
+        sf::st_as_sf()
     }else{
       dat_cropped <- if(matching_crs) dat %>% sf::st_crop(planning_grid) else{planning_grid %>% 
           sf::st_transform(sf::st_crs(dat)) %>% 
