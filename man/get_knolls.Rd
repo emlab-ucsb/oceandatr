@@ -24,10 +24,10 @@ get_knolls(
 If an `area_polygon` is supplied, an `sf` object of knolls for that area. If a `planning_grid` is supplied, a raster or `sf` of gridded knolls data, depending on `planning_grid` format.
 }
 \description{
-This function gets knolls data within an area polygon or planning grid depending on which is supplied
+This function gets knolls base area data within an area polygon or planning grid depending on which is supplied
 }
 \details{
-Knolls are small seamounts; seamounts with peaks 200-1000 m higher than the surrounding seafloor [(Morato et al., 2008)](https://doi.org/10.3354/meps07268). The knolls data is from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
+Knolls are small seamounts; seamounts with peaks 200-1000 m higher than the surrounding seafloor [(Morato et al., 2008)](https://doi.org/10.3354/meps07268). The knolls base area data is from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
 }
 \examples{
 # Get EEZ data first 
