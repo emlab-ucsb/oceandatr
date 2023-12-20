@@ -15,15 +15,16 @@ Imports:
     dplyr,
     tidyr,
     exactextractr,
-    glue
+    NbClust
 Remotes:
     lifewatch/mregions2
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
+    codetools,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -5,12 +5,10 @@
 library(raster)
 
 #working paths
-sys_path <- ifelse(Sys.info()["sysname"]=="Windows", "G:/Shared drives/",ifelse(Sys.info()["sysname"]=="Linux", "/home/jason/Documents/Gdrive_sync/emlab_shared/", "~/Google Drive/Shared drives/"))
-# Path to our emLab's data folder
-emlab_data_path <- paste0(sys_path,"emlab/data")
+data_file_path <- "temp_raw/"
 
 #want all data in memory otherwise it just writes a link
-antipatharia <- readAll(raster(file.path(emlab_data_path, "antipatharia-distribution/YessonEtAl_DSR2_2016_AntipathariaHSM.tif")))
+antipatharia <- readAll(raster(file.path(data_file_path, "antipatharia-distribution/YessonEtAl_DSR2_2016_AntipathariaHSM.tif")))
 
 #this takes >1hr and uses >30GB memory
 writeRaster(antipatharia, file.path("inst/extdata", "YessonEtAl_2016_Antipatharia.tif"), format = "GTiff", options = c("COMPRESS=ZSTD", "PREDICTOR=2", "ZSTD_LEVEL=22", "NUM_THREADS=10"), datatype = "INT1U")

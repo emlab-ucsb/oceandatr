@@ -51,9 +51,7 @@ Each of these columns is a different type of identifier for ocean areas that we 
 australia_eez <- get_area(area_name = "Australia", query_type = "eez", mregions_column = "territory1")
 
 # Plot the result
-ggplot2::ggplot() + 
-  ggplot2::geom_sf(data = australia_eez) + 
-  ggplot2::theme_void()
+plot(australia_eez[2])
 ```
 
 Alternatively, we might know the ISO3 code for a territory and wish to query the database that way; we would use the "iso_ter1" column to filter for the ISO3 code we desire. Below, we use the ISO3 code for Australia to grab the EEZ. 
@@ -63,9 +61,7 @@ Alternatively, we might know the ISO3 code for a territory and wish to query the
 australia_eez <- get_area(area_name = "AUS", query_type = "eez", mregions_column = "iso_ter1")
 
 # Plot the result
-ggplot2::ggplot() + 
-  ggplot2::geom_sf(data = australia_eez) + 
-  ggplot2::theme_void()
+plot(australia_eez[2])
 ```
 
 Of course, maybe we aren't memorizing ISO3 codes, but we would recognize the code that we wanted if we saw it in a list. We can get a list of possible values to choose from for each `mregions_column` by setting `show_value_options` to `TRUE`: 
@@ -81,9 +77,7 @@ There might be a project in which you need the area in the high seas. This is a 
 high_seas <- get_area(area_name = "63203", query_type = "high_seas", mregions_column = "mrgid")
 
 # Plot the result
-ggplot2::ggplot() + 
-  ggplot2::geom_sf(data = high_seas) + 
-  ggplot2::theme_void()
+plot(high_seas[2])
 ```
 
 If you are only interested in a small section of the high seas, you can crop this layer to the appropriate extent. 
@@ -96,9 +90,7 @@ high_seas_cropped <- high_seas %>%
   sf::st_crop(xmin = 100, xmax = 185, ymin = -60, ymax = 0)
 
 # Plot the result
-ggplot2::ggplot() + 
-  ggplot2::geom_sf(data = high_seas_cropped) + 
-  ggplot2::theme_void()
+plot(high_seas_cropped[2])
 ```
 
 If your region of interest includes the high seas and an EEZ area, you can combine the two layers resulting from their independent queries using `sf::st_union()`. 
@@ -109,9 +101,7 @@ australia_eez_high_seas <- australia_eez %>%
   sf::st_union(high_seas_cropped)
 
 # Plot the result
-ggplot2::ggplot() + 
-  ggplot2::geom_sf(data = australia_eez_high_seas) + 
-  ggplot2::theme_void()
+plot(australia_eez_high_seas[2])
 ```
 
 Currently, there is no way to select multiple areas at once. If your region of interest spans several EEZs or marine regions, we recommend querying each area independently and merging the layers together.
@@ -125,9 +115,7 @@ australia_indonesia <- australia_eez %>%
   sf::st_union(indonesia_eez)
 
 # Plot the result
-ggplot2::ggplot() + 
-  ggplot2::geom_sf(data = australia_indonesia) + 
-  ggplot2::theme_void()
+plot(australia_indonesia[2]) 
 ```
 
 We can now go ahead and use these areas in `offshoredatr` to create an appropriate planning grid and grab additional datasets. 
