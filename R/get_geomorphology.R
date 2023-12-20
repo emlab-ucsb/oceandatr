@@ -27,21 +27,25 @@ get_geomorphology <- function(area_polygon = NULL, planning_grid = NULL, antimer
   list.files() %>% 
   system.file("extdata/geomorphology", ., package = "offshoredatr")
 
-  sf::sf_use_s2(FALSE)
-
   geomorph_data <- list()
   
   meth <- if(check_raster(planning_grid)) 'near' else 'mode'
 
+  suppressMessages({sf::sf_use_s2(FALSE)})
+  
   for (i in 1:length(geomorph_file_paths)) {
     feature_name <- gsub(pattern =  ".rds", replacement =  "", basename(geomorph_file_paths[i]))
     
     geomorph_layer <- geomorph_file_paths[i] %>% 
       readRDS() 
-    
-    geomorph_data[[i]] <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = geomorph_layer, meth = meth, name = feature_name, antimeridian = antimeridian)
+    suppressMessages({
+      suppressWarnings({
+        geomorph_data[[i]] <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = geomorph_layer, meth = meth, name = feature_name, antimeridian = antimeridian)
+        })
+    })
   }
-  sf::sf_use_s2(TRUE)
+  
+  suppressMessages({sf::sf_use_s2(TRUE)})
  
   if(!is.null(area_polygon)){
     do.call(rbind, geomorph_data) %>% 

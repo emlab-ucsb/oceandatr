@@ -25,19 +25,19 @@ get_features(
 
 \item{features}{a vector of feature names, can include: "bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_regions"}
 
+\item{seamount_buffer}{`numeric`; the distance from the seamount peak to include in the output. Distance should be in the same units as the area_polygon or planning_grid provided, use e.g. `sf::st_crs(planning_grid, parameters = TRUE)$units_gdal` to check what units your planning grid or area polygon is in (works for raster as well as sf objects)}
+
+\item{bathy_resolution}{`numeric`; the resolution (in minutes) of data to pull from the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)}
+
 \item{antipatharia_threshold}{`numeric` between 0 and 100; the threshold value for habitat suitability for antipatharia corals to be considered present (default is 22, as defined in Yesson et al., 2017)}
 
 \item{octocoral_threshold}{`numeric` between 0 and 7; the threshold value for how many species (of 7) should be predicted present in an area for octocorals to be considered present (default is 2)}
 
+\item{enviro_clusters}{`numeric`; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)}
+
+\item{max_enviro_clusters}{`numeric`; the maximum number of environmental regions to try when using the clustering algorithm (default is 8)}
+
 \item{antimeridian}{Does `area_polygon` or `planning_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.}
-
-\item{buffer}{numeric; the distance from the seamount peak to include in the output. Distance should be in the same units as the area_polygon or planning_grid provided, use e.g. `sf::st_crs(planning_grid, parameters = TRUE)$units_gdal` to check what units your planning grid or area polygon is in (works for raster as well as sf objects)}
-
-\item{resolution}{`numeric`; the resolution (in minutes) of data to pull from the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)}
-
-\item{num_clusters}{numeric; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)}
-
-\item{max_num_clusters}{numeric; the maximum number of environmental regions to try when using the clustering algorithm (default is 8)}
 }
 \value{
 If an `area_polygon` is supplied, a list of feature data is returned (will be mixed raster and sf objects). If a `planning_grid` is supplied, a raster stack or `sf` of gridded data is returned, depending on `planning_grid` format.
