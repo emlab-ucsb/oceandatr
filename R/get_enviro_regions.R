@@ -89,7 +89,7 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
       sf::st_geometry(enviro_data) %>% 
         sf::st_as_sf() %>% 
         dplyr::mutate(row_id = 1:nrow(.)) %>% 
-        dplyr::left_join(enviro_region_cols) %>% 
+        dplyr::left_join(enviro_region_cols, by = dplyr::join_by(row_id)) %>% 
         dplyr::select(-row_id)
     }else{
       #create environmental regions raster, filled with NAs to start with

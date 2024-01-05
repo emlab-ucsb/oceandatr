@@ -57,7 +57,7 @@ get_bathymetry <- function(area_polygon = NULL, planning_grid = NULL, classify_b
   } else{
     bathymetry <- data_to_planning_grid(area_polygon, planning_grid, dat = bathymetry_data_filepath, meth, name, antimeridian) 
     }
-  
+
   if(classify_bathymetry){
     depth_zones <- c("hadopelagic", "abyssopelagic", "bathypelagic", "mesopelagic", "epipelagic" )
     

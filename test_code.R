@@ -25,6 +25,15 @@ terra::plot(ber_corals_pu_ras)
 ber_corals_pu_sf <- get_coral_habitat(planning_grid = planning_sf_ber)
 plot(ber_corals_pu_sf, border = F)
 
+ber_knolls <- get_knolls(area_polygon = bermuda_eez)
+plot(sf::st_geometry(ber_knolls))
+
+ber_knolls_pu_ras <- get_knolls(planning_grid = planning_rast_ber)
+terra::plot(ber_knolls_pu_ras)
+
+ber_knolls_pu_sf <- get_knolls(planning_grid = planning_sf_ber)
+plot(ber_knolls_pu_sf, border = F)
+
 ber_geomorph <- get_geomorphology(area_polygon = bermuda_eez)
 plot(ber_geomorph)
 
@@ -103,7 +112,8 @@ plot(fiji_knolls %>% sf::st_shift_longitude())
 fiji_knolls_pu_ras <- get_knolls(planning_grid = planning_rast_fiji)
 terra::plot(fiji_knolls_pu_ras)
 
-fiji_knolls_pu_sf <-
+fiji_knolls_pu_sf <- get_knolls(planning_grid = planning_sf_fiji)
+plot(fiji_knolls_pu_sf, border = F)
 
 fiji_bathy_pu_sf <- get_bathymetry(planning_grid = planning_sf_fiji, classify_bathymetry = T)
 plot(fiji_bathy_pu_sf, border = FALSE)
@@ -175,11 +185,18 @@ plot(fiji_feature_set_sf, border=F)
 
 kir_eez <- get_area(area_name = "KIR", mregions_column = "iso_ter1")
 
-planning_grid <- get_planning_grid(area_polygon = kir_eez, 
-                                   projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', resolution = 5000)
+planning_rast_kir <- get_planning_grid(area_polygon = kir_eez, 
+                                   projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+
+planning_sf_kir <- get_planning_grid(area_polygon = kir_eez, projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', resolution = 10000, option = "sf_hex")
 
 kir_bathy <- get_bathymetry(kir_eez, classify_bathymetry = FALSE)
 terra::plot(kir_bathy %>% terra::rotate(left = FALSE) %>% terra::trim())
+
+#porblem is in raster_to_planmning_grid
+#this helps: planning_grid %>% 
+# terra::as.polygons() %>% 
+#   sf::st_as_sf() %>% sf::st_transform(sf::st_crs(dat)) %>% sf::st_shift_longitude() %>% plot()
 
 kir_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_kir, classify_bathymetry = T)
 terra::plot(kir_bathy_pu_ras)
