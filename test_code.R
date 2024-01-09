@@ -193,11 +193,6 @@ planning_sf_kir <- get_planning_grid(area_polygon = kir_eez, projection_crs = '+
 kir_bathy <- get_bathymetry(kir_eez, classify_bathymetry = FALSE)
 terra::plot(kir_bathy %>% terra::rotate(left = FALSE) %>% terra::trim())
 
-#porblem is in raster_to_planmning_grid
-#this helps: planning_grid %>% 
-# terra::as.polygons() %>% 
-#   sf::st_as_sf() %>% sf::st_transform(sf::st_crs(dat)) %>% sf::st_shift_longitude() %>% plot()
-
 kir_bathy_pu_ras <- get_bathymetry(planning_grid = planning_rast_kir, classify_bathymetry = T)
 terra::plot(kir_bathy_pu_ras)
 
@@ -247,6 +242,7 @@ kir_enviro_data <- get_enviro_regions(area_polygon = kir_eez, raw_data = TRUE)
 terra::plot(kir_enviro_data %>% terra::rotate(left=FALSE) %>% terra::trim())
 
 kir_enviro_data_sf_grid <- get_enviro_regions(planning_grid = planning_sf_kir, raw_data = TRUE)
+plot(kir_enviro_data_sf_grid, border = FALSE)
 
 kir_enviro_data_rast_pu <- get_enviro_regions(planning_grid = planning_rast_kir, raw_data = TRUE)
 terra::plot(kir_enviro_data_rast_pu)
