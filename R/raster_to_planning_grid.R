@@ -22,8 +22,9 @@ ras_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, a
     if(antimeridian){
       planning_grid %>% 
         terra::as.polygons() %>% 
-        terra::project(dat) %>% 
-        terra::rotate(left = FALSE) %>% 
+        sf::st_as_sf() %>% 
+        sf::st_transform(sf::st_crs(dat)) %>%
+        sf::st_shift_longitude() %>% 
         terra::crop(terra::rotate(dat, left = FALSE), .) %>% 
         terra::project(planning_grid, method = meth) %>% 
         terra::mask(planning_grid) %>% 
