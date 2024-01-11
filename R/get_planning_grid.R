@@ -1,6 +1,9 @@
 #' Create a planning grid raster for an area of interest
 #' 
 #' @description This function creates a planning grid for area of interest.
+#' 
+#' @details
+#' This function uses `sf::st_make_grid()` to create an `sf` planning grid. The default ordering of this grid type is from bottom to top, left to right. In contrast, the planning grid resulting from a `raster` object is ordered from top to bottom, left to right. To preserve consistency across the data types, we have reordered the `sf` planning grid to also fill from top to bottom, left to right.
 #'
 #' @param area_polygon an sf polygon or multipolygon object of the area of interest (e.g., a country's EEZ)
 #' @param projection_crs a suitable crs for the area of interest; for prioritization work, best practices is to use a local, equal area projection
@@ -11,7 +14,7 @@
 #' @export
 #'
 #' @examples 
-#' # Get ar area of interest first. In this case Bermuda's EEZ
+#' # Get area of interest first. In this case Bermuda's EEZ
 #' bermuda_eez <- get_area(area_name = "Bermuda")
 #' # Create a CRS using a local, equal area projection for Bermuda. 
 #' # You can a suitable equal area projection for your area of interest from https://projectionwizard.org
@@ -39,11 +42,18 @@ get_planning_grid <- function(area_polygon, projection_crs, option = "raster", r
     
   } else{
     grid_out <- if(option == "sf_square") sf::st_make_grid(area_polygon, cellsize = resolution, square = TRUE) %>% sf::st_as_sf() else sf::st_make_grid(area_polygon, cellsize = resolution, square = FALSE) %>% sf::st_as_sf() 
-  
+    
     grid_centroids <- sf::st_centroid(grid_out)
     
     overlap <- sf::st_intersects(grid_centroids, area_polygon) %>% 
       lengths() > 0
-    grid_out[overlap,]
+    grid_out[overlap,] %>% 
+      dplyr::bind_cols(sf::st_coordinates(sf::st_centroid(.)) %>%
+                         as.data.frame() %>%
+                         dplyr::select(X, Y)) %>%
+      dplyr::mutate(X = round(X, digits = 4),
+                    Y = round(Y, digits = 4)) %>%
+      dplyr::arrange(dplyr::desc(Y), X) %>%
+      dplyr::select(-X, -Y)
   } 
 } 

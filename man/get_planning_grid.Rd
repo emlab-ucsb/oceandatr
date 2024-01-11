@@ -26,8 +26,11 @@ A `terra::rast()` of `sf` planning grid of the same resolution and crs provided
 \description{
 This function creates a planning grid for area of interest.
 }
+\details{
+This function uses `sf::st_make_grid()` to create an `sf` planning grid. The default ordering of this grid type is from bottom to top, left to right. In contrast, the planning grid resulting from a `raster` object is ordered from top to bottom, left to right. To preserve consistency across the data types, we have reordered the `sf` planning grid to also fill from top to bottom, left to right.
+}
 \examples{
-# Get ar area of interest first. In this case Bermuda's EEZ
+# Get area of interest first. In this case Bermuda's EEZ
 bermuda_eez <- get_area(area_name = "Bermuda")
 # Create a CRS using a local, equal area projection for Bermuda. 
 # You can a suitable equal area projection for your area of interest from https://projectionwizard.org
