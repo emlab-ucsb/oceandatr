@@ -106,7 +106,10 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
     clust_result <- kmeans(x = df_for_clustering, centers = num_clusters, nstart = 10)
     clust_partition <- clust_result$cluster
     
-    if(show_plots) enviro_regions_boxplot(clust_partition, df_for_clustering)
+    if(show_plots) {
+      enviro_regions_boxplot(clust_partition, df_for_clustering)
+      enviro_regions_pca(clust_partition, df_for_clustering)
+    }
     
     if(check_sf(enviro_data)){
       enviro_region_cols <- model.matrix(~ as.factor(clust_partition) - 1) %>% 
@@ -151,4 +154,15 @@ enviro_regions_boxplot <- function(enviro_region, enviro_data){
     eval(parse(text = paste0("boxplot(`", colnames(enviro_regions_df[i]), "` ~ enviro_region, data = enviro_regions_df, col = palette.colors(n = ", max(enviro_region), ", palette = 'Dark2'))")))
   }
   par(mfrow = c(1,1))
+}
+
+enviro_regions_pca <- function(enviro_region, enviro_data){
+  pca_df <- stats::prcomp(enviro_data, scale. = TRUE, center = TRUE) %>% 
+    .[["x"]] %>% 
+    as.data.frame()
+
+  pca_df$enviro_region <- enviro_region
+  
+  plot(x = pca_df$PC1, y = pca_df$PC2, col = pca_df$enviro_region, xlab = "PC1", ylab = "PC2", pch = 4, cex = 0.6)
+  legend("bottomright", legend = unique(pca_df$enviro_region), col = unique(pca_df$enviro_region), pch = 4, cex = 1, title = "Enviro region")
 }
