@@ -10,8 +10,12 @@ get_enviro_regions(
   raw_data = FALSE,
   show_plots = TRUE,
   num_clusters = NULL,
-  max_num_clusters = 8,
-  antimeridian = NULL
+  max_num_clusters = 6,
+  antimeridian = NULL,
+  sample_size = 5000,
+  num_samples = 5,
+  num_cores = 1,
+  custom_seed = 1234
 )
 }
 \arguments{
@@ -25,15 +29,23 @@ get_enviro_regions(
 
 \item{num_clusters}{`numeric`; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)}
 
-\item{max_num_clusters}{`numeric`; the maximum number of environmental regions to try when using the clustering algorithm (default is 8)}
+\item{max_num_clusters}{`numeric`; the maximum number of environmental regions to try when using the clustering algorithm (default is 6)}
 
 \item{antimeridian}{Does `area_polygon` or `planning_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+
+\item{sample_size}{`numeric`; default is 5000. Larger sample sizes will quickly consume memory (>10GB) so should be used with caution.}
+
+\item{num_samples}{`numeric`; default is 5, which resulted in good consensus on the optimal number of clusters in testing.}
+
+\item{num_cores}{`numeric`; default 1. Multi-core sampling is supported if the package `parallel` is installed, but be aware than increasing the number of cores will also increase the memory required.}
+
+\item{custom_seed}{`numeric`; default `1234`, but a custom seed can be supplied if desired.}
 }
 \value{
 If an `area_polygon` is supplied, a raster stack of environmental regions, or Bio-Oracle data if `raw_data = TRUE`, is returned. If a `planning_grid` is supplied, a raster stack or `sf` of gridded environmental regions,  or Bio-Oracle data if `raw_data = TRUE`, is returned depending on `planning_grid` format.
 }
 \description{
-This function gets [Bio-Oracle](https://bio-oracle.org/)  environmental data for the area of interest or planning grid and creates environmental regions using a clustering algorithm. Details are described in Magris et al. [2020](https://doi.org/10.1111/ddi.13183)
+This function gets [Bio-Oracle](https://bio-oracle.org/) environmental data for the area of interest or planning grid and creates environmental regions using k-means clustering. The idea for this comes from Magris et al. [2020](https://doi.org/10.1111/ddi.13183). The number of environmental regions can be specified directly, using `num_clusters`, but the function will also find the 'optimal' number of clusters using the `NbClust()` from the `NbClust` package.
 }
 \details{
 The environmental data used in the clustering, obtained from Bio-Oracle are:
@@ -51,6 +63,8 @@ The environmental data used in the clustering, obtained from Bio-Oracle are:
 \item Sea surface temperature (min)
 \item Silicate concentration (mean)
 }
+
+When the number of planning units/ cells for clustering exceeds ~ 10,000, the amount of computer memory required to find the optimal number of clusters using `NbClust::NbClust()` exceeds 10GB, so repeated sampling is used to find a consensus number of clusters. Sensible defaults are provided, namely `sample_size = 5000`, `num_samples = 5`, `max_num_clusters = 6` but can be customised if desired, though see the parameter descriptions below for some words of warning. Parallel processing is offered by specifying `num_cores` >1 (must be an integer), though the package `parallel` must be installed (it is included in most R installations). To find the number of available cores `parallel::detectCores()`.
 }
 \examples{
 # Get EEZ data first 

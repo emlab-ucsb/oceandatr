@@ -25,6 +25,7 @@ Suggests:
     knitr,
     rmarkdown,
     codetools,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    parallel
 Config/testthat/edition: 3
 VignetteBuilder: knitr

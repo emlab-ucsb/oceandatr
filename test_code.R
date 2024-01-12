@@ -65,6 +65,7 @@ ber_seamounts_buffered_pu_sf <- get_seamounts_buffered(planning_grid = planning_
 plot(ber_seamounts_buffered_pu_sf, border = F)
 
 ber_enviro_data <- get_enviro_regions(area_polygon = bermuda_eez, raw_data = TRUE)
+terra::plot(ber_enviro_data)
 
 ber_enviro_data_rast_pu <- get_enviro_regions(planning_grid = planning_rast_ber, raw_data = TRUE)
 terra::plot(ber_enviro_data_rast_pu)
@@ -72,7 +73,7 @@ terra::plot(ber_enviro_data_rast_pu)
 ber_enviro_data_sf_pu <- get_enviro_regions(planning_grid = planning_sf_ber, raw_data = TRUE)
 plot(ber_enviro_data_sf_pu, border = FALSE)
 
-ber_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_ber, num_clusters = 3, show_plots = T)
+ber_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_ber, show_plots = T, num_cores = 4)
 terra::plot(ber_enviro_regions_rast_pu)
 
 ber_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_ber, num_clusters = 3, show_plots = T)
@@ -168,7 +169,7 @@ terra::plot(fiji_enviro_data_rast_pu)
 fiji_enviro_data_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, raw_data = TRUE)
 plot(fiji_enviro_data_sf_pu, border = FALSE)
 
-fiji_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_fiji, num_clusters = 3)
+fiji_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_fiji)
 terra::plot(fiji_enviro_regions_rast_pu)
 
 fiji_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, num_clusters = 3)
@@ -250,7 +251,7 @@ terra::plot(kir_enviro_data_rast_pu)
 kir_enviro_data_sf_pu <- get_enviro_regions(planning_grid = planning_sf_kir, raw_data = TRUE)
 plot(kir_enviro_data_sf_pu, border = FALSE)
 
-kir_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_kir, num_clusters = 3)
+kir_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_kir)
 terra::plot(kir_enviro_regions_rast_pu)
 
 kir_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_kir, num_clusters = 3)
