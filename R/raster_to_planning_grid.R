@@ -28,14 +28,14 @@ ras_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, a
         terra::crop(terra::rotate(dat, left = FALSE), .) %>% 
         terra::project(planning_grid, method = meth) %>% 
         terra::mask(planning_grid) %>% 
-        setNames(name)
+        stats::setNames(name)
     }else{
       planning_grid %>%
         {if(matching_crs) . else terra::as.polygons(.) %>% terra::project(terra::crs(dat))} %>% 
             terra::crop(dat, .) %>% 
             {if(matching_crs) terra::resample(., planning_grid, method = meth) else terra::project(., planning_grid, method = meth)} %>%
             terra::mask(planning_grid) %>% 
-            setNames(name)
+            stats::setNames(name)
     }
   } else {
     if(antimeridian){
@@ -46,7 +46,7 @@ ras_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, a
       dat %>% 
         terra::rotate(left = FALSE) %>% 
         exactextractr::exact_extract(p_grid, meth , force_df = TRUE) %>% 
-        setNames(name) %>%
+        stats::setNames(name) %>%
         data.frame(p_grid, .) %>%
         sf::st_sf() %>% 
         sf::st_transform(., sf::st_crs(planning_grid)) 
@@ -56,7 +56,7 @@ ras_to_planning_grid <- function(dat, planning_grid, matching_crs, meth, name, a
       
       dat %>% 
         exactextractr::exact_extract(p_grid, meth , force_df = TRUE) %>% 
-        setNames(name) %>%
+        stats::setNames(name) %>%
         data.frame(p_grid, .) %>%
         sf::st_sf() %>% 
         {if(matching_crs) . else sf::st_transform(., sf::st_crs(planning_grid))}

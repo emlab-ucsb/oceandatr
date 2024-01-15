@@ -50,7 +50,7 @@ get_coral_habitat <- function(area_polygon = NULL, planning_grid = NULL, antipat
 
   antipatharia_global <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "offshoredatr", mustWork = TRUE) %>%
     terra::rast() %>%
-    setNames("antipatharia")
+    stats::setNames("antipatharia")
 
   meth <- if(check_sf(planning_grid)) "mean" else "average"
 
@@ -62,14 +62,14 @@ get_coral_habitat <- function(area_polygon = NULL, planning_grid = NULL, antipat
 
   cold_corals_global <- system.file("extdata", "binary_grid_figure7.tif", package = "offshoredatr", mustWork = TRUE) %>%
     terra::rast() %>%
-    setNames("cold_corals")
+    stats::setNames("cold_corals")
 
   cold_corals <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = cold_corals_global, name = "cold_corals", meth = meth, antimeridian = antimeridian)
   rm(cold_corals_global)
 
   octocorals_global <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "offshoredatr", mustWork = TRUE) %>%
     terra::rast() %>%
-    setNames("octocorals")
+    stats::setNames("octocorals")
 
   octocorals <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = octocorals_global, name = "octocorals", meth = meth, antimeridian = antimeridian)
   rm(octocorals_global)

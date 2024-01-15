@@ -10,6 +10,7 @@
 #' @param antimeridian Does `area_polygon` or `planning_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
 #'
 #' @return If an `area_polygon` is supplied, an `sf` seamounts object. If a `planning_grid` is supplied, a raster or `sf` of gridded seamount data, depending on `planning_grid` format.
+#' @export
 #'
 #' @examples
 #' # Get EEZ data first 

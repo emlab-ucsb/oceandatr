@@ -172,7 +172,7 @@ plot(fiji_enviro_data_sf_pu, border = FALSE)
 fiji_enviro_regions_rast_pu <- get_enviro_regions(planning_grid = planning_rast_fiji)
 terra::plot(fiji_enviro_regions_rast_pu)
 
-fiji_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, num_clusters = 3)
+fiji_enviro_regions_sf_pu <- get_enviro_regions(planning_grid = planning_sf_fiji, num_cores = 4)
 plot(fiji_enviro_regions_sf_pu, border = F)
 
 fiji_feature_set_rast <- get_features(planning_grid = planning_rast_fiji, enviro_clusters = 3, antimeridian = TRUE)

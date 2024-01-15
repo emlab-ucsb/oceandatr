@@ -4,18 +4,21 @@ Title: Offshore Data Preparation
 Version: 0.1.0
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
 Description: Offshore data preparation for use in prioritizations
-License: What license is it under?
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
     magrittr,
+    methods,
     mregions2,
     sf,
     terra,
     dplyr,
     tidyr,
     exactextractr,
-    NbClust
+    NbClust,
+    graphics,
+    stats
 Remotes:
     lifewatch/mregions2
 RoxygenNote: 7.2.3

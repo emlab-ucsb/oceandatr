@@ -70,7 +70,7 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
   }
   else{
     
-    df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
+    df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
     
     if(sample_size > nrow(df_for_clustering)) sample_size <- nrow(df_for_clustering)
     
@@ -103,7 +103,7 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
      
       }
     #k-means clustering for specific number of clusters
-    clust_result <- kmeans(x = df_for_clustering, centers = num_clusters, nstart = 10)
+    clust_result <- stats::kmeans(x = df_for_clustering, centers = num_clusters, nstart = 10)
     clust_partition <- clust_result$cluster
     
     if(show_plots) {
@@ -112,9 +112,9 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
     }
     
     if(check_sf(enviro_data)){
-      enviro_region_cols <- model.matrix(~ as.factor(clust_partition) - 1) %>% 
+      enviro_region_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) %>% 
         as.data.frame() %>%   
-        setNames(paste0("enviro_region_", 1:ncol(.))) %>% 
+        stats::setNames(paste0("enviro_region_", 1:ncol(.))) %>% 
         dplyr::mutate(row_id = as.numeric(names(clust_partition)))
       
       sf::st_geometry(enviro_data) %>% 
@@ -131,7 +131,7 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
       
       enviro_regions %>% 
         terra::segregate(other=NA) %>% 
-        setNames(paste0("enviro_region_", names(.)))
+        stats::setNames(paste0("enviro_region_", names(.)))
     }
   }
 }
@@ -149,11 +149,11 @@ enviro_regions_boxplot <- function(enviro_region, enviro_data){
   #compare values in each environmental region
   enviro_regions_df <- cbind(enviro_region, enviro_data) 
 
-  par(mfrow = c(3,4))
+  graphics::par(mfrow = c(3,4))
   for (i in 2:ncol(enviro_regions_df)) {
     eval(parse(text = paste0("boxplot(`", colnames(enviro_regions_df[i]), "` ~ enviro_region, data = enviro_regions_df, col = palette.colors(n = ", max(enviro_region), ", palette = 'Dark2'))")))
   }
-  par(mfrow = c(1,1))
+  graphics::par(mfrow = c(1,1))
 }
 
 enviro_regions_pca <- function(enviro_region, enviro_data){
@@ -164,5 +164,5 @@ enviro_regions_pca <- function(enviro_region, enviro_data){
   pca_df$enviro_region <- enviro_region
   
   plot(x = pca_df$PC1, y = pca_df$PC2, col = pca_df$enviro_region, xlab = "PC1", ylab = "PC2", pch = 4, cex = 0.6)
-  legend("bottomright", legend = unique(pca_df$enviro_region), col = unique(pca_df$enviro_region), pch = 4, cex = 1, title = "Enviro region")
+  graphics::legend("bottomright", legend = unique(pca_df$enviro_region), col = unique(pca_df$enviro_region), pch = 4, cex = 1, title = "Enviro region")
 }

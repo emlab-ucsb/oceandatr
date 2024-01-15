@@ -200,7 +200,7 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
     # message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
     WEB.REQUEST <- paste0("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/DEM_all/ImageServer/exportImage?bbox=", x1, ",", y1, ",", x2, ",", y2, "&bboxSR=4326&size=", ncell.lon, ",", ncell.lat,"&imageSR=4326&format=tiff&pixelType=F32&interpolation=+RSP_NearestNeighbor&compression=LZ77&renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%", database, "%27%22}&f=image")
     filename <- gsub("[.]", "", paste(x1, x2, y1, y2, sep = "_"))
-    download.file(url = WEB.REQUEST, destfile = paste0(filename, "_tmp.tif"), mode = "wb", quiet = TRUE)
+    utils::download.file(url = WEB.REQUEST, destfile = paste0(filename, "_tmp.tif"), mode = "wb", quiet = TRUE)
     dat <- suppressWarnings(try(terra::rast(paste0(filename, "_tmp.tif")), silent = TRUE))
     return(dat)
   }
@@ -224,7 +224,7 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
       message("This may take seconds to minutes, depending on grid size\n")
       left <- fetch(l1, y1, l2, y2, ncell.lon.left, ncell.lat)
       right <- fetch(l3, y1, l4, y2, ncell.lon.right, ncell.lat)
-      if (is(left, "try-error") | is(right, "try-error")) {
+      if (methods::is(left, "try-error") | methods::is(right, "try-error")) {
         stop("The NOAA server cannot be reached\n")
       } else {
         # message("Got data crossing antimeridian")
@@ -234,7 +234,7 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
                                             xmin = lon1_left, xmax = lon2_left, 
                                             resolution = terra::res(right)))
         bath <- terra::merge(left, right) %>%
-          setNames("bathymetry")
+          stats::setNames("bathymetry")
         # left <- marmap::as.bathy(raster::raster(left))
         # left <- left[-nrow(left), ]
         # right <- marmap::as.bathy(raster::raster(right))
@@ -249,9 +249,9 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
       # message("Querying NOAA database ...")
       message("This may take seconds to minutes, depending on grid size")
       bath <- fetch(x1, y1, x2, y2, ncell.lon, ncell.lat) %>% 
-        setNames("bathymetry")
+        stats::setNames("bathymetry")
       
-      if (is(bath, "try-error")) {
+      if (methods::is(bath, "try-error")) {
         stop("The NOAA server cannot be reached\n")
       } else{
         "Got data"

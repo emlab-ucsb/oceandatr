@@ -50,7 +50,7 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
       dat_cropped %>% 
         terra::rasterize(planning_grid, field = 1, by = sf_col_layer_names) %>% 
         terra::mask(planning_grid) %>% 
-        setNames(name)
+        stats::setNames(name)
     
   } else{ #this is for sf planning grid output
     if(antimeridian & (sf::st_crs(dat) == sf::st_crs(4326))){

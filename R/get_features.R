@@ -79,7 +79,7 @@ get_features <- function(area_polygon = NULL, planning_grid = NULL, features = c
     
     mget(features) %>% 
       terra::rast() %>%
-      setNames(ras_names)
+      stats::setNames(ras_names)
   } else if(!is.null(planning_grid)) { 
     sf_features <- mget(features)
     
