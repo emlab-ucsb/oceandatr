@@ -15,7 +15,7 @@ test_that("returns coral habitat layer with 3 species - bermuda gridded", {
 
 # Test failed
 test_that("returns coral habitat layer with 3 species - kiribati gridded", {
-  expect_s4_class(get_coral_habitat(get_planning_grid(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1"), 
+  expect_s4_class(planning_grid = get_coral_habitat(get_planning_grid(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1"), 
                                                       projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
                                                       resolution = 5000)),
                   class = "SpatRaster")
