@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(offshoredatr)
+library(oceandatr)
 
-test_check("offshoredatr")
+test_check("oceandatr")

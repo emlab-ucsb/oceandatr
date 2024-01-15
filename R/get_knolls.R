@@ -24,7 +24,7 @@ get_knolls <- function(area_polygon = NULL, planning_grid = NULL, name = "knolls
   
   check_grid_or_polygon(planning_grid, area_polygon)
   
-      knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) %>%
+      knolls <- system.file("extdata", "knolls.rds", package = "oceandatr", mustWork = TRUE) %>%
         readRDS() 
       
       data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = knolls, name = "knolls", antimeridian = antimeridian)

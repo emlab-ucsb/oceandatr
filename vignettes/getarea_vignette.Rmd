@@ -1,8 +1,8 @@
 ---
-title: "Selecting areas with offshoredatr"
+title: "Selecting areas with oceandatr"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Selecting areas with offshoredatr}
+  %\VignetteIndexEntry{Selecting areas with oceandatr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 Suggests:
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 	comment = "#>"
 )
 
-devtools::load_all()
+library(oceandatr)
 ```
 
 The `get_area()` function is used to generate an `sf` object of the area of interest. If you already have an `sf` object with your area of interest, you do not need to use `get_area()` and can use your existing object in place of an object returned by `get_area()`. However, if you do need to generate an area of interest, using this particular function can be a bit confusing if the desired area is not a well-defined EEZ. Here, we walk through a few examples to make this function a little bit easier to use and understand. 
@@ -118,9 +118,9 @@ australia_indonesia <- australia_eez %>%
 plot(australia_indonesia[2]) 
 ```
 
-We can now go ahead and use these areas in `offshoredatr` to create an appropriate planning grid and grab additional datasets. 
+We can now go ahead and use these areas in `oceandatr` to create an appropriate planning grid and grab additional datasets. 
 
-```{r proceed with offshoredatr setup, fig.align= "center", fig.cap="Planning grid of the Indonesian and Australian EEZs."}
+```{r proceed with oceandatr setup, fig.align= "center", fig.cap="Planning grid of the Indonesian and Australian EEZs."}
 # Set projection for planning grid - grabbed from this website: https://projectionwizard.org
 projection <- 'PROJCS["ProjWiz_Custom_Albers",
  GEOGCS["GCS_WGS_1984",
@@ -145,7 +145,7 @@ planning_grid <- get_planning_grid(area_polygon = australia_indonesia,
 # Plot the planning grid
 terra::plot(planning_grid, box = FALSE, axes = FALSE, legend = FALSE)
 ```
-```{r proceed with offshoredatr data, fig.align= "center", fig.cap="Seamounts within the Indonesian and Australian EEZs."}
+```{r proceed with oceandatr data, fig.align= "center", fig.cap="Seamounts within the Indonesian and Australian EEZs."}
 # Get seamount locations with a 30 km buffer
 seamounts <- get_seamounts_buffered(planning_grid = planning_grid, 
                                     buffer = 30000)

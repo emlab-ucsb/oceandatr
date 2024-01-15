@@ -24,7 +24,7 @@ get_seamount_peaks <- function(area_polygon = NULL, planning_grid = NULL, name =
   
   check_grid_or_polygon(planning_grid, area_polygon)
   
-  seamounts <- system.file("extdata", "seamounts.rds", package = "offshoredatr", mustWork = TRUE) %>%
+  seamounts <- system.file("extdata", "seamounts.rds", package = "oceandatr", mustWork = TRUE) %>%
     readRDS()
 
   meth <- if(check_raster(planning_grid)) "near" else "mode"

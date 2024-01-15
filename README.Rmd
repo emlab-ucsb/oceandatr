@@ -19,27 +19,27 @@ w = 6
 ow = "600"
 ```
 
-# offshoredatr
+# oceandatr
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-Offshoredatr aims to provide simple functions for creating data for conducting a spatial conservation prioritization for large scale areas of the ocean, specifically offshore areas.
+`oceandatr` aims to provide simple functions for creating data for conducting a spatial conservation prioritization for large scale areas of the ocean, specifically offshore areas.
 
 ## Installation
 
-You can install the development version of offshoredatr from [GitHub](https://github.com/) with:
+You can install the development version of oceandatr from [GitHub](https://github.com/) with:
 
 ```{r, eval = FALSE}
 if (!require(devtools)) install.packages("devtools")
-devtools::install_github("emlab-ucsb/offshoredatr")
+devtools::install_github("emlab-ucsb/oceandatr")
 ```
 
 ## Example of usage
 
 ```{r eval=FALSE}
-#load offshoredatr package
-library(offshoredatr)
+#load oceandatr package
+library(oceandatr)
 ```
 
 ### Obtain an EEZ for an area of interest

@@ -137,7 +137,7 @@ get_enviro_regions <- function(area_polygon = NULL,  planning_grid = NULL, raw_d
 }
 
 get_enviro_data <- function(area_polygon = NULL, planning_grid = NULL, antimeridian){
-  bio_oracle_data <- list.files(system.file("extdata", "bio_oracle", package = "offshoredatr", mustWork = TRUE), full.names = TRUE) %>% 
+  bio_oracle_data <- list.files(system.file("extdata", "bio_oracle", package = "oceandatr", mustWork = TRUE), full.names = TRUE) %>% 
     terra::rast()
   
   meth <- if(check_sf(planning_grid)) 'mean' else 'average'

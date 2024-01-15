@@ -37,7 +37,7 @@ Get gridded or cropped data from input data
 }
 \examples{
 # Get knolls data
-knolls <- system.file("extdata", "knolls.rds", package = "offshoredatr", mustWork = TRUE) \%>\% readRDS() 
+knolls <- system.file("extdata", "knolls.rds", package = "oceandatr", mustWork = TRUE) \%>\% readRDS() 
 # Get EEZ data
 bermuda_eez <- get_area(area_name = "Bermuda")
 # Create a planning grid
