@@ -28,11 +28,11 @@ ow = "600"
 
 ## Installation
 
-You can install the development version of oceandatr from [GitHub](https://github.com/) with:
+You can install oceandatr from [GitHub](https://github.com/) with:
 
 ```{r, eval = FALSE}
-if (!require(devtools)) install.packages("devtools")
-devtools::install_github("emlab-ucsb/oceandatr")
+if (!require(remotes)) install.packages("remotes")
+remotes::install_github("emlab-ucsb/oceandatr")
 ```
 
 ## Example of usage
