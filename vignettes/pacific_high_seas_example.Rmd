@@ -1,0 +1,19 @@
+---
+title: "Pacific High Seas Example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pacific High Seas Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(oceandatr)
+```
