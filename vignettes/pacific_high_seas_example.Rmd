@@ -17,3 +17,5 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(oceandatr)
 ```
+
+This example shows how to use `oceandatr` to create a complete set of feature data that can be used directly in a spatial prioritization. 
