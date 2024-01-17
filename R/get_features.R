@@ -26,7 +26,7 @@
 #' # Grab all the data
 #' features_gridded <- get_features(planning_grid = planning_grid)
 
-get_features <- function(area_polygon = NULL, planning_grid = NULL, features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_regions"), seamount_buffer = 30000, bathy_resolution = 1, antipatharia_threshold = 22, octocoral_threshold = 2, enviro_clusters = NULL, max_enviro_clusters = 8, antimeridian = NULL){
+get_features <- function(area_polygon = NULL, planning_grid = NULL, features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_regions"), seamount_buffer = 30000, bathy_resolution = 1, antipatharia_threshold = 22, octocoral_threshold = 2, enviro_clusters = NULL, max_enviro_clusters = 6, antimeridian = NULL){
   
   if("bathymetry" %in% features) { 
     message("Getting depth zones...")
@@ -78,7 +78,7 @@ get_features <- function(area_polygon = NULL, planning_grid = NULL, features = c
       unlist(use.names = FALSE)
     
     mget(features) %>% 
-      terra::rast() %>%
+      terra::rast() %>% 
       stats::setNames(ras_names)
   } else if(!is.null(planning_grid)) { 
     sf_features <- mget(features)

@@ -14,7 +14,7 @@ get_features(
   antipatharia_threshold = 22,
   octocoral_threshold = 2,
   enviro_clusters = NULL,
-  max_enviro_clusters = 8,
+  max_enviro_clusters = 6,
   antimeridian = NULL
 )
 }

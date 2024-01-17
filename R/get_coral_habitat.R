@@ -98,7 +98,7 @@ get_coral_habitat <- function(area_polygon = NULL, planning_grid = NULL, antipat
     if(check_raster(antipatharia)){
       c(antipatharia, cold_corals, octocorals) %>%
         {if(any(names(.) %in% coral_layer_names)) . else stop("No coral habitat within the planning grid.")} %>% 
-        terra::subset(which(names(.) %in% coral_layer_names))
+        terra::subset(which(names(.) %in% coral_layer_names)) %>% 
         terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
     }else{
       cbind(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>% 

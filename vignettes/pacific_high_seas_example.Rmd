@@ -14,16 +14,86 @@ knitr::opts_chunk$set(
 )
 ```
 
+along with `oceandatr` we will need to load `prioritizr` for the spatial prioritization and we will use the open source solver `lsymphony` to solve the prioritization problem, so this needs to be installed and loaded via th Bioconductor website 
+
 ```{r setup}
 library(oceandatr)
-
+library(gfwr)
+library(prioritizr)
+remotes::install_bioc("lpsymphony")
+library(lpsymphony)
 ```
 
 This example shows how to use `oceandatr` to create a complete set of feature data that can be used directly in a spatial prioritization. 
 
 # High Seas area of the Pacific Ocean
 
-```{r}
+First we retrieve the entire High Seas area, then we will crop for the area we are interested in, highlighted in red on the map.
 
+```{r high_seas_area}
+hs <- get_area(area_name = "63203", query_type = "high_seas", mregions_column = "mrgid")
+
+pacific_hs_area_extent <- sf::st_bbox(c(xmin = 135, xmax = 155, ymin = 0, ymax = 6), crs = 4326)
+
+plot(sf::st_geometry(hs), main = "High Seas", col = "royalblue3", axes = TRUE, las = 1)
+plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING"), col = "red", add = TRUE)
+```
+
+We are going to use only the highlighted Pacific High Seas area which borders Indonesia, Papua New Guinea, Palau and the Federated States of Micronesia.
+
+```{r pacific_high_seas}
+sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
+
+pacific_hs <- hs %>% 
+  sf::st_crop(pacific_hs_area_extent)
+
+sf::sf_use_s2(TRUE)
+
+plot(sf::st_geometry(pacific_hs), col = "royalblue3", axes = TRUE, las = 1)
+```
+
+Now we select a suitable projection for the area and a suitable resolution for the planning grid used for gridding the data. We can use [projection wizard](https://projectionwizard.org) to find an equal-area projection, entering the same extent coordinates we used to crop the high seas area (xmin = 135, xmax = 155, ymin = 0, ymax = 6). 
+
+We will use 10km square planning units so that there the data processing and prioritization run reasonably fast (smaller planning units will require more time/ computer memory get data for)
+
+```{r planning_grid}
+
+pacific_hs_projection <- "+proj=cea +lon_0=145 +lat_ts=3 +datum=WGS84 +units=m +no_defs"
+
+pacific_hs_planning_grid <- get_planning_grid(area_polygon = pacific_hs,
+                                   projection_crs = pacific_hs_projection,
+                                   resolution = 10000) 
+
+#get_planning_grid returns a raster by default, so we can plot it using the terra package
+terra::plot(pacific_hs_planning_grid)
+```
+
+Now we have a planning grid, we can use get a basic set of features to use in a spatial prioritization with a single command, setting the seamount buffer to 30km:
+
+```{r features, warning=FALSE}
+feature_set <- get_features(planning_grid = pacific_hs_planning_grid, seamount_buffer = 30000)
+
+terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
+```
+# Cost data: fishing effort
+
+```{r}
+pacific_hs_geojson <- gfwr::sf_to_geojson(pacific_hs)
+
+fishing_effort <- gfwr::get_raster(spatial_resolution = 'low',
+                                   temporal_resolution = 'yearly',
+                                   group_by = 'gearType', 
+                                   date_range = '2022-01-01,2022-12-31',
+                                   region = pacific_hs_geojson,
+                                   region_source = 'user_json')
+
+total_annual_effort <- fishing_effort %>% 
+  dplyr::group_by(Lat, Lon, `Time Range`) %>% 
+  dplyr::summarise(total_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select("Lon", "Lat", "total_effort") %>% 
+  terra::rast(type = "xyz", crs = "epsg:4326")
+
+terra::plot(total_annual_effort, fun = terra::lines(pacific_hs))
 ```
 
