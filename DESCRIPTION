@@ -18,7 +18,8 @@ Imports:
     exactextractr,
     NbClust,
     graphics,
-    stats
+    stats,
+    tidyselect
 Remotes:
     lifewatch/mregions2
 RoxygenNote: 7.2.3

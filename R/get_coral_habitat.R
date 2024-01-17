@@ -73,7 +73,7 @@ get_coral_habitat <- function(area_polygon = NULL, planning_grid = NULL, antipat
 
   octocorals <- data_to_planning_grid(area_polygon = area_polygon, planning_grid = planning_grid, dat = octocorals_global, name = "octocorals", meth = meth, antimeridian = antimeridian)
   rm(octocorals_global)
-  
+
   if(!is.null(area_polygon)){
     c(antipatharia, cold_corals, octocorals) %>% 
       terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
@@ -87,20 +87,22 @@ get_coral_habitat <- function(area_polygon = NULL, planning_grid = NULL, antipat
     octocoral_breaks <- c(0, octocoral_threshold, 8)
     octocoral_class_names <- c(NA, "octocoral")
     
-    antipatharia <- classify_layers(dat = antipatharia, dat_breaks = antipatharia_breaks, classification_names = antipatharia_class_names) %>%
-     {if(check_raster(.)) terra::subset(., "antipatharia_coral") else dplyr::select(., "antipatharia_coral")}
+    antipatharia <- classify_layers(dat = antipatharia, dat_breaks = antipatharia_breaks, classification_names = antipatharia_class_names)
 
-    cold_corals <- classify_layers(dat = cold_corals, dat_breaks = cold_corals_breaks, classification_names = cold_corals_class_names) %>%
-     {if(check_raster(.)) terra::subset(., "cold_coral") else dplyr::select(., "cold_coral")}
+    cold_corals <- classify_layers(dat = cold_corals, dat_breaks = cold_corals_breaks, classification_names = cold_corals_class_names) 
 
-    octocorals <- classify_layers(dat = octocorals, dat_breaks = octocoral_breaks, classification_names = octocoral_class_names) %>%
-      {if(check_raster(.)) terra::subset(., "octocoral") else dplyr::select(., "octocoral")}
+    octocorals <- classify_layers(dat = octocorals, dat_breaks = octocoral_breaks, classification_names = octocoral_class_names) 
+    
+    coral_layer_names <- c(antipatharia_class_names[2], cold_corals_class_names[2], octocoral_class_names[2])
 
     if(check_raster(antipatharia)){
       c(antipatharia, cold_corals, octocorals) %>%
+        {if(any(names(.) %in% coral_layer_names)) . else stop("No coral habitat within the planning grid.")} %>% 
+        terra::subset(which(names(.) %in% coral_layer_names))
         terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
     }else{
-      cbind(sf::st_drop_geometry(antipatharia), sf::st_drop_geometry(cold_corals), octocorals) %>%
+      cbind(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>% 
+        {if(any(colnames(.) %in% coral_layer_names))  dplyr::select(., tidyselect::any_of(coral_layer_names)) else stop("No coral habitat within the planning grid.")}%>% 
         sf::st_sf()
     }
   }
