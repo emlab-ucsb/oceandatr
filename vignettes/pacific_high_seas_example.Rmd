@@ -77,8 +77,11 @@ terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terr
 ```
 # Cost data: fishing effort
 
-```{r}
-pacific_hs_geojson <- gfwr::sf_to_geojson(pacific_hs)
+```{r message=FALSE}
+pacific_hs_geojson <- pacific_hs_area_extent %>% #use the larger area extent because using just the pacific_hs polygon results in a slightly truncated area
+  sf::st_as_sfc() %>% 
+  sf::st_as_sf() %>% 
+  gfwr::sf_to_geojson()
 
 fishing_effort <- gfwr::get_raster(spatial_resolution = 'low',
                                    temporal_resolution = 'yearly',
@@ -91,9 +94,34 @@ total_annual_effort <- fishing_effort %>%
   dplyr::group_by(Lat, Lon, `Time Range`) %>% 
   dplyr::summarise(total_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE)) %>% 
   dplyr::ungroup() %>% 
-  dplyr::select("Lon", "Lat", "total_effort") %>% 
-  terra::rast(type = "xyz", crs = "epsg:4326")
+  dplyr::select("Lon", "Lat", "total_effort") %>%
+  terra::rast(type = "xyz", crs = "epsg:4326") %>% 
+  terra::subst(NA, 0) %>% 
+  oceandatr::data_to_planning_grid(planning_grid = pacific_hs_planning_grid,
+                                   dat = .,
+                                   name = "fishing_effort")
 
-terra::plot(total_annual_effort, fun = terra::lines(pacific_hs))
+terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+```
+
+# Run a simple prioritization
+
+Set targets of 20% for all features.
+
+```{r}
+prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
+  add_min_set_objective() %>% 
+  add_relative_targets(0.2) %>% 
+  add_boundary_penalties(penalty = 0.0001) %>% 
+  add_binary_decisions() %>% 
+  add_lpsymphony_solver(verbose = FALSE)
+
+sol <- solve(prob)
+
+terra::plot(sol, main = "Solution", axes = TRUE, 
+            col = c("grey70", "green4"),
+            type = "classes",
+            levels = c("Not selected", "Selected"),
+            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
 ```
 
