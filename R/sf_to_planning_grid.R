@@ -21,7 +21,7 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
   if(is.null(sf_col_layer_names)){
     dat <- dat %>% 
       sf::st_geometry() %>% 
-      sf::st_as_sf() %>% 
+      sf::st_sf() %>% 
       dplyr::mutate(sf_col_layer_names = 1, .before = 1)
   }  else {
     dat <- dat %>% 
@@ -45,7 +45,7 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
           } else .} %>% 
         sf::st_crop(p_grid) %>% 
         sf::st_transform(sf::st_crs(planning_grid)) %>% 
-        {if(antimeridian) sf::st_union(.) %>% sf::st_as_sf() else .}
+        {if(antimeridian) sf::st_union(.) %>% sf::st_sf() else .}
     }
       dat_cropped %>% 
         terra::rasterize(planning_grid, field = 1, by = sf_col_layer_names) %>% 
@@ -65,7 +65,7 @@ sf_to_planning_grid <- function(dat, planning_grid, matching_crs, name, sf_col_l
         sf::st_crop(p_grid) %>% 
         sf::st_transform(sf::st_crs(planning_grid)) %>% 
         sf::st_union() %>% 
-        sf::st_as_sf()
+        sf::st_sf()
     }else{
       dat_cropped <- if(matching_crs) dat %>% sf::st_crop(planning_grid) else{planning_grid %>% 
           sf::st_transform(sf::st_crs(dat)) %>% 
