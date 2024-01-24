@@ -31,7 +31,7 @@ This function uses `sf::st_make_grid()` to create an `sf` planning grid. The def
 }
 \examples{
 # Get area of interest first. In this case Bermuda's EEZ
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Create a CRS using a local, equal area projection for Bermuda. 
 # You can a suitable equal area projection for your area of interest from https://projectionwizard.org
 projection <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'

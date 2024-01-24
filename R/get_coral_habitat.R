@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' # Get EEZ data first 
-#' bermuda_eez <- get_area(area_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 #' # Get coral habitat
 #' coral_habitat <- get_coral_habitat(area_polygon = bermuda_eez)
 #' # Get gridded coral habitat data

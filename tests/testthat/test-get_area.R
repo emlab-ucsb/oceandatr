@@ -3,7 +3,7 @@ test_that("options for columns matches mregions2", {
 })
 
 test_that("options for values matches mregions2", {
-  expect_equal(get_area(show_value_options = TRUE), list("territory1" = mregions2::mrp_col_distinct("eez", "territory1")))
+  expect_equal(get_area(show_value_options = TRUE), list("sovereign1" = mregions2::mrp_col_distinct("eez", "sovereign1")))
 })
 
 test_that("all options match mregions2", {
@@ -16,7 +16,7 @@ test_that("all options match mregions2", {
 })
 
 test_that("bermuda example", { 
-  expect_s3_class(get_area("Bermuda"), class = "sf")
+  expect_s3_class(get_area(area_name = "Bermuda", mregions_column = "territory1"), class = "sf")
 })
 
 test_that("kiribati example", { 

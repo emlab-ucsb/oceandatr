@@ -68,7 +68,7 @@ When the number of planning units/ cells for clustering exceeds ~ 10,000, the am
 }
 \examples{
 # Get EEZ data first 
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Get the Bio-Oracle environmental data in the area of interest
 enviro_data <- get_enviro_regions(area_polygon = bermuda_eez, raw_data = TRUE)
 # Create three environmental regions for a planning grid

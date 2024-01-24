@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # Grab EEZ data first 
-#' bermuda_eez <- get_area(area_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 #' # Get geomorphology for the EEZ
 #' geomorphology <- get_geomorphology(area_polygon = bermuda_eez)
 #' # Get geomorphological features in planning_grid

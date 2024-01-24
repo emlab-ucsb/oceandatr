@@ -64,7 +64,7 @@ If the user has downloaded bathymetry data for the area of interest, for example
 }
 \examples{
 # Get EEZ data first 
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Get bathymetry data
 bathymetry <- get_bathymetry(area_polygon = bermuda_eez, classify_bathymetry = TRUE)
 # Get depth zones in planning_grid

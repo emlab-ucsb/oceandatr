@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' # Grab EEZ data first 
-#' bermuda_eez <- get_area(area_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 #' # Get buffered seamounts in Bermuda's EEZ - warns that buffering is not correct for long/lat (WGS 84) data. Buffer is in decimal degrees
 #' seamounts_buffered <- get_seamounts_buffered(area_polygon = bermuda_eez, buffer = 0.5)
 #' # Get seamounts buffered to 30 km, in a planning grid

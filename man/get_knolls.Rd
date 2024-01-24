@@ -31,7 +31,7 @@ Knolls are small seamounts; seamounts with peaks 200-1000 m higher than the surr
 }
 \examples{
 # Get EEZ data first 
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Get knolls
 knolls <- get_knolls(area_polygon = bermuda_eez)
 # Get knolls in a planning grid

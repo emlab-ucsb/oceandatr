@@ -47,7 +47,7 @@ This is a wrapper of `get_bathymetry()`, `get_seamounts_buffered()`, `get_knolls
 }
 \examples{
 # Grab EEZ data first 
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Get a feature data for Bermuda
 feature_set <- get_features(area_polygon = bermuda_eez)
 # Get feature data in a planning grid

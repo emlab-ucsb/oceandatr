@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' # Get EEZ data first 
-#' bermuda_eez <- get_area(area_name = "Bermuda")
+#' bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 #' # Get seamount peaks
 #' seamount_peaks <- get_seamount_peaks(area_polygon = bermuda_eez)
 #' # Get seamounts in a planning grid

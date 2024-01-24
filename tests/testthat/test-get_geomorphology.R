@@ -1,10 +1,10 @@
 test_that("return correct object for Bermuda - sf", {
-  expect_s3_class(get_geomorphology(area_polygon = get_area(area_name = "Bermuda")), 
+  expect_s3_class(get_geomorphology(area_polygon = get_area(area_name = "Bermuda", mregions_column = "territory1")), 
                   class = "sf")
 })
 
 test_that("return correct object for Bermuda - raster", {
-  expect_s4_class(get_geomorphology(planning_grid = get_planning_grid(area_polygon = get_area(area_name = "Bermuda"), 
+  expect_s4_class(get_geomorphology(planning_grid = get_planning_grid(area_polygon = get_area(area_name = "Bermuda", mregions_column = "territory1"), 
                                                                       projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
                                                                       resolution = 5000)), 
                   class = "SpatRaster")

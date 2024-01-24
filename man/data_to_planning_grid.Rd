@@ -39,7 +39,7 @@ Get gridded or cropped data from input data
 # Get knolls data
 knolls <- system.file("extdata", "knolls.rds", package = "oceandatr", mustWork = TRUE) \%>\% readRDS() 
 # Get EEZ data
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Create a planning grid
 planning_grid <- get_planning_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
 # Get knolls data into the planning grid

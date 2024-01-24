@@ -7,7 +7,7 @@
 get_area(
   area_name,
   query_type = "eez",
-  mregions_column = "territory1",
+  mregions_column = "sovereign1",
   show_value_options = FALSE,
   show_column_options = FALSE
 )
@@ -17,7 +17,7 @@ get_area(
 
 \item{query_type}{string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list` to see the full list of data_product options. (default is "eez")}
 
-\item{mregions_column}{string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (default is "territory1")}
+\item{mregions_column}{string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (default is "sovereign1")}
 
 \item{show_value_options}{logical; whether to show all of the value options associated with your `mregions_column` selection that are available in `mregions2`; running this will not return a spatial object (default is FALSE)}
 
@@ -37,7 +37,7 @@ get_area(show_value_options = TRUE)
 # Show all possible options
 get_area(show_column_options = TRUE, show_value_options = TRUE)
 # Get EEZ area just for Bermuda
-get_area(area_name = "Bermuda")
+get_area(area_name = "Bermuda", mregions_column = "territory1")
 # Get EEZ areas for Kiribati (iso_ter1 = KIR)
 get_area(area_name = "KIR", mregions_column = "iso_ter1")
 }
