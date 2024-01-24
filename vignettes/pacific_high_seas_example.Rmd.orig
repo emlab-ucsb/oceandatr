@@ -7,18 +7,20 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
 Along with `oceandatr` we will need to load `prioritizr` for the spatial prioritization and we will use the open source solver `lsymphony` to solve the prioritization problem, so this needs to be installed and loaded via th Bioconductor website 
 
-
-```r
+```{r setup}
 library(oceandatr)
 library(gfwr)
 library(prioritizr)
 remotes::install_bioc("lpsymphony")
-#> Skipping install of 'lpsymphony' from a bioc_xgit remote, the SHA1 (99258031) has not changed since last install.
-#>   Use `force = TRUE` to force installation
 library(lpsymphony)
 ```
 
@@ -28,11 +30,8 @@ This example shows how to use `oceandatr` to create a complete set of feature da
 
 First we retrieve the entire High Seas area, then we will crop for the area we are interested in, highlighted in red on the map.
 
-
-```r
+```{r high_seas_area}
 hs <- get_area(area_name = "63203", query_type = "high_seas", mregions_column = "mrgid")
-#> Cache is fresh. Reading: '/tmp/Rtmpdw4jBx/high_seas-0b4f8b1b/high_seas.shp'
-#> (Last Modified: 2024-01-24 16:29:22.953676)
 
 pacific_hs_area_extent <- sf::st_bbox(c(xmin = 135, xmax = 155, ymin = 0, ymax = 6), crs = 4326)
 
@@ -40,12 +39,9 @@ plot(sf::st_geometry(hs), main = "High Seas", col = "royalblue3", axes = TRUE, l
 plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING"), col = "red", add = TRUE)
 ```
 
-![plot of chunk high_seas_area](figure/high_seas_area-1.png)
-
 We are going to use only the highlighted Pacific High Seas area which borders Indonesia, Papua New Guinea, Palau and the Federated States of Micronesia.
 
-
-```r
+```{r pacific_high_seas, message = FALSE, warning = FALSE}
 sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
 
 pacific_hs <- hs %>% 
@@ -56,14 +52,11 @@ sf::sf_use_s2(TRUE)
 plot(sf::st_geometry(pacific_hs), col = "royalblue3", axes = TRUE, las = 1)
 ```
 
-![plot of chunk pacific_high_seas](figure/pacific_high_seas-1.png)
-
 Now we select a suitable projection for the area and a suitable resolution for the planning grid used for gridding the data. We can use [projection wizard](https://projectionwizard.org) to find an equal-area projection, entering the same extent coordinates we used to crop the high seas area (xmin = 135, xmax = 155, ymin = 0, ymax = 6). 
 
 We will use 10km square planning units so that there the data processing and prioritization run reasonably fast (smaller planning units will require more time/ computer memory get data for)
 
-
-```r
+```{r planning_grid}
 
 pacific_hs_projection <- "+proj=cea +lon_0=145 +lat_ts=3 +datum=WGS84 +units=m +no_defs"
 
@@ -75,34 +68,17 @@ pacific_hs_planning_grid <- get_planning_grid(area_polygon = pacific_hs,
 terra::plot(pacific_hs_planning_grid)
 ```
 
-![plot of chunk planning_grid](figure/planning_grid-1.png)
-
 Now we have a planning grid, we can use get a basic set of features to use in a spatial prioritization with a single command, setting the seamount buffer to 30km:
 
-
-```r
+```{r features, warning=FALSE}
 feature_set <- get_features(planning_grid = pacific_hs_planning_grid, seamount_buffer = 30000)
-#> Getting depth zones...
-#> This may take seconds to minutes, depending on grid size
-#> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they are planar
-#> Spherical geometry (s2) switched on
-#> Getting knoll data...
-#> Getting geomorphology data...
-#> Getting coral data...
-#> |-- Coral data found for antipatharia coral, octocoral
-#> Getting environmental regions data... This could take several minutes
 
 terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
 
-![plot of chunk features](figure/features-1.png)
-
 # Cost data: fishing effort
 
-
-```r
+```{r fishing-effort, message=FALSE}
 pacific_hs_geojson <- pacific_hs_area_extent %>% #use the larger area extent because using just the pacific_hs polygon results in a slightly truncated area
   sf::st_as_sfc() %>% 
   sf::st_as_sf() %>% 
@@ -129,14 +105,11 @@ total_annual_effort <- fishing_effort %>%
 terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
 ```
 
-![plot of chunk fishing-effort](figure/fishing-effort-1.png)
-
 # Run a simple prioritization
 
 Set targets of 20% for all features.
 
-
-```r
+```{r prioritization, message = FALSE}
 prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
@@ -152,6 +125,4 @@ terra::plot(sol, main = "Solution", axes = TRUE,
             levels = c("Not selected", "Selected"),
             fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
 ```
-
-![plot of chunk prioritization](figure/prioritization-1.png)
 
