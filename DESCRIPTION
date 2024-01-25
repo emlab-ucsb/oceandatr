@@ -4,7 +4,7 @@ Title: Ocean Data Access
 Version: 0.1.0
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
 Description: Prepares ocean related datasets ready for use in spatial prioritization, i.e. data in gridded format.
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
