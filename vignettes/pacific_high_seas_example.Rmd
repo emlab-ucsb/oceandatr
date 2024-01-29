@@ -84,15 +84,16 @@ terra::plot(pacific_hs_planning_grid, col = "grey70")
 
 pacific_hs_planning_grid_ras <- get_planning_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
-                                   resolution = 20000) 
+                                   resolution = 30000) 
 
 pacific_hs_planning_grid_sf <- get_planning_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
                                    option = "sf_hex",
-                                   resolution = 20000)
+                                   resolution = 30000)
 
 pacific_hs_map <- ggplot2::ggplot(data = rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs)) +
   ggplot2::geom_sf(ggplot2::aes(fill = name)) +
+  ggplot2::geom_sf(data = pacific_hs, fill = "transparent", col = "black", lwd = 0.4) +
   ggplot2::scale_fill_brewer(type = "qual", palette = "Set2") +
   ggplot2::labs(fill = NULL) +
   ggplot2::theme_bw()
@@ -100,8 +101,8 @@ pacific_hs_map <- ggplot2::ggplot(data = rbind(sf::st_cast(pacific_hs, to = "MUL
 pacific_pus_ras_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_ras %>% terra::project("epsg:4326") %>%  terra::as.data.frame(xy = TRUE)) +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = layer), fill = "grey70") +
   ggplot2::coord_sf() +
-  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°")) +
-  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°")) +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
   ggplot2::theme_bw() +
   ggplot2::theme(legend.position = "none",
                  axis.title = ggplot2::element_blank())
@@ -112,8 +113,7 @@ pacific_pus_sf_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_sf) +
   ggplot2::theme_bw()
 
 
-cowplot::plot_grid(pacific_hs_map, cowplot::plot_grid(pacific_pus_ras_map, pacific_pus_sf_map), ncol = 1)
-
+cowplot::plot_grid(pacific_hs_map, pacific_pus_ras_map, pacific_pus_sf_map, ncol = 1, labels = "auto", label_size = 12, rel_heights = c(1.5, 1, 1), rel_widths = c(2, 3, 3), align = "v", axis = "r ")
 ```
 
 Now we have a planning grid, we can use get a basic set of features to use in a spatial prioritization with a single command, setting the seamount buffer to 30km:
