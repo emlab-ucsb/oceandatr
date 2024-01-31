@@ -22,6 +22,8 @@ library(gfwr)
 library(prioritizr)
 remotes::install_bioc("lpsymphony")
 library(lpsymphony)
+remotes::install_github("emlab-ucsb/patchwise")
+library(patchwise)
 ```
 
 This example shows how to use `oceandatr` to create a complete set of feature data that can be used directly in a spatial prioritization. 
@@ -82,11 +84,11 @@ terra::plot(pacific_hs_planning_grid, col = "grey70")
 
 ```{r include=FALSE}
 
-pacific_hs_planning_grid_ras <- get_planning_grid(area_polygon = pacific_hs,
+pacific_hs_planning_grid_ras_lowres <- get_planning_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
                                    resolution = 30000) 
 
-pacific_hs_planning_grid_sf <- get_planning_grid(area_polygon = pacific_hs,
+pacific_hs_planning_grid_sf_lowres <- get_planning_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
                                    option = "sf_hex",
                                    resolution = 30000)
@@ -98,7 +100,7 @@ pacific_hs_map <- ggplot2::ggplot(data = rbind(sf::st_cast(pacific_hs, to = "MUL
   ggplot2::labs(fill = NULL) +
   ggplot2::theme_bw()
 
-pacific_pus_ras_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_ras %>% terra::project("epsg:4326") %>%  terra::as.data.frame(xy = TRUE)) +
+pacific_pus_ras_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_ras_lowres %>% terra::project("epsg:4326") %>%  terra::as.data.frame(xy = TRUE)) +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = layer), fill = "grey70") +
   ggplot2::coord_sf() +
   ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
@@ -108,7 +110,7 @@ pacific_pus_ras_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_ras %>% t
                  axis.title = ggplot2::element_blank())
 
 
-pacific_pus_sf_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_sf) +
+pacific_pus_sf_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_sf_lowres) +
   ggplot2::geom_sf(ggplot2::aes(), col = "black") +
   ggplot2::theme_bw()
 
@@ -123,6 +125,22 @@ feature_set <- get_features(planning_grid = pacific_hs_planning_grid, seamount_b
 
 terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
+
+```{r}
+#nicer maps for paper
+.simpleCap <- function(x) {
+    s <- strsplit(x, " ")[[1]]
+    paste(toupper(substring(s, 1, 1)), substring(s, 2),
+          sep = "", collapse = " ")
+}
+
+tmap::tm_shape(setNames(feature_set, gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence())) +
+  tmap::tm_raster(palette = "forestgreen", legend.show = FALSE) +
+  tmap::tm_shape(pacific_hs) +
+  tmap::tm_borders() +
+  tmap::tm_layout(panel.label.size = 1.5)
+```
+
 
 # Cost data: fishing effort
 
@@ -151,6 +169,7 @@ total_annual_effort <- fishing_effort %>%
                                    name = "fishing_effort")
 
 terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+
 ```
 
 # Run a simple prioritization
@@ -161,7 +180,7 @@ Set targets of 20% for all features.
 prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
-  add_boundary_penalties(penalty = 0.0001) %>% 
+  #add_boundary_penalties(penalty = 0.0001) %>% 
   add_binary_decisions() %>% 
   add_lpsymphony_solver(verbose = FALSE)
 
@@ -172,5 +191,109 @@ terra::plot(sol, main = "Solution", axes = TRUE,
             type = "classes",
             levels = c("Not selected", "Selected"),
             fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+```
+
+# Prioritization with patches
+
+```{r}
+# Separate seamount data - we want to protect entire patches
+seamounts_rast <- feature_set[["seamounts"]]
+features_rast <- feature_set[[names(feature_set)[names(feature_set) != "seamounts"]]]
+
+# Create seamount patches - seamount areas that touch are considered the same patch
+patches_rast <- patchwise::create_patches(seamounts_rast)
+
+# Create patches dataframe - this creates several constraints so that entire seamount units are protected together
+patches_df_rast <- patchwise::create_patch_df(planning_grid = pacific_hs_planning_grid, features = features_rast, patches = patches_rast, costs = total_annual_effort)
+
+# Create boundary matrix for prioritizr
+boundary_matrix_rast <- patchwise::create_boundary_matrix(planning_grid = pacific_hs_planning_grid, patches = patches_rast, patch_df = patches_df_rast)
+
+# Create targets for protection - let's just do 20% for each feature (including 20% of whole seamounts)
+targets_rast <- patchwise::features_targets(targets = rep(0.2, (terra::nlyr(features_rast) + 1)), features = features_rast, pre_patches = seamounts_rast)
+
+# Add these targets to targets for protection for the "constraints" we introduced to protect entire seamount units
+constraints_rast <- patchwise::constraints_targets(feature_targets = targets_rast, patch_df = patches_df_rast)
+
+# Run the prioritization
+problem_rast <- prioritizr::problem(x = patches_df_rast, features = constraints_rast$feature, cost_column = "fishing_effort") %>%
+  prioritizr::add_min_set_objective() %>%
+  prioritizr::add_manual_targets(constraints_rast) %>%
+  prioritizr::add_binary_decisions() %>%
+  #prioritizr::add_boundary_penalties(penalty = 0.0001, data = boundary_matrix_rast) %>%
+  prioritizr::add_lpsymphony_solver()
+
+# Solve the prioritization
+solution_rast <- solve(problem_rast)
+
+# Convert the prioritization into a more digestible format
+result_rast <- patchwise::convert_solution(solution = solution_rast, patch_df = patches_df_rast, planning_grid = pacific_hs_planning_grid)
+
+# Show the results
+terra::plot(result_rast)
+```
+
+```{r include = FALSE}
+#nice maps for publication
+
+# tmap::tm_shape(total_annual_effort) +
+#   tmap::tm_raster(palette = "viridis", title = "Total apparent fishing\neffort (hours)", style = "quantile", n = 8) +
+#   tmap::tm_layout(legend.outside = TRUE)
+
+ggplot_gfw <- ggplot2::ggplot() +
+  ggplot2::geom_raster(data = terra::as.data.frame(total_annual_effort %>% terra::project("epsg:4326"), xy = TRUE), ggplot2::aes(x=x, y=y, fill = fishing_effort)) +
+  ggplot2::coord_sf() +
+  ggplot2::scale_fill_viridis_c(name = "Apparent fishing\neffort (hours)") +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.title = ggplot2::element_blank())
+
+ggplot_sol_no_patches <- ggplot2::ggplot() +
+  ggplot2::geom_raster(data = terra::as.data.frame(sol %>% terra::project("epsg:4326", method = "near"), xy = TRUE), ggplot2::aes(x=x, y=y, fill = factor(fishing_effort))) +
+  ggplot2::geom_sf(data = seamounts_rast %>% terra::as.polygons() %>% terra::project("epsg:4326") %>% sf::st_as_sf() %>% dplyr::mutate(type = "Seamounts"), ggplot2::aes(colour = type), fill = NA, lwd = 0.2) +
+  ggplot2::coord_sf() +
+  ggplot2::scale_fill_manual(values = c("grey", "forestgreen"),
+                             labels = c("Not selected", "Selected"),
+                             name = NULL) +
+  ggplot2::scale_color_manual(values = c("Seamounts" = "black"),
+                              labels = "Seamounts",
+                              name = NULL) +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.title = ggplot2::element_blank())
+
+ggplot_sol_patches <- ggplot2::ggplot() +
+  ggplot2::geom_raster(data = terra::as.data.frame(result_rast %>% terra::project("epsg:4326", method = "near"), xy = TRUE), ggplot2::aes(x=x, y=y, fill = factor(layer))) +
+    ggplot2::geom_sf(data = seamounts_rast %>% terra::as.polygons() %>% terra::project("epsg:4326") %>% sf::st_as_sf() %>% dplyr::mutate(type = "Seamounts"), ggplot2::aes(colour = type), fill = NA, lwd = 0.2) +
+  ggplot2::coord_sf() +
+  ggplot2::scale_fill_manual(values = c("grey", "forestgreen"),
+                             labels = c("Not selected", "Selected"),
+                             name = NULL) +
+    ggplot2::scale_color_manual(values = c("Seamounts" = "black"),
+                              labels = "Seamounts",
+                              name = NULL) +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.title = ggplot2::element_blank())
+
+
+legend_gfw <- cowplot::get_legend(
+  # create some space to the left of the legend
+  ggplot_gfw + ggplot2::theme(legend.box.margin = ggplot2::margin(0, 0, 0, 0))
+)
+
+legend_sols <- cowplot::get_legend(
+  # create some space to the left of the legend
+  ggplot_sol_no_patches + ggplot2::theme(legend.box.margin = ggplot2::margin(0, 0, 0, 0))
+)
+
+plots <- cowplot::plot_grid(ggplot_gfw+ ggplot2::theme(legend.position = "none", plot.margin = ggplot2::margin(0,0,6,0)), ggplot_sol_no_patches + ggplot2::theme(legend.position = "none", plot.margin = ggplot2::margin(0,0,6,0)), ggplot_sol_patches + ggplot2::theme(legend.position = "none", plot.margin = ggplot2::margin(0,0,6,0)), ncol = 1, labels = "auto", label_size = 12)
+
+legends <- cowplot::plot_grid(legend_gfw, legend_sols, ncol = 1, rel_heights = c(0.4, 1))
+
+cowplot::plot_grid(plots, legends, ncol = 2, rel_widths = c(0.8, 0.2))
 ```
 
