@@ -9,8 +9,13 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4
 )
 ```
 
@@ -20,9 +25,9 @@ Along with `oceandatr` we will need to load `prioritizr` for the spatial priorit
 library(oceandatr)
 library(gfwr)
 library(prioritizr)
-remotes::install_bioc("lpsymphony")
+#remotes::install_bioc("lpsymphony")
 library(lpsymphony)
-remotes::install_github("emlab-ucsb/patchwise")
+#remotes::install_github("emlab-ucsb/patchwise")
 library(patchwise)
 ```
 
@@ -43,7 +48,7 @@ plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING
 
 We are going to use only the highlighted Pacific High Seas area which borders Indonesia, Papua New Guinea, Palau and the Federated States of Micronesia. We can get the EEZs of these states using `oceandatr`'s `get_area` function.
 
-```{r get_surrounding_eezs, message=FALSE}
+```{r get_surrounding_eezs}
 
 country_names <- c("Indonesia", "Papua New Guinea", "Palau", "Micronesia")
 
@@ -53,7 +58,7 @@ eezs <- lapply(country_names, FUN = function(x) get_area(area_name = x) %>% dply
 ```
 
 
-```{r pacific_high_seas, message = FALSE, warning = FALSE}
+```{r pacific_high_seas}
 sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
 
 pacific_hs <- hs %>% 
@@ -82,7 +87,7 @@ pacific_hs_planning_grid <- get_planning_grid(area_polygon = pacific_hs,
 terra::plot(pacific_hs_planning_grid, col = "grey70")
 ```
 
-```{r include=FALSE}
+```{r eval=FALSE, include=FALSE}
 
 pacific_hs_planning_grid_ras_lowres <- get_planning_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
@@ -120,13 +125,13 @@ cowplot::plot_grid(pacific_hs_map, pacific_pus_ras_map, pacific_pus_sf_map, ncol
 
 Now we have a planning grid, we can use get a basic set of features to use in a spatial prioritization with a single command, setting the seamount buffer to 30km:
 
-```{r features, warning=FALSE}
+```{r features}
 feature_set <- get_features(planning_grid = pacific_hs_planning_grid, seamount_buffer = 30000)
 
 terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 #nicer maps for paper
 .simpleCap <- function(x) {
     s <- strsplit(x, " ")[[1]]
@@ -144,7 +149,7 @@ tmap::tm_shape(setNames(feature_set, gsub("_", " ", names(feature_set)) %>% stri
 
 # Cost data: fishing effort
 
-```{r fishing-effort, message=FALSE}
+```{r fishing-effort}
 pacific_hs_geojson <- pacific_hs_area_extent %>% #use the larger area extent because using just the pacific_hs polygon results in a slightly truncated area
   sf::st_as_sfc() %>% 
   sf::st_as_sf() %>% 
@@ -176,7 +181,7 @@ terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transf
 
 Set targets of 20% for all features.
 
-```{r prioritization, message = FALSE}
+```{r prioritization}
 prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
@@ -195,7 +200,7 @@ terra::plot(sol, main = "Solution", axes = TRUE,
 
 # Prioritization with patches
 
-```{r}
+```{r prioritization_patches}
 # Separate seamount data - we want to protect entire patches
 seamounts_rast <- feature_set[["seamounts"]]
 features_rast <- feature_set[[names(feature_set)[names(feature_set) != "seamounts"]]]
@@ -230,10 +235,14 @@ solution_rast <- solve(problem_rast)
 result_rast <- patchwise::convert_solution(solution = solution_rast, patch_df = patches_df_rast, planning_grid = pacific_hs_planning_grid)
 
 # Show the results
-terra::plot(result_rast)
+terra::plot(result_rast, main = "Solution", axes = TRUE, 
+            col = c("grey70", "green4"),
+            type = "classes",
+            levels = c("Not selected", "Selected"),
+            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
 ```
 
-```{r include = FALSE}
+```{r eval = FALSE, include=FALSE}
 #nice maps for publication
 
 # tmap::tm_shape(total_annual_effort) +
