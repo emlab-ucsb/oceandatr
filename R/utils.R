@@ -2,18 +2,18 @@
 
 #' Check planning grid or area polygon input is supplied and is in correct format
 #'
-#' @param planning_grid sf or raster planning grid
+#' @param spatial_grid sf or raster planning grid
 #' @param area_polygon sf object 
 #'
 #' @noRd
-check_grid_or_polygon <- function(planning_grid, area_polygon) {
-  if (is.null(area_polygon) & is.null(planning_grid)) {
+check_grid_or_polygon <- function(spatial_grid, area_polygon) {
+  if (is.null(area_polygon) & is.null(spatial_grid)) {
     stop("an area polygon or planning grid must be supplied")
-  } else if (!is.null(area_polygon) & !is.null(planning_grid)) {
+  } else if (!is.null(area_polygon) & !is.null(spatial_grid)) {
     stop("please supply either an area polygon or a planning grid, not both")
-  } else if (!is.null(planning_grid) &
-             !(class(planning_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) {
-    stop("planning_grid must be a raster or sf object")
+  } else if (!is.null(spatial_grid) &
+             !(class(spatial_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) {
+    stop("spatial_grid must be a raster or sf object")
   } else if (!is.null(area_polygon) &
              !(class(area_polygon)[1] == "sf")) {
     stop("area_polygon must be an sf object")
@@ -24,16 +24,16 @@ check_grid_or_polygon <- function(planning_grid, area_polygon) {
 #' Check if area polygon or planning grid crs is same as data crs
 #'
 #' @param area_polygon sf object
-#' @param planning_grid raster or sf 
+#' @param spatial_grid raster or sf 
 #' @param dat raster or sf
 #'
 #' @return `logical` TRUE crs' match, FALSE if they don't
 #' @noRd
-check_matching_crs <- function(area_polygon, planning_grid, dat){
-  if(is.null(planning_grid)){
+check_matching_crs <- function(area_polygon, spatial_grid, dat){
+  if(is.null(spatial_grid)){
     ifelse(sf::st_crs(area_polygon) == sf::st_crs(dat), TRUE, FALSE) 
   }else{
-    ifelse(sf::st_crs(planning_grid) == sf::st_crs(dat), TRUE, FALSE)
+    ifelse(sf::st_crs(spatial_grid) == sf::st_crs(dat), TRUE, FALSE)
   } 
 }
 
@@ -147,10 +147,10 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
   }
 }
 area_polygon_lonlat <-
-  function(area_polygon, planning_grid, matching_crs) {
-    if (!is.null(planning_grid)) {
-      if (check_raster(planning_grid)) {
-        planning_grid %>%
+  function(area_polygon, spatial_grid, matching_crs) {
+    if (!is.null(spatial_grid)) {
+      if (check_raster(spatial_grid)) {
+        spatial_grid %>%
           terra::as.polygons() %>%
           {
             if (matching_crs)
@@ -161,7 +161,7 @@ area_polygon_lonlat <-
           sf::st_as_sf() %>% 
           {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
       } else{
-        planning_grid %>%
+        spatial_grid %>%
           {
             if (matching_crs)
               .

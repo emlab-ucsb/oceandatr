@@ -138,7 +138,7 @@ projection <- 'PROJCS["ProjWiz_Custom_Albers",
  UNIT["Meter",1.0]]'
 
 # Create a planning grid 
-planning_grid <- get_planning_grid(area_polygon = australia_indonesia, 
+planning_grid <- get_grid(area_polygon = australia_indonesia, 
                                    projection_crs = projection, 
                                    resolution = 10000)
 
@@ -147,7 +147,7 @@ terra::plot(planning_grid, box = FALSE, axes = FALSE, legend = FALSE)
 ```
 ```{r proceed with oceandatr data, fig.align= "center", fig.cap="Seamounts within the Indonesian and Australian EEZs."}
 # Get seamount locations with a 30 km buffer
-seamounts <- get_seamounts_buffered(planning_grid = planning_grid, 
+seamounts <- get_seamounts_buffered(spatial_grid = planning_grid, 
                                     buffer = 30000)
 # Plot seamount data
 terra::plot(seamounts, box = FALSE, axes = FALSE, legend = FALSE)

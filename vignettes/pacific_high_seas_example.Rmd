@@ -74,21 +74,21 @@ We will use 10km square planning units so that there the data processing and pri
 
 pacific_hs_projection <- "+proj=cea +lon_0=145 +lat_ts=3 +datum=WGS84 +units=m +no_defs"
 
-pacific_hs_planning_grid <- get_planning_grid(area_polygon = pacific_hs,
+pacific_hs_planning_grid <- get_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
                                    resolution = 10000) 
 
-#get_planning_grid returns a raster by default, so we can plot it using the terra package
+#get_grid returns a raster by default, so we can plot it using the terra package
 terra::plot(pacific_hs_planning_grid, col = "grey70")
 ```
 
 ```{r include=FALSE}
 
-pacific_hs_planning_grid_ras_lowres <- get_planning_grid(area_polygon = pacific_hs,
+pacific_hs_planning_grid_ras_lowres <- get_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
                                    resolution = 30000) 
 
-pacific_hs_planning_grid_sf_lowres <- get_planning_grid(area_polygon = pacific_hs,
+pacific_hs_planning_grid_sf_lowres <- get_grid(area_polygon = pacific_hs,
                                    projection_crs = pacific_hs_projection,
                                    option = "sf_hex",
                                    resolution = 30000)
@@ -121,7 +121,7 @@ cowplot::plot_grid(pacific_hs_map, pacific_pus_ras_map, pacific_pus_sf_map, ncol
 Now we have a planning grid, we can use get a basic set of features to use in a spatial prioritization with a single command, setting the seamount buffer to 30km:
 
 ```{r features, warning=FALSE}
-feature_set <- get_features(planning_grid = pacific_hs_planning_grid, seamount_buffer = 30000)
+feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000)
 
 terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
@@ -164,7 +164,7 @@ total_annual_effort <- fishing_effort %>%
   dplyr::select("Lon", "Lat", "total_effort") %>%
   terra::rast(type = "xyz", crs = "epsg:4326") %>% 
   terra::subst(NA, 0) %>% 
-  oceandatr::data_to_planning_grid(planning_grid = pacific_hs_planning_grid,
+  get_data_in_grid(spatial_grid = pacific_hs_planning_grid,
                                    dat = .,
                                    name = "fishing_effort")
 
