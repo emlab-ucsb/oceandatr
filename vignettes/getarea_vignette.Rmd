@@ -11,17 +11,7 @@ VignetteBuilder:
     knitr
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-	echo = TRUE,
-	message = FALSE,
-	warning = FALSE,
-	collapse = TRUE,
-	comment = "#>"
-)
 
-library(oceandatr)
-```
 
 The `get_area()` function is used to generate an `sf` object of the area of interest. If you already have an `sf` object with your area of interest, you do not need to use `get_area()` and can use your existing object in place of an object returned by `get_area()`. However, if you do need to generate an area of interest, using this particular function can be a bit confusing if the desired area is not a well-defined EEZ. Here, we walk through a few examples to make this function a little bit easier to use and understand. 
 
@@ -29,24 +19,55 @@ In the back-end, `get_area()` uses the `mrp_get()` function from the [`mregions2
 
 We can get an idea of the possible query types using the following: 
 
-```{r possible query types, eval=FALSE}
+
+```r
 mregions2::mrp_list[,c("title", "layer")]
 ```
 
-```{r possible query types output, echo=FALSE}
-knitr::kable(mregions2::mrp_list[,c("title", "layer")])
-```
+
+
+|title                                                                                                                         |layer                        |
+|:-----------------------------------------------------------------------------------------------------------------------------|:----------------------------|
+|Exclusive Economic Zones (200 NM) (v11, world, 2019)                                                                          |eez                          |
+|Maritime Boundaries (v11, world, 2019)                                                                                        |eez_boundaries               |
+|Territorial Seas (12 NM) (v3, world, 2019)                                                                                    |eez_12nm                     |
+|Contiguous Zones (24 NM) (v3, world, 2019)                                                                                    |eez_24nm                     |
+|Internal Waters (v3, world, 2019)                                                                                             |eez_internal_waters          |
+|Archipelagic Waters (v3, world, 2019)                                                                                         |eez_archipelagic_waters      |
+|High Seas (v1, world, 2020)                                                                                                   |high_seas                    |
+|Extended Continental Shelves (v01, world, 2022)                                                                               |ecs                          |
+|Extended Continental Shelves - boundaries (v01, world, 2022)                                                                  |ecs_boundaries               |
+|IHO Sea Areas (v3)                                                                                                            |iho                          |
+|Global Oceans and Seas (v1)                                                                                                   |goas                         |
+|The intersect of the Exclusive Economic Zones and IHO areas (v4)                                                              |eez_iho                      |
+|Marine and land zones: the union of world country boundaries and EEZ's                                                        |eez_land                     |
+|Global Biogeochemical Provinces (Longhurst)                                                                                   |longhurst                    |
+|Global contourite distribution                                                                                                |cds                          |
+|Emission Control Areas (ECAs) designated under regulation 13 of MARPOL Annex VI (NOx emission control)                        |eca_reg13_nox                |
+|Emission Control Areas (ECAs) designated under regulation 14 of MARPOL Annex VI (SOx and particulate matter emission control) |eca_reg14_sox_pm             |
+|UNESCO World Heritage Marine Sites (v02, 2023)                                                                                |worldheritagemarineprogramme |
+|The 66 Large Marine Ecosystems of the World                                                                                   |lme                          |
+|Marine Ecoregions of the World - Ecoregions                                                                                   |ecoregions                   |
+|SeaVoX - Sea Areas Polygons (v18, 2021)                                                                                       |seavox_v18                   |
+
+
 
 
 There are several options to choose from, so it might be worthwhile to do a little extra research to decide which layer is most likely to give you the results you desire. Attributes in the "layer" column can be used to inform the `query_type` in `get_area()`. From here, we can look at the list of possible column names to choose from. Let's use the "eez" option as the layer of interest and allow `show_column_options` to equal `TRUE`. 
 
-```{r possible column names}
+
+```r
 get_area(query_type = "eez", show_column_options = TRUE)
+#> $mregions_column
+#>  [1] "mrgid"      "geoname"    "mrgid_ter1" "pol_type"   "mrgid_sov1" "territory1" "iso_ter1"   "sovereign1" "mrgid_ter2" "mrgid_sov2" "territory2"
+#> [12] "iso_ter2"   "sovereign2" "mrgid_ter3" "mrgid_sov3" "territory3" "iso_ter3"   "sovereign3" "x_1"        "y_1"        "mrgid_eez"  "area_km2"  
+#> [23] "iso_sov1"   "iso_sov2"   "iso_sov3"   "un_sov1"    "un_sov2"    "un_sov3"    "un_ter1"    "un_ter2"    "un_ter3"
 ```
 
 Each of these columns is a different type of identifier for ocean areas that we can choose from. A full explanation of what the columns mean can be found [here](https://marineregions.org/eezattribute.php). The column we choose depends on how we want to refer to the area that we choose. Perhaps the most common column we might use is "territory1", which allows us to provide a specific country name by which to query. For example, we can pull Australia's EEZ and plot the result: 
 
-```{r country example - australia, fig.align= "center", fig.cap="Map of the Australian EEZ."}
+
+```r
 # Grab the area
 australia_eez <- get_area(area_name = "Australia", query_type = "eez", mregions_column = "territory1")
 
@@ -54,9 +75,15 @@ australia_eez <- get_area(area_name = "Australia", query_type = "eez", mregions_
 plot(australia_eez[2])
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/country example - australia-1.png" alt="Map of the Australian EEZ."  />
+<p class="caption">Map of the Australian EEZ.</p>
+</div>
+
 Alternatively, we might know the ISO3 code for a territory and wish to query the database that way; we would use the "iso_ter1" column to filter for the ISO3 code we desire. Below, we use the ISO3 code for Australia to grab the EEZ. 
 
-```{r iso3 code example - australia, fig.align= "center", fig.cap="Map of the Australian EEZ."}
+
+```r
 # Grab the area
 australia_eez <- get_area(area_name = "AUS", query_type = "eez", mregions_column = "iso_ter1")
 
@@ -64,15 +91,32 @@ australia_eez <- get_area(area_name = "AUS", query_type = "eez", mregions_column
 plot(australia_eez[2])
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/iso3 code example - australia-1.png" alt="Map of the Australian EEZ."  />
+<p class="caption">Map of the Australian EEZ.</p>
+</div>
+
 Of course, maybe we aren't memorizing ISO3 codes, but we would recognize the code that we wanted if we saw it in a list. We can get a list of possible values to choose from for each `mregions_column` by setting `show_value_options` to `TRUE`: 
 
-```{r list of possible values in iso_ter1}
+
+```r
 get_area(query_type = "eez", mregions_column = "iso_ter1", show_value_options =  TRUE)
+#> $iso_ter1
+#>   [1] "ABW" "AGO" "AIA" "ALB" "ARE" "ARG" "ASM" "ATF" "ATG" "AUS" "AZE" "BEL" "BEN" "BES" "BGD" "BGR" "BHR" "BHS" "BIH" "BLM" "BLZ" "BMU" "BRA" "BRB" "BRN"
+#>  [26] "CAN" "CCK" "CHL" "CHN" "CIV" "CMR" "COD" "COG" "COK" "COL" "COM" "CPV" "CRI" "CUB" "CUW" "CXR" "CYM" "CYP" "DEU" "DJI" "DMA" "DNK" "DOM" "DZA" "ECU"
+#>  [51] "EGY" "ERI" "ESH" "ESP" "EST" "FIN" "FJI" "FLK" "FRA" "FRO" "FSM" "GAB" "GBR" "GEO" "GGY" "GHA" "GIB" "GIN" "GLP" "GMB" "GNB" "GNQ" "GRC" "GRD" "GRL"
+#>  [76] "GTM" "GUF" "GUM" "GUY" "HMD" "HND" "HRV" "HTI" "IDN" "IMN" "IND" "IRL" "IRN" "IRQ" "ISL" "ISR" "ITA" "JAM" "JEY" "JOR" "JPN" "KAZ" "KEN" "KHM" "KIR"
+#> [101] "KNA" "KOR" "KWT" "LBN" "LBR" "LBY" "LCA" "LKA" "LTU" "LVA" "MAF" "MAR" "MCO" "MDG" "MDV" "MEX" "MHL" "MLT" "MMR" "MNE" "MNP" "MOZ" "MRT" "MSR" "MTQ"
+#> [126] "MUS" "MYS" "MYT" "NAM" "NCL" "NFK" "NGA" "NIC" "NIU" "NLD" "NOR" "NRU" "NZL" "OMN" "PAK" "PAN" "PCN" "PER" "PHL" "PLW" "PNG" "POL" "PRI" "PRK" "PRT"
+#> [151] "PSE" "PYF" "QAT" "REU" "ROU" "RUS" "SAU" "SDN" "SEN" "SGP" "SGS" "SHN" "SJM" "SLB" "SLE" "SLV" "SOM" "SPM" "STP" "SUR" "SVN" "SWE" "SXM" "SYC" "SYR"
+#> [176] "TCA" "TGO" "THA" "TKL" "TKM" "TLS" "TON" "TTO" "TUN" "TUR" "TUV" "TWN" "TZA" "UKR" "UMI" "URY" "USA" "VCT" "VEN" "VGB" "VIR" "VNM" "VUT" "WLF" "WSM"
+#> [201] "YEM" "ZAF"
 ```
 
 There might be a project in which you need the area in the high seas. This is a little tricky, but easy if you know the codes. In this case, the `area_name` should be "63202", the `query_type` should be "high_seas", and the `mregions_column` should be "mrgid". There is only one option for the high seas area, and it returns the layer in its entirety. 
 
-```{r high seas, fig.align= "center", fig.cap="Map of the high seas."}
+
+```r
 # Grab the area
 high_seas <- get_area(area_name = "63203", query_type = "high_seas", mregions_column = "mrgid")
 
@@ -80,9 +124,15 @@ high_seas <- get_area(area_name = "63203", query_type = "high_seas", mregions_co
 plot(high_seas[2])
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/high seas-1.png" alt="Map of the high seas."  />
+<p class="caption">Map of the high seas.</p>
+</div>
+
 If you are only interested in a small section of the high seas, you can crop this layer to the appropriate extent. 
 
-```{r crop high seas, fig.align= "center", fig.cap="Map of the high seas, cropped near Australia."}
+
+```r
 sf::sf_use_s2(FALSE) # turn of spherical geometry so we can crop
 
 # Crop the area
@@ -93,9 +143,15 @@ high_seas_cropped <- high_seas %>%
 plot(high_seas_cropped[2])
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/crop high seas-1.png" alt="Map of the high seas, cropped near Australia."  />
+<p class="caption">Map of the high seas, cropped near Australia.</p>
+</div>
+
 If your region of interest includes the high seas and an EEZ area, you can combine the two layers resulting from their independent queries using `sf::st_union()`. 
 
-```{r australia eez and high seas, fig.align= "center", fig.cap="Map of the Australian EEZ and nearby high seas areas."}
+
+```r
 # Combine the areas
 australia_eez_high_seas <- australia_eez %>% 
   sf::st_union(high_seas_cropped)
@@ -104,9 +160,15 @@ australia_eez_high_seas <- australia_eez %>%
 plot(australia_eez_high_seas[2])
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/australia eez and high seas-1.png" alt="Map of the Australian EEZ and nearby high seas areas."  />
+<p class="caption">Map of the Australian EEZ and nearby high seas areas.</p>
+</div>
+
 Currently, there is no way to select multiple areas at once. If your region of interest spans several EEZs or marine regions, we recommend querying each area independently and merging the layers together.
 
-```{r australia and indonesia, fig.align= "center", fig.cap="Map of the Indonesian and Australian EEZs."}
+
+```r
 # Grab the area
 indonesia_eez <- get_area(area_name = "Indonesia", query_type = "eez", mregions_column = "territory1")
 
@@ -118,9 +180,15 @@ australia_indonesia <- australia_eez %>%
 plot(australia_indonesia[2]) 
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/australia and indonesia-1.png" alt="Map of the Indonesian and Australian EEZs."  />
+<p class="caption">Map of the Indonesian and Australian EEZs.</p>
+</div>
+
 We can now go ahead and use these areas in `oceandatr` to create an appropriate planning grid and grab additional datasets. 
 
-```{r proceed with oceandatr setup, fig.align= "center", fig.cap="Planning grid of the Indonesian and Australian EEZs."}
+
+```r
 # Set projection for planning grid - grabbed from this website: https://projectionwizard.org
 projection <- 'PROJCS["ProjWiz_Custom_Albers",
  GEOGCS["GCS_WGS_1984",
@@ -145,13 +213,24 @@ planning_grid <- get_grid(area_polygon = australia_indonesia,
 # Plot the planning grid
 terra::plot(planning_grid, box = FALSE, axes = FALSE, legend = FALSE)
 ```
-```{r proceed with oceandatr data, fig.align= "center", fig.cap="Seamounts within the Indonesian and Australian EEZs."}
+
+<div class="figure" style="text-align: center">
+<img src="figure/proceed with oceandatr setup-1.png" alt="Planning grid of the Indonesian and Australian EEZs."  />
+<p class="caption">Planning grid of the Indonesian and Australian EEZs.</p>
+</div>
+
+```r
 # Get seamount locations with a 30 km buffer
 seamounts <- get_seamounts_buffered(spatial_grid = planning_grid, 
                                     buffer = 30000)
 # Plot seamount data
 terra::plot(seamounts, box = FALSE, axes = FALSE, legend = FALSE)
 ```
+
+<div class="figure" style="text-align: center">
+<img src="figure/proceed with oceandatr data-1.png" alt="Seamounts within the Indonesian and Australian EEZs."  />
+<p class="caption">Seamounts within the Indonesian and Australian EEZs.</p>
+</div>
 
 
 

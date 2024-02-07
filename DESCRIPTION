@@ -4,7 +4,7 @@ Title: Ocean Data Access
 Version: 0.1.0
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
 Description: Prepares ocean related datasets ready for use in spatial prioritization, i.e. data in gridded format.
-License: GPL (>= 3) + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -15,14 +15,13 @@ Imports:
     terra,
     dplyr,
     tidyr,
-    exactextractr,
     NbClust,
     graphics,
     stats,
     tidyselect,
     spatialgridr (>= 0.0.0.9000)
 Remotes: 
-    lifewatch/mregions2,
+    github::lifewatch/mregions2,
     github::emlab-ucsb/spatialgridr
 RoxygenNote: 7.3.1
 Depends: 
