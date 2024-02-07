@@ -49,7 +49,7 @@ library(oceandatr)
 This function pulls data for EEZs from the [Marine Gazetteer](https://marineregions.org/gazetteer.php) using the `mregions2` R package; the function is just a wrapper to make the process a bit simpler. 
 
 ```{r area of interest, fig.height=h, fig.width=w, out.width=ow}
-bermuda_eez <- get_area(area_name = "Bermuda")
+bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
 
 #plot to check we have Bermuda's EEZ
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
