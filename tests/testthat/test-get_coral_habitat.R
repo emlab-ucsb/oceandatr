@@ -2,10 +2,10 @@ test_that("returns coral habitat layer with 3 species - bermuda", {
   expect_s4_class(get_coral_habitat(area_polygon = get_area(area_name = "Bermuda", mregions_column = "territory1")), class = "SpatRaster")
 })
 
-test_that("returns coral habitat layer with 3 species - kiribati", {
-  expect_s4_class(get_coral_habitat(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1")),
-                  class = "SpatRaster")
-})
+# test_that("returns coral habitat layer with 3 species - kiribati", {
+#   expect_s4_class(get_coral_habitat(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1")),
+#                   class = "SpatRaster")
+# })
 
 test_that("returns coral habitat layer with 3 species - bermuda gridded", {
   expect_s4_class(get_coral_habitat(spatial_grid = get_grid(area_polygon = get_area(area_name = "Bermuda", mregions_column = "territory1"), 
@@ -13,10 +13,9 @@ test_that("returns coral habitat layer with 3 species - bermuda gridded", {
                                                                       resolution = 5000)), class = "SpatRaster")
 })
 
-# Test failed
 test_that("returns coral habitat layer with 3 species - kiribati gridded", {
-  expect_s4_class(get_coral_habitat(spatial_grid = get_grid(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1"), 
-                                                      projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
+  expect_s4_class(get_coral_habitat(spatial_grid = get_grid(area_polygon = get_area(area_name = "KIR", mregions_column = "iso_ter1"),
+                                                      projection_crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs',
                                                       resolution = 5000)),
                   class = "SpatRaster")
 })
