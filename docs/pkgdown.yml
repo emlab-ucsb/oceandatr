@@ -1,0 +1,11 @@
+pandoc: 3.1.1
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  getarea_vignette: getarea_vignette.html
+  pacific_high_seas_example: pacific_high_seas_example.html
+last_built: 2024-02-07T18:59Z
+urls:
+  reference: https://emlab-ucsb.github.io/oceandatr/reference
+  article: https://emlab-ucsb.github.io/oceandatr/articles
+
