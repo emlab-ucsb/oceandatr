@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# oceandatr
+# oceandatr <a href="https://emlab-ucsb.github.io/oceandatr/"><img src="man/figures/logo.png" align="right" height="139" alt="oceandatr website" /></a>
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -9,6 +9,9 @@
 `oceandatr` aims to provide simple functions for creating data for
 conducting a spatial conservation prioritization for large scale areas
 of the ocean, specifically offshore areas.
+
+Fish images in logo modified from original by Tracey Saxby, [Integration
+and Application Network](https://ian.umces.edu/media-library)
 
 ## Installation
 
