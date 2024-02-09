@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   getarea_vignette: getarea_vignette.html
   pacific_high_seas_example: pacific_high_seas_example.html
-last_built: 2024-02-09T00:39Z
+last_built: 2024-02-09T01:14Z
 urls:
   reference: https://emlab-ucsb.github.io/oceandatr/reference
   article: https://emlab-ucsb.github.io/oceandatr/articles
