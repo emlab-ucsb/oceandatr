@@ -16,7 +16,7 @@
 #' dist_from_shore_rast <- get_dist_shore(planning_grid)
 #' terra::plot(dist_from_shore_rast)
 get_dist_shore <- function(spatial_grid){
-  if(!any(check_raster(spatial_grid) & check_sf(spatial_grid))) stop("spatialgrid must be in raster or sf format")
+  if(!any(check_raster(spatial_grid), check_sf(spatial_grid))) stop("spatialgrid must be in raster or sf format")
      
      #get high res land polygons from Natural Earth
      ne_data_filename <- "ne_land_data.zip"
@@ -33,10 +33,24 @@ get_dist_shore <- function(spatial_grid){
      matching_crs <- if(sf::st_crs(spatial_grid) == sf::st_crs(4326)) TRUE else FALSE
      
      if(check_raster(spatial_grid)){
-       spatial_grid %>% 
-         {if(matching_crs) . else terra::project(., "epsg:4326", method = 'near')} %>% 
-         terra::distance(terra::vect(ne_data)) %>% 
-         {if(matching_crs) . else terra::project(., spatial_grid, method = 'bilinear')}
+       
+       if(matching_crs){
+         spatial_grid %>% 
+           terra::distance(terra::vect(ne_data)) %>% 
+           terra::mask(spatial_grid)
+       }else{
+         dist_vect <- spatial_grid %>% 
+           terra::as.data.frame(xy = TRUE, cell = TRUE) %>% 
+           sf::st_as_sf(coords = c("x", "y"), crs = sf::st_crs(spatial_grid)) %>%
+           sf::st_geometry() %>% 
+           sf::st_sf() %>% 
+           sf::st_transform(4326) %>% 
+           sf::st_distance(ne_data) %>% 
+           {do.call(pmin, as.data.frame(.))} 
+         
+         spatial_grid[!is.na(spatial_grid)] <- dist_vect
+         return(spatial_grid)
+       }
      } else{
        temp_grid <- spatial_grid %>% 
          {if(matching_crs) . else sf::st_transform(., 4326)}

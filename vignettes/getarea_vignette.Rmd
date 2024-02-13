@@ -59,9 +59,10 @@ There are several options to choose from, so it might be worthwhile to do a litt
 ```r
 get_area(query_type = "eez", show_column_options = TRUE)
 #> $mregions_column
-#>  [1] "mrgid"      "geoname"    "mrgid_ter1" "pol_type"   "mrgid_sov1" "territory1" "iso_ter1"   "sovereign1" "mrgid_ter2" "mrgid_sov2" "territory2"
-#> [12] "iso_ter2"   "sovereign2" "mrgid_ter3" "mrgid_sov3" "territory3" "iso_ter3"   "sovereign3" "x_1"        "y_1"        "mrgid_eez"  "area_km2"  
-#> [23] "iso_sov1"   "iso_sov2"   "iso_sov3"   "un_sov1"    "un_sov2"    "un_sov3"    "un_ter1"    "un_ter2"    "un_ter3"
+#>  [1] "mrgid"      "geoname"    "mrgid_ter1" "pol_type"   "mrgid_sov1" "territory1" "iso_ter1"   "sovereign1" "mrgid_ter2"
+#> [10] "mrgid_sov2" "territory2" "iso_ter2"   "sovereign2" "mrgid_ter3" "mrgid_sov3" "territory3" "iso_ter3"   "sovereign3"
+#> [19] "x_1"        "y_1"        "mrgid_eez"  "area_km2"   "iso_sov1"   "iso_sov2"   "iso_sov3"   "un_sov1"    "un_sov2"   
+#> [28] "un_sov3"    "un_ter1"    "un_ter2"    "un_ter3"
 ```
 
 Each of these columns is a different type of identifier for ocean areas that we can choose from. A full explanation of what the columns mean can be found [here](https://marineregions.org/eezattribute.php). The column we choose depends on how we want to refer to the area that we choose. Perhaps the most common column we might use is "territory1", which allows us to provide a specific country name by which to query. For example, we can pull Australia's EEZ and plot the result: 
@@ -102,15 +103,17 @@ Of course, maybe we aren't memorizing ISO3 codes, but we would recognize the cod
 ```r
 get_area(query_type = "eez", mregions_column = "iso_ter1", show_value_options =  TRUE)
 #> $iso_ter1
-#>   [1] "ABW" "AGO" "AIA" "ALB" "ARE" "ARG" "ASM" "ATF" "ATG" "AUS" "AZE" "BEL" "BEN" "BES" "BGD" "BGR" "BHR" "BHS" "BIH" "BLM" "BLZ" "BMU" "BRA" "BRB" "BRN"
-#>  [26] "CAN" "CCK" "CHL" "CHN" "CIV" "CMR" "COD" "COG" "COK" "COL" "COM" "CPV" "CRI" "CUB" "CUW" "CXR" "CYM" "CYP" "DEU" "DJI" "DMA" "DNK" "DOM" "DZA" "ECU"
-#>  [51] "EGY" "ERI" "ESH" "ESP" "EST" "FIN" "FJI" "FLK" "FRA" "FRO" "FSM" "GAB" "GBR" "GEO" "GGY" "GHA" "GIB" "GIN" "GLP" "GMB" "GNB" "GNQ" "GRC" "GRD" "GRL"
-#>  [76] "GTM" "GUF" "GUM" "GUY" "HMD" "HND" "HRV" "HTI" "IDN" "IMN" "IND" "IRL" "IRN" "IRQ" "ISL" "ISR" "ITA" "JAM" "JEY" "JOR" "JPN" "KAZ" "KEN" "KHM" "KIR"
-#> [101] "KNA" "KOR" "KWT" "LBN" "LBR" "LBY" "LCA" "LKA" "LTU" "LVA" "MAF" "MAR" "MCO" "MDG" "MDV" "MEX" "MHL" "MLT" "MMR" "MNE" "MNP" "MOZ" "MRT" "MSR" "MTQ"
-#> [126] "MUS" "MYS" "MYT" "NAM" "NCL" "NFK" "NGA" "NIC" "NIU" "NLD" "NOR" "NRU" "NZL" "OMN" "PAK" "PAN" "PCN" "PER" "PHL" "PLW" "PNG" "POL" "PRI" "PRK" "PRT"
-#> [151] "PSE" "PYF" "QAT" "REU" "ROU" "RUS" "SAU" "SDN" "SEN" "SGP" "SGS" "SHN" "SJM" "SLB" "SLE" "SLV" "SOM" "SPM" "STP" "SUR" "SVN" "SWE" "SXM" "SYC" "SYR"
-#> [176] "TCA" "TGO" "THA" "TKL" "TKM" "TLS" "TON" "TTO" "TUN" "TUR" "TUV" "TWN" "TZA" "UKR" "UMI" "URY" "USA" "VCT" "VEN" "VGB" "VIR" "VNM" "VUT" "WLF" "WSM"
-#> [201] "YEM" "ZAF"
+#>   [1] "ABW" "AGO" "AIA" "ALB" "ARE" "ARG" "ASM" "ATF" "ATG" "AUS" "AZE" "BEL" "BEN" "BES" "BGD" "BGR" "BHR" "BHS" "BIH"
+#>  [20] "BLM" "BLZ" "BMU" "BRA" "BRB" "BRN" "CAN" "CCK" "CHL" "CHN" "CIV" "CMR" "COD" "COG" "COK" "COL" "COM" "CPV" "CRI"
+#>  [39] "CUB" "CUW" "CXR" "CYM" "CYP" "DEU" "DJI" "DMA" "DNK" "DOM" "DZA" "ECU" "EGY" "ERI" "ESH" "ESP" "EST" "FIN" "FJI"
+#>  [58] "FLK" "FRA" "FRO" "FSM" "GAB" "GBR" "GEO" "GGY" "GHA" "GIB" "GIN" "GLP" "GMB" "GNB" "GNQ" "GRC" "GRD" "GRL" "GTM"
+#>  [77] "GUF" "GUM" "GUY" "HMD" "HND" "HRV" "HTI" "IDN" "IMN" "IND" "IRL" "IRN" "IRQ" "ISL" "ISR" "ITA" "JAM" "JEY" "JOR"
+#>  [96] "JPN" "KAZ" "KEN" "KHM" "KIR" "KNA" "KOR" "KWT" "LBN" "LBR" "LBY" "LCA" "LKA" "LTU" "LVA" "MAF" "MAR" "MCO" "MDG"
+#> [115] "MDV" "MEX" "MHL" "MLT" "MMR" "MNE" "MNP" "MOZ" "MRT" "MSR" "MTQ" "MUS" "MYS" "MYT" "NAM" "NCL" "NFK" "NGA" "NIC"
+#> [134] "NIU" "NLD" "NOR" "NRU" "NZL" "OMN" "PAK" "PAN" "PCN" "PER" "PHL" "PLW" "PNG" "POL" "PRI" "PRK" "PRT" "PSE" "PYF"
+#> [153] "QAT" "REU" "ROU" "RUS" "SAU" "SDN" "SEN" "SGP" "SGS" "SHN" "SJM" "SLB" "SLE" "SLV" "SOM" "SPM" "STP" "SUR" "SVN"
+#> [172] "SWE" "SXM" "SYC" "SYR" "TCA" "TGO" "THA" "TKL" "TKM" "TLS" "TON" "TTO" "TUN" "TUR" "TUV" "TWN" "TZA" "UKR" "UMI"
+#> [191] "URY" "USA" "VCT" "VEN" "VGB" "VIR" "VNM" "VUT" "WLF" "WSM" "YEM" "ZAF"
 ```
 
 There might be a project in which you need the area in the high seas. This is a little tricky, but easy if you know the codes. In this case, the `area_name` should be "63202", the `query_type` should be "high_seas", and the `mregions_column` should be "mrgid". There is only one option for the high seas area, and it returns the layer in its entirety. 

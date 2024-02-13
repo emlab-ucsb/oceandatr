@@ -7,6 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+This example walks though how to do a spatial prioritization using `oceandatr` to obtain suitable data, and also using the package [`patchwise`](https://github.com/emlab-ucsb/patchwise) to ensure that entire seamounts are included in the prioritization solutions.
+
+We use a High Seas area of the Pacific as the planning area for this example since it is outside any states' jurisdiction.
+
 
 
 Along with `oceandatr` we will need to load `prioritizr` for the spatial prioritization and we will use the open source solver `lsymphony` to solve the prioritization problem, so this needs to be installed and loaded via th Bioconductor website 
@@ -22,11 +26,9 @@ library(lpsymphony)
 library(patchwise)
 ```
 
-This example shows how to use `oceandatr` to create a complete set of feature data that can be used directly in a spatial prioritization. 
-
 # High Seas area of the Pacific Ocean
 
-First we retrieve the entire High Seas area, then we will crop for the area we are interested in, highlighted in red on the map.
+First we retrieve the entire High Seas geospatial data, then we will crop for the area we are interested in, highlighted in red on the map.
 
 
 ```r
@@ -35,10 +37,10 @@ hs <- get_area(area_name = "63203", query_type = "high_seas", mregions_column = 
 pacific_hs_area_extent <- sf::st_bbox(c(xmin = 135, xmax = 155, ymin = 0, ymax = 6), crs = 4326)
 
 plot(sf::st_geometry(hs), main = "High Seas", col = "royalblue3", axes = TRUE, las = 1)
-plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING"), col = "red", add = TRUE)
+plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING"), col = "red", lwd=2, add = TRUE)
 ```
 
-![plot of chunk high_seas_area](figure/high_seas_area-1.png)
+![Map of the High Seas](figure/high_seas_area-1.png)
 
 We are going to use only the highlighted Pacific High Seas area which borders Indonesia, Papua New Guinea, Palau and the Federated States of Micronesia. We can get the EEZs of these states using `oceandatr`'s `get_area` function.
 
@@ -67,7 +69,7 @@ sf::sf_use_s2(TRUE)
 plot(rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs), axes = TRUE, las = 1, main = NULL, key.pos = 4)
 ```
 
-![plot of chunk pacific_high_seas](figure/pacific_high_seas-1.png)
+![Map of Pacific High Seas area in regional context](figure/pacific_high_seas-1.png)
 
 Now we select a suitable projection for the area and a suitable resolution for the planning grid used for gridding the data. We can use [projection wizard](https://projectionwizard.org) to find an equal-area projection, entering the same extent coordinates we used to crop the high seas area (xmin = 135, xmax = 155, ymin = 0, ymax = 6). 
 
@@ -86,11 +88,11 @@ pacific_hs_planning_grid <- get_grid(area_polygon = pacific_hs,
 terra::plot(pacific_hs_planning_grid, col = "grey70")
 ```
 
-![plot of chunk planning_grid](figure/planning_grid-1.png)
+![Pacific High Seas area planning grid raster](figure/planning_grid-1.png)
 
 
 
-Now we have a planning grid, we can use get a basic set of features to use in a spatial prioritization with a single command, setting the seamount buffer to 30km:
+Now we have a planning grid, we can get data on conservation features (e.g. habitats) using `oceandatr` to use in a spatial prioritization with a single command `get_features()`. We have to set the seamount buffer, which is the area around the seamount that is included as part of the seamount, and we use 30km based since biodiversity is known to be higher within this distance of seamount peaks (see `?get_seamounts_buffered` for more info).
 
 
 
@@ -100,12 +102,16 @@ feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_bu
 terra::plot(feature_set, maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
 
-![plot of chunk features](figure/features-1.png)
+![Conservation features for the Pacific High Seas planning area](figure/features-1.png)
 
 
 
 
-# Cost data: fishing effort
+# Cost data: Global Fishing Watch data
+
+The other piece of data needed for a spatial prioritization is cost. In terrestrial spatial planning, this can be the actually monetary value of buying the land for conservation. In marine spatial planning, measures of fishing, such as catch and fishing effort, are often used as the opportunity cost for each planning unit.
+
+[Global Fishing Watch](https://globalfishingwatch.org/) has global fishing effort data, and this can be accessed easily using the R package [`gfwr`](https://github.com/GlobalFishingWatch/gfwr). An API key is required, but can be easily generated at no cost; see the `gfwr` website for more details.
 
 
 ```r
@@ -127,7 +133,7 @@ total_annual_effort <- fishing_effort %>%
   dplyr::ungroup() %>% 
   dplyr::select("Lon", "Lat", "total_effort") %>%
   terra::rast(type = "xyz", crs = "epsg:4326") %>% 
-  terra::subst(NA, 0) %>% 
+  terra::subst(NA, 0.01) %>% 
   get_data_in_grid(spatial_grid = pacific_hs_planning_grid,
                                    dat = .,
                                    name = "fishing_effort")
@@ -135,18 +141,18 @@ total_annual_effort <- fishing_effort %>%
 terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
 ```
 
-![plot of chunk fishing-effort](figure/fishing-effort-1.png)
+![Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch](figure/fishing-effort-1.png)
 
-# Run a simple prioritization
+# Run a simple spatial prioritization
 
-Set targets of 20% for all features.
+We now have all the data we need to create a conservation problem and solve it to get a map of priority areas for conservation for our Pacific High Seas area. For the prioritization, we need to set targets for how much of each conservation feature must be included in the prioritized areas. We will set this at 20%.
 
 
 ```r
 prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
-  #add_boundary_penalties(penalty = 0.0001) %>% 
+  #add_boundary_penalties(penalty = 0.00001) %>% 
   add_binary_decisions() %>% 
   add_lpsymphony_solver(verbose = FALSE)
 
@@ -157,11 +163,14 @@ terra::plot(sol, main = "Solution", axes = TRUE,
             type = "classes",
             levels = c("Not selected", "Selected"),
             fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 ```
 
-![plot of chunk prioritization](figure/prioritization-1.png)
+![Prioritization solution for the Pacific High Seas area. Grey outlines are seamounts.](figure/prioritization-1.png)
 
 # Prioritization with patches
+
+To ensure that whole seamount areas area included in the solution, we need to use the `patchwise` package to do some pre-processing of the data we use. The prioritization result is similar to that above, but whole seamount patches equal to at least 20% of the total seamount area are included.
 
 
 ```r
@@ -210,9 +219,10 @@ terra::plot(result_rast, main = "Solution", axes = TRUE,
             type = "classes",
             levels = c("Not selected", "Selected"),
             fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+terra::plot(terra::as.polygons(seamounts_rast), add=TRUE)
 ```
 
-![plot of chunk prioritization_patches](figure/prioritization_patches-1.png)
+![Prioritization solution for the Pacific High Seas area, with whole seamounts included. Grey outlines are seamounts.](figure/prioritization_patches-1.png)
 
 
 
