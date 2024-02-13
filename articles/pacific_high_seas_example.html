@@ -78,6 +78,13 @@
 
     
     
+<p>This example walks though how to do a spatial prioritization using
+<code>oceandatr</code> to obtain suitable data, and also using the
+package <a href="https://github.com/emlab-ucsb/patchwise" class="external-link"><code>patchwise</code></a>
+to ensure that entire seamounts are included in the prioritization
+solutions.</p>
+<p>We use a High Seas area of the Pacific as the planning area for this
+example since it is outside any states’ jurisdiction.</p>
 <p>Along with <code>oceandatr</code> we will need to load
 <code>prioritizr</code> for the spatial prioritization and we will use
 the open source solver <code>lsymphony</code> to solve the
@@ -91,23 +98,21 @@ Bioconductor website</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">lpsymphony</span><span class="op">)</span></span>
 <span><span class="co">#remotes::install_github("emlab-ucsb/patchwise")</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">patchwise</span><span class="op">)</span></span></code></pre></div>
-<p>This example shows how to use <code>oceandatr</code> to create a
-complete set of feature data that can be used directly in a spatial
-prioritization.</p>
 <div class="section level2">
 <h2 id="high-seas-area-of-the-pacific-ocean">High Seas area of the Pacific Ocean<a class="anchor" aria-label="anchor" href="#high-seas-area-of-the-pacific-ocean"></a>
 </h2>
-<p>First we retrieve the entire High Seas area, then we will crop for
-the area we are interested in, highlighted in red on the map.</p>
+<p>First we retrieve the entire High Seas geospatial data, then we will
+crop for the area we are interested in, highlighted in red on the
+map.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_area.html">get_area</a></span><span class="op">(</span>area_name <span class="op">=</span> <span class="st">"63203"</span>, query_type <span class="op">=</span> <span class="st">"high_seas"</span>, mregions_column <span class="op">=</span> <span class="st">"mrgid"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pacific_hs_area_extent</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">135</span>, xmax <span class="op">=</span> <span class="fl">155</span>, ymin <span class="op">=</span> <span class="fl">0</span>, ymax <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">hs</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"High Seas"</span>, col <span class="op">=</span> <span class="st">"royalblue3"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pacific_hs_area_extent</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pacific_hs_area_extent</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd<span class="op">=</span><span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/high_seas_area-1.png" alt=""><p class="caption">plot of chunk high_seas_area</p>
+<img src="figure/high_seas_area-1.png" alt=""><p class="caption">Map of the High Seas</p>
 </div>
 <p>We are going to use only the highlighted Pacific High Seas area which
 borders Indonesia, Papua New Guinea, Palau and the Federated States of
@@ -132,7 +137,7 @@ Micronesia. We can get the EEZs of these states using
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="va">pacific_hs</span>, to <span class="op">=</span> <span class="st">"MULTIPOLYGON"</span><span class="op">)</span>, <span class="va">eezs</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, las <span class="op">=</span> <span class="fl">1</span>, main <span class="op">=</span> <span class="cn">NULL</span>, key.pos <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/pacific_high_seas-1.png" alt=""><p class="caption">plot of chunk pacific_high_seas</p>
+<img src="figure/pacific_high_seas-1.png" alt=""><p class="caption">Map of Pacific High Seas area in regional context</p>
 </div>
 <p>Now we select a suitable projection for the area and a suitable
 resolution for the planning grid used for gridding the data. We can use
@@ -154,22 +159,37 @@ units will require more time/ computer memory get data for)</p>
 <span><span class="co">#get_grid returns a raster by default, so we can plot it using the terra package</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pacific_hs_planning_grid</span>, col <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/planning_grid-1.png" alt=""><p class="caption">plot of chunk planning_grid</p>
+<img src="figure/planning_grid-1.png" alt=""><p class="caption">Pacific High Seas area planning grid raster</p>
 </div>
-<p>Now we have a planning grid, we can use get a basic set of features
-to use in a spatial prioritization with a single command, setting the
-seamount buffer to 30km:</p>
+<p>Now we have a planning grid, we can get data on conservation features
+(e.g. habitats) using <code>oceandatr</code> to use in a spatial
+prioritization with a single command <code><a href="../reference/get_features.html">get_features()</a></code>. We
+have to set the seamount buffer, which is the area around the seamount
+that is included as part of the seamount, and we use 30km based since
+biodiversity is known to be higher within this distance of seamount
+peaks (see <code><a href="../reference/get_seamounts_buffered.html">?get_seamounts_buffered</a></code> for more info).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">feature_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_features.html">get_features</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span>, seamount_buffer <span class="op">=</span> <span class="fl">30000</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">feature_set</span>, maxnl <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nlyr</a></span><span class="op">(</span><span class="va">feature_set</span><span class="op">)</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co">#set maximum number of layers to plot to the same as the number of layers in the feature set</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/features-1.png" alt=""><p class="caption">plot of chunk features</p>
+<img src="figure/features-1.png" alt=""><p class="caption">Conservation features for the Pacific High Seas
+planning area</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="cost-data-fishing-effort">Cost data: fishing effort<a class="anchor" aria-label="anchor" href="#cost-data-fishing-effort"></a>
+<h2 id="cost-data-global-fishing-watch-data">Cost data: Global Fishing Watch data<a class="anchor" aria-label="anchor" href="#cost-data-global-fishing-watch-data"></a>
 </h2>
+<p>The other piece of data needed for a spatial prioritization is cost.
+In terrestrial spatial planning, this can be the actually monetary value
+of buying the land for conservation. In marine spatial planning,
+measures of fishing, such as catch and fishing effort, are often used as
+the opportunity cost for each planning unit.</p>
+<p><a href="https://globalfishingwatch.org/" class="external-link">Global Fishing Watch</a>
+has global fishing effort data, and this can be accessed easily using
+the R package <a href="https://github.com/GlobalFishingWatch/gfwr" class="external-link"><code>gfwr</code></a>.
+An API key is required, but can be easily generated at no cost; see the
+<code>gfwr</code> website for more details.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pacific_hs_geojson</span> <span class="op">&lt;-</span> <span class="va">pacific_hs_area_extent</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co">#use the larger area extent because using just the pacific_hs polygon results in a slightly truncated area</span></span>
 <span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -189,25 +209,30 @@ seamount buffer to 30km:</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"Lon"</span>, <span class="st">"Lat"</span>, <span class="st">"total_effort"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"xyz"</span>, crs <span class="op">=</span> <span class="st">"epsg:4326"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/subst.html" class="external-link">subst</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">0</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/subst.html" class="external-link">subst</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">0.01</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_data_in_grid.html" class="external-link">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span>,</span>
 <span>                                   dat <span class="op">=</span> <span class="va">.</span>,</span>
 <span>                                   name <span class="op">=</span> <span class="st">"fishing_effort"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">total_annual_effort</span>, fun <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/fishing-effort-1.png" alt=""><p class="caption">plot of chunk fishing-effort</p>
+<img src="figure/fishing-effort-1.png" alt=""><p class="caption">Map of total apparent fishing effort in 2022 for the
+Pacific High Seas area. Data from Global Fishing Watch</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="run-a-simple-prioritization">Run a simple prioritization<a class="anchor" aria-label="anchor" href="#run-a-simple-prioritization"></a>
+<h2 id="run-a-simple-spatial-prioritization">Run a simple spatial prioritization<a class="anchor" aria-label="anchor" href="#run-a-simple-spatial-prioritization"></a>
 </h2>
-<p>Set targets of 20% for all features.</p>
+<p>We now have all the data we need to create a conservation problem and
+solve it to get a map of priority areas for conservation for our Pacific
+High Seas area. For the prioritization, we need to set targets for how
+much of each conservation feature must be included in the prioritized
+areas. We will set this at 20%.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob</span> <span class="op">&lt;-</span> <span class="fu">prioritizr</span><span class="fu">::</span><span class="fu">problem</span><span class="op">(</span>x <span class="op">=</span> <span class="va">total_annual_effort</span>, features <span class="op">=</span> <span class="va">feature_set</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">add_min_set_objective</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">add_relative_targets</span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="co">#add_boundary_penalties(penalty = 0.0001) %&gt;% </span></span>
+<span>  <span class="co">#add_boundary_penalties(penalty = 0.00001) %&gt;% </span></span>
 <span>  <span class="fu">add_binary_decisions</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">add_lpsymphony_solver</span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -217,14 +242,21 @@ seamount buffer to 30km:</p>
 <span>            col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"green4"</span><span class="op">)</span>,</span>
 <span>            type <span class="op">=</span> <span class="st">"classes"</span>,</span>
 <span>            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not selected"</span>, <span class="st">"Selected"</span><span class="op">)</span>,</span>
-<span>            fun <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>            fun <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">feature_set</span><span class="op">[[</span><span class="st">"seamounts"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/prioritization-1.png" alt=""><p class="caption">plot of chunk prioritization</p>
+<img src="figure/prioritization-1.png" alt=""><p class="caption">Prioritization solution for the Pacific High Seas
+area. Grey outlines are seamounts.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="prioritization-with-patches">Prioritization with patches<a class="anchor" aria-label="anchor" href="#prioritization-with-patches"></a>
 </h2>
+<p>To ensure that whole seamount areas area included in the solution, we
+need to use the <code>patchwise</code> package to do some pre-processing
+of the data we use. The prioritization result is similar to that above,
+but whole seamount patches equal to at least 20% of the total seamount
+area are included.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Separate seamount data - we want to protect entire patches</span></span>
 <span><span class="va">seamounts_rast</span> <span class="op">&lt;-</span> <span class="va">feature_set</span><span class="op">[[</span><span class="st">"seamounts"</span><span class="op">]</span><span class="op">]</span></span>
@@ -270,9 +302,11 @@ seamount buffer to 30km:</p>
 <span>            col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"green4"</span><span class="op">)</span>,</span>
 <span>            type <span class="op">=</span> <span class="st">"classes"</span>,</span>
 <span>            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not selected"</span>, <span class="st">"Selected"</span><span class="op">)</span>,</span>
-<span>            fun <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>            fun <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">seamounts_rast</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/prioritization_patches-1.png" alt=""><p class="caption">plot of chunk prioritization_patches</p>
+<img src="figure/prioritization_patches-1.png" alt=""><p class="caption">Prioritization solution for the Pacific High Seas
+area, with whole seamounts included. Grey outlines are seamounts.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

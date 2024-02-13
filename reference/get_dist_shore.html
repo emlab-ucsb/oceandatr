@@ -72,9 +72,8 @@
 <span class="r-in"><span><span class="co"># Get a planning grid</span></span></span>
 <span class="r-in"><span><span class="va">planning_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>area_polygon <span class="op">=</span> <span class="va">bermuda_eez</span>, projection_crs <span class="op">=</span> <span class="st">'+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'</span>, resolution <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dist_from_shore_rast</span> <span class="op">&lt;-</span> <span class="fu">get_dist_shore</span><span class="op">(</span><span class="va">planning_grid</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dist_shore(planning_grid):</span> spatialgrid must be in raster or sf format</span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dist_from_shore_rast</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'plot': object 'dist_from_shore_rast' not found</span>
+<span class="r-plt img"><img src="get_dist_shore-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

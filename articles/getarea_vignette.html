@@ -210,9 +210,10 @@ from. Let’s use the “eez” option as the layer of interest and allow
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_area.html">get_area</a></span><span class="op">(</span>query_type <span class="op">=</span> <span class="st">"eez"</span>, show_column_options <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $mregions_column</span></span>
-<span><span class="co">#&gt;  [1] "mrgid"      "geoname"    "mrgid_ter1" "pol_type"   "mrgid_sov1" "territory1" "iso_ter1"   "sovereign1" "mrgid_ter2" "mrgid_sov2" "territory2"</span></span>
-<span><span class="co">#&gt; [12] "iso_ter2"   "sovereign2" "mrgid_ter3" "mrgid_sov3" "territory3" "iso_ter3"   "sovereign3" "x_1"        "y_1"        "mrgid_eez"  "area_km2"  </span></span>
-<span><span class="co">#&gt; [23] "iso_sov1"   "iso_sov2"   "iso_sov3"   "un_sov1"    "un_sov2"    "un_sov3"    "un_ter1"    "un_ter2"    "un_ter3"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "mrgid"      "geoname"    "mrgid_ter1" "pol_type"   "mrgid_sov1" "territory1" "iso_ter1"   "sovereign1" "mrgid_ter2"</span></span>
+<span><span class="co">#&gt; [10] "mrgid_sov2" "territory2" "iso_ter2"   "sovereign2" "mrgid_ter3" "mrgid_sov3" "territory3" "iso_ter3"   "sovereign3"</span></span>
+<span><span class="co">#&gt; [19] "x_1"        "y_1"        "mrgid_eez"  "area_km2"   "iso_sov1"   "iso_sov2"   "iso_sov3"   "un_sov1"    "un_sov2"   </span></span>
+<span><span class="co">#&gt; [28] "un_sov3"    "un_ter1"    "un_ter2"    "un_ter3"</span></span></code></pre></div>
 <p>Each of these columns is a different type of identifier for ocean
 areas that we can choose from. A full explanation of what the columns
 mean can be found <a href="https://marineregions.org/eezattribute.php" class="external-link">here</a>. The column
@@ -254,15 +255,17 @@ to <code>TRUE</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_area.html">get_area</a></span><span class="op">(</span>query_type <span class="op">=</span> <span class="st">"eez"</span>, mregions_column <span class="op">=</span> <span class="st">"iso_ter1"</span>, show_value_options <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $iso_ter1</span></span>
-<span><span class="co">#&gt;   [1] "ABW" "AGO" "AIA" "ALB" "ARE" "ARG" "ASM" "ATF" "ATG" "AUS" "AZE" "BEL" "BEN" "BES" "BGD" "BGR" "BHR" "BHS" "BIH" "BLM" "BLZ" "BMU" "BRA" "BRB" "BRN"</span></span>
-<span><span class="co">#&gt;  [26] "CAN" "CCK" "CHL" "CHN" "CIV" "CMR" "COD" "COG" "COK" "COL" "COM" "CPV" "CRI" "CUB" "CUW" "CXR" "CYM" "CYP" "DEU" "DJI" "DMA" "DNK" "DOM" "DZA" "ECU"</span></span>
-<span><span class="co">#&gt;  [51] "EGY" "ERI" "ESH" "ESP" "EST" "FIN" "FJI" "FLK" "FRA" "FRO" "FSM" "GAB" "GBR" "GEO" "GGY" "GHA" "GIB" "GIN" "GLP" "GMB" "GNB" "GNQ" "GRC" "GRD" "GRL"</span></span>
-<span><span class="co">#&gt;  [76] "GTM" "GUF" "GUM" "GUY" "HMD" "HND" "HRV" "HTI" "IDN" "IMN" "IND" "IRL" "IRN" "IRQ" "ISL" "ISR" "ITA" "JAM" "JEY" "JOR" "JPN" "KAZ" "KEN" "KHM" "KIR"</span></span>
-<span><span class="co">#&gt; [101] "KNA" "KOR" "KWT" "LBN" "LBR" "LBY" "LCA" "LKA" "LTU" "LVA" "MAF" "MAR" "MCO" "MDG" "MDV" "MEX" "MHL" "MLT" "MMR" "MNE" "MNP" "MOZ" "MRT" "MSR" "MTQ"</span></span>
-<span><span class="co">#&gt; [126] "MUS" "MYS" "MYT" "NAM" "NCL" "NFK" "NGA" "NIC" "NIU" "NLD" "NOR" "NRU" "NZL" "OMN" "PAK" "PAN" "PCN" "PER" "PHL" "PLW" "PNG" "POL" "PRI" "PRK" "PRT"</span></span>
-<span><span class="co">#&gt; [151] "PSE" "PYF" "QAT" "REU" "ROU" "RUS" "SAU" "SDN" "SEN" "SGP" "SGS" "SHN" "SJM" "SLB" "SLE" "SLV" "SOM" "SPM" "STP" "SUR" "SVN" "SWE" "SXM" "SYC" "SYR"</span></span>
-<span><span class="co">#&gt; [176] "TCA" "TGO" "THA" "TKL" "TKM" "TLS" "TON" "TTO" "TUN" "TUR" "TUV" "TWN" "TZA" "UKR" "UMI" "URY" "USA" "VCT" "VEN" "VGB" "VIR" "VNM" "VUT" "WLF" "WSM"</span></span>
-<span><span class="co">#&gt; [201] "YEM" "ZAF"</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] "ABW" "AGO" "AIA" "ALB" "ARE" "ARG" "ASM" "ATF" "ATG" "AUS" "AZE" "BEL" "BEN" "BES" "BGD" "BGR" "BHR" "BHS" "BIH"</span></span>
+<span><span class="co">#&gt;  [20] "BLM" "BLZ" "BMU" "BRA" "BRB" "BRN" "CAN" "CCK" "CHL" "CHN" "CIV" "CMR" "COD" "COG" "COK" "COL" "COM" "CPV" "CRI"</span></span>
+<span><span class="co">#&gt;  [39] "CUB" "CUW" "CXR" "CYM" "CYP" "DEU" "DJI" "DMA" "DNK" "DOM" "DZA" "ECU" "EGY" "ERI" "ESH" "ESP" "EST" "FIN" "FJI"</span></span>
+<span><span class="co">#&gt;  [58] "FLK" "FRA" "FRO" "FSM" "GAB" "GBR" "GEO" "GGY" "GHA" "GIB" "GIN" "GLP" "GMB" "GNB" "GNQ" "GRC" "GRD" "GRL" "GTM"</span></span>
+<span><span class="co">#&gt;  [77] "GUF" "GUM" "GUY" "HMD" "HND" "HRV" "HTI" "IDN" "IMN" "IND" "IRL" "IRN" "IRQ" "ISL" "ISR" "ITA" "JAM" "JEY" "JOR"</span></span>
+<span><span class="co">#&gt;  [96] "JPN" "KAZ" "KEN" "KHM" "KIR" "KNA" "KOR" "KWT" "LBN" "LBR" "LBY" "LCA" "LKA" "LTU" "LVA" "MAF" "MAR" "MCO" "MDG"</span></span>
+<span><span class="co">#&gt; [115] "MDV" "MEX" "MHL" "MLT" "MMR" "MNE" "MNP" "MOZ" "MRT" "MSR" "MTQ" "MUS" "MYS" "MYT" "NAM" "NCL" "NFK" "NGA" "NIC"</span></span>
+<span><span class="co">#&gt; [134] "NIU" "NLD" "NOR" "NRU" "NZL" "OMN" "PAK" "PAN" "PCN" "PER" "PHL" "PLW" "PNG" "POL" "PRI" "PRK" "PRT" "PSE" "PYF"</span></span>
+<span><span class="co">#&gt; [153] "QAT" "REU" "ROU" "RUS" "SAU" "SDN" "SEN" "SGP" "SGS" "SHN" "SJM" "SLB" "SLE" "SLV" "SOM" "SPM" "STP" "SUR" "SVN"</span></span>
+<span><span class="co">#&gt; [172] "SWE" "SXM" "SYC" "SYR" "TCA" "TGO" "THA" "TKL" "TKM" "TLS" "TON" "TTO" "TUN" "TUR" "TUV" "TWN" "TZA" "UKR" "UMI"</span></span>
+<span><span class="co">#&gt; [191] "URY" "USA" "VCT" "VEN" "VGB" "VIR" "VNM" "VUT" "WLF" "WSM" "YEM" "ZAF"</span></span></code></pre></div>
 <p>There might be a project in which you need the area in the high seas.
 This is a little tricky, but easy if you know the codes. In this case,
 the <code>area_name</code> should be “63202”, the
