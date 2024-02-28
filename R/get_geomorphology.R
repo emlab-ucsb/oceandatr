@@ -24,8 +24,8 @@ get_geomorphology <- function(area_polygon = NULL, spatial_grid = NULL, antimeri
   check_grid_or_polygon(spatial_grid, area_polygon)
   
   geomorph_file_paths <- system.file("extdata/geomorphology", package = "oceandatr") %>% 
-  list.files() %>% 
-  system.file("extdata/geomorphology", ., package = "oceandatr")
+    list.files() %>% 
+    system.file("extdata/geomorphology", ., package = "oceandatr")
 
   geomorph_data <- list()
   
