@@ -36,3 +36,4 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/
+Roxygen: list(markdown = TRUE)

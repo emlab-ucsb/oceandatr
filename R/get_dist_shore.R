@@ -22,7 +22,7 @@ get_dist_shore <- function(spatial_grid){
      ne_data_filename <- "ne_land_data.zip"
      
      if(!file.exists(file.path(tempdir(), "ne_10m_land.shp"))){
-       utils::download.file(url = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip", destfile = file.path(tempdir(), ne_data_filename), mode = "wb", quiet = TRUE)
+       utils::download.file(url = "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_land.zip", destfile = file.path(tempdir(), ne_data_filename), mode = "wb", quiet = TRUE)
        utils::unzip(file.path(tempdir(), ne_data_filename), exdir = tempdir())
      }
      

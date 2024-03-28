@@ -13,21 +13,21 @@ get_area(
 )
 }
 \arguments{
-\item{area_name}{string; the name of the country or area that you would like to query for; must match a name in `mregions2` for the `mregions_column` selected}
+\item{area_name}{string; the name of the country or area that you would like to query for; must match a name in \code{mregions2} for the \code{mregions_column} selected}
 
-\item{query_type}{string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run `mregions2::mrp_list` to see the full list of data_product options. (default is "eez")}
+\item{query_type}{string; the area type that you would like to query for; some options include "eez", "high_seas", "ecoregions". Run \code{mregions2::mrp_list} to see the full list of data_product options. (default is "eez")}
 
-\item{mregions_column}{string; the name of the column in `mregions2` that you would like to query to find the area corresponding to `area_name` (default is "sovereign1")}
+\item{mregions_column}{string; the name of the column in \code{mregions2} that you would like to query to find the area corresponding to \code{area_name} (default is "sovereign1")}
 
-\item{show_value_options}{logical; whether to show all of the value options associated with your `mregions_column` selection that are available in `mregions2`; running this will not return a spatial object (default is FALSE)}
+\item{show_value_options}{logical; whether to show all of the value options associated with your \code{mregions_column} selection that are available in \code{mregions2}; running this will not return a spatial object (default is FALSE)}
 
-\item{show_column_options}{logical; whether to show all of the `mregions_column` options that are available in `mregions2`; running this will not return a spatial object (default is FALSE)}
+\item{show_column_options}{logical; whether to show all of the \code{mregions_column} options that are available in \code{mregions2}; running this will not return a spatial object (default is FALSE)}
 }
 \value{
-if `show_options` = FALSE, returns the sf object of the area of interest; if `show_value_options` or `show_column_options` == TRUE, a named list will be returned. Names in the list correspond to options for `mregions_column` and values correspond to options for `area_name`
+if \code{show_options} = FALSE, returns the sf object of the area of interest; if \code{show_value_options} or \code{show_column_options} == TRUE, a named list will be returned. Names in the list correspond to options for \code{mregions_column} and values correspond to options for \code{area_name}
 }
 \description{
-This uses the `mrp_get` function from the `mregions2` package to retrieve an area object (e.g. an EEZ) from Marine Regions (https://marineregions.org/gazetteer.php). You can filter using any column available in the `mregions2` database. To see all possible column names and codes, specify `show_options` = TRUE when you run the function.
+This uses the \code{mrp_get} function from the \code{mregions2} package to retrieve an area object (e.g. an EEZ) from Marine Regions (https://marineregions.org/gazetteer.php). You can filter using any column available in the \code{mregions2} database. To see all possible column names and codes, specify \code{show_options} = TRUE when you run the function.
 }
 \examples{
 # Show all possible column names 

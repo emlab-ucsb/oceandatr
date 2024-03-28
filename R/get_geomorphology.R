@@ -34,40 +34,40 @@ get_geomorphology <- function(area_polygon = NULL, spatial_grid = NULL, antimeri
   suppressMessages({sf::sf_use_s2(FALSE)})
   
   for (i in 1:length(geomorph_file_paths)) {
-    feature_name <- gsub(pattern =  ".rds", replacement =  "", basename(geomorph_file_paths[i]))
+    nms <- gsub(pattern =  ".rds", replacement =  "", basename(geomorph_file_paths[i]))
     
     geomorph_layer <- geomorph_file_paths[i] %>% 
       readRDS() 
     suppressMessages({
       suppressWarnings({
-        geomorph_data[[i]] <- get_data_in_grid(area_polygon = area_polygon, spatial_grid = spatial_grid, dat = geomorph_layer, meth = meth, name = feature_name, antimeridian = antimeridian)
+        geomorph_data[[i]] <- tryCatch(
+          get_data_in_grid(area_polygon = area_polygon, 
+                           spatial_grid = if(check_sf(spatial_grid)) spatial_grid %>% sf::st_geometry() %>% sf::st_sf() else spatial_grid, 
+                           dat = geomorph_layer, 
+                           meth = meth, 
+                           name = nms, 
+                           antimeridian = antimeridian),
+          error = function(e) NULL)
         })
     })
   }
   
   suppressMessages({sf::sf_use_s2(TRUE)})
+
+  null_elements <- sapply(geomorph_data, is.null)
+
+  if(all(null_elements)) stop("No geomorphology data in the polygon or grid.") else geomorph_data <- geomorph_data[!null_elements]
  
   if(!is.null(area_polygon)){
     do.call(rbind, geomorph_data) %>% 
       sf::st_cast(to = "MULTIPOLYGON")
-  } else if(check_raster(geomorph_data[[1]])){
-    geomorph_ras <- terra::rast(geomorph_data)
-    
-    na_index <- is.na(terra::minmax(geomorph_ras)[1,])
-    if(all(na_index == TRUE)){
-      stop("No data present in the planning grid")
-    }else geomorph_ras[[!na_index]]
+  } else if(check_raster(spatial_grid)){
+      suppressWarnings(terra::rast(geomorph_data))
   }else{ #sf planning grid case
-    non_zero_index <- (sapply(geomorph_data, function(x) sum(x[[1]], na.rm = TRUE)) >0)
-    if(all(non_zero_index == FALSE)){
-      stop("No data present in the planning grid")
-    }else{
-      geomorph_data <- geomorph_data[non_zero_index] 
-      
       lapply(geomorph_data[1:(length(geomorph_data)-1)], function(x) sf::st_drop_geometry(x)) %>% 
         do.call(cbind, .) %>% 
-        cbind(geomorph_data[[length(geomorph_data)]]) %>% 
-        sf::st_sf()
-    }
+        cbind(geomorph_data[length(geomorph_data)]) %>% 
+        sf::st_sf() %>% 
+        sf::st_set_geometry("geometry")
   }
 }
