@@ -30,7 +30,11 @@ Gets ecoregion data within an area polygon or planning grid depending on which i
 The Following ecoregions can be obtained:
 \itemize{
 \item Marine Ecosystems of the World \href{https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas}{dataset}
+\item \href{https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=}{Longhurst Provinces}
+\item \href{http://geonode.iwlearn.org/layers/geonode:lmes}{Large Marine Ecosystems of the World}
 }
+
+All data are downloaded via the \code{mregions2} R package function \code{mregions2::mrp_get()}, and more information on the data can be found on the \href{https://marineregions.org/sources.php}{Marine Regions website}
 }
 \examples{
 #' # Get EEZ data first 
