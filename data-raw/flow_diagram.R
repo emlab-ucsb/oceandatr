@@ -45,7 +45,7 @@ area [label = 'get_area()']
 pus [label = 'get_grid()']
 features [label =  'get_features()']
 prioritize [label = 'prioritizr', fillcolor = darkolivegreen2, shape = 'hexagon', orientation = 90, height = 1.7]
-cost[label = 'cost data', fillcolor = grey]
+cost[label = 'get_dist_shore()']
 
 # edge definitions with the node IDs
 cost -> prioritize
