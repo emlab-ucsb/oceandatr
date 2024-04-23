@@ -39,8 +39,8 @@ get_dist_shore <- function(spatial_grid){
            terra::distance(terra::vect(ne_data)) %>% 
            terra::mask(spatial_grid)
          
-         ras_min <- terra::global(temp_ras, "min", na.rm = TRUE)
-         ras_max <- terra::global(temp_ras, "max", na.rm = TRUE)
+         ras_min <- as.numeric(terra::global(temp_ras, "min", na.rm = TRUE)[1])
+         ras_max <- as.numeric(terra::global(temp_ras, "max", na.rm = TRUE)[1])
          
          return((ras_max - temp_ras - ras_min))
        }else{
@@ -55,8 +55,8 @@ get_dist_shore <- function(spatial_grid){
          
          spatial_grid[!is.na(spatial_grid)] <- dist_vect
          
-         ras_min <- terra::global(spatial_grid, "min", na.rm = TRUE)
-         ras_max <- terra::global(spatial_grid, "max", na.rm = TRUE)
+         ras_min <- as.numeric(terra::global(spatial_grid, "min", na.rm = TRUE)[1])
+         ras_max <- as.numeric(terra::global(spatial_grid, "max", na.rm = TRUE)[1])
          
          return((ras_max - spatial_grid - ras_min))
        }
