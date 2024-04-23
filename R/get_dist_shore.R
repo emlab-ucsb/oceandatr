@@ -35,9 +35,14 @@ get_dist_shore <- function(spatial_grid){
      if(check_raster(spatial_grid)){
        
        if(matching_crs){
-         spatial_grid %>% 
+         temp_ras <- spatial_grid %>% 
            terra::distance(terra::vect(ne_data)) %>% 
            terra::mask(spatial_grid)
+         
+         ras_min <- terra::global(temp_ras, "min", na.rm = TRUE)
+         ras_max <- terra::global(temp_ras, "max", na.rm = TRUE)
+         
+         return((ras_max - temp_ras - ras_min))
        }else{
          dist_vect <- spatial_grid %>% 
            terra::as.data.frame(xy = TRUE, cell = TRUE) %>% 
@@ -49,7 +54,11 @@ get_dist_shore <- function(spatial_grid){
            {do.call(pmin, as.data.frame(.))} 
          
          spatial_grid[!is.na(spatial_grid)] <- dist_vect
-         return(spatial_grid)
+         
+         ras_min <- terra::global(temp_ras, "min", na.rm = TRUE)
+         ras_max <- terra::global(temp_ras, "max", na.rm = TRUE)
+         
+         return((ras_max - spatial_grid - ras_min))
        }
      } else{
        temp_grid <- spatial_grid %>% 
