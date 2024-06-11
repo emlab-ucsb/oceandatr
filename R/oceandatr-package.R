@@ -5,6 +5,7 @@
 #' @importFrom graphics legend
 #' @importFrom graphics par
 #' @importFrom methods is
+#' @importFrom spatialgridr get_boundary
 #' @importFrom spatialgridr get_data_in_grid
 #' @importFrom spatialgridr get_grid
 #' @importFrom stats complete.cases
