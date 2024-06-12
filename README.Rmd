@@ -154,7 +154,7 @@ Seamounts, classified as peaks at least 1000m higher than the surrounding seaflo
 
 ```{r seamounts, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 #planning grid units are metres, so set buffer to 30000 m = 30 km
-seamounts <- get_seamounts_buffered(spatial_grid = bermuda_grid, buffer = 30000)
+seamounts <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 
 terra::plot(seamounts, col = "saddlebrown", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)

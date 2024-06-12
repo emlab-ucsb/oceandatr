@@ -17,7 +17,7 @@ get_seamounts(
 
 \item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw seamounts data in that polygon(s) will be returned}
 
-\item{buffer}{\code{numeric}; the distance from the seamount peak to include in the output. Distance should be in the same units as the spatial_grid, use e.g. \code{sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal} to check units. If buffering raw data, this units are degrees.}
+\item{buffer}{\code{numeric}; the distance from the seamount peak to include in the output. Distance should be in the same units as the spatial_grid, use e.g. \code{sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal} to check units. If buffering raw data, units are metres, unless \code{sf::sf_use_s2()} is set to \code{FALSE}, in which case the units are degrees.}
 
 \item{name}{name of raster or column in sf object that is returned}
 
@@ -39,6 +39,7 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 # Get raw seamounts data
 seamount_peaks <- get_seamount_peaks(spatial_grid = bermuda_eez, raw = TRUE)
 # Get gridded seamount data
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 1000)
-seamounts_gridded <- get_seamount_peaks(spatial_grid = bermuda_grid)
+bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+#buffer seamounts to a distance of 30 km (30,000 m)
+seamounts_gridded <- get_seamount_peaks(spatial_grid = bermuda_grid, buffer = 30000)
 }

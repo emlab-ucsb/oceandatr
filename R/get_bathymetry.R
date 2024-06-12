@@ -37,8 +37,8 @@
 #' # Get raw bathymetry data, not classified into depth zones
 #' bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, raw = TRUE, classify_bathymetry = FALSE)
 #' # Get depth zones in spatial_grid
-#' planning_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
-#' depth_zones <- get_bathymetry(spatial_grid = planning_grid)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 #' terra::plot(depth_zones)
 get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300, antimeridian = NULL){
 
@@ -60,6 +60,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
     }
 
   if(classify_bathymetry){
+    
     depth_zones <- c("hadopelagic", "abyssopelagic", "bathypelagic", "mesopelagic", "epipelagic" )
     
     bathymetry_cuts <- c(-12000, -6000, -4000, -1000, -200, 10)
@@ -68,11 +69,18 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
     reclass_var <- ifelse(above_sea_level_isNA, NA, 0)
     
     if(check_sf(bathymetry)){
+      grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
+      
+      if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)
+
       bathymetry %>% 
+        dplyr::select(name) %>% 
         dplyr::mutate(bathymetry = dplyr::case_when(bathymetry >=0 ~ reclass_var,
-                                                    .default = as.numeric(bathymetry))) %>% 
-        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) %>% 
-        dplyr::select((ncol(.)-1):1) #reorder shallowest to deepest depth zones
+                                                    .default = as.numeric(bathymetry))) %>%
+        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) %>%
+        dplyr::select((ncol(.)-1):1) %>% #reorder shallowest to deepest depth zones
+        {if(grid_has_extra_cols) cbind(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+
     }else{
       bathymetry %>%
         terra::classify(matrix(c(0, 1e4, reclass_var), ncol = 3), include.lowest = TRUE) %>%

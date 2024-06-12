@@ -7,7 +7,7 @@
 #'
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
 #' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw seamounts data in that polygon(s) will be returned
-#' @param buffer `numeric`; the distance from the seamount peak to include in the output. Distance should be in the same units as the spatial_grid, use e.g. `sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal` to check units. If buffering raw data, this units are degrees.
+#' @param buffer `numeric`; the distance from the seamount peak to include in the output. Distance should be in the same units as the spatial_grid, use e.g. `sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal` to check units. If buffering raw data, units are metres, unless `sf::sf_use_s2()` is set to `FALSE`, in which case the units are degrees.
 #' @param name name of raster or column in sf object that is returned
 #' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
 #'
@@ -20,8 +20,9 @@
 #' # Get raw seamounts data
 #' seamount_peaks <- get_seamount_peaks(spatial_grid = bermuda_eez, raw = TRUE)
 #' # Get gridded seamount data
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 1000)
-#' seamounts_gridded <- get_seamount_peaks(spatial_grid = bermuda_grid)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+#' #buffer seamounts to a distance of 30 km (30,000 m)
+#' seamounts_gridded <- get_seamount_peaks(spatial_grid = bermuda_grid, buffer = 30000)
 get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name = "seamounts", antimeridian = NULL){
   
   check_grid(spatial_grid)
@@ -31,7 +32,7 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
   
   if(raw){
     get_data_in_grid(spatial_grid = spatial_grid, dat = seamounts, raw = TRUE, antimeridian = antimeridian) %>% 
-    {if(is.null(buffer)) . else{sf::st_buffer(buffer) %>% sf::st_union() %>% sf::st_sf()}}  
+   {if(is.null(buffer)) . else sf::st_buffer(., buffer)}
   } else{
     
     meth <- if(check_raster(spatial_grid)) "near" else "mode"
