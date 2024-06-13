@@ -68,7 +68,7 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 # Get raw bathymetry data, not classified into depth zones
 bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, raw = TRUE, classify_bathymetry = FALSE)
 # Get depth zones in spatial_grid
-planning_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
-depth_zones <- get_bathymetry(spatial_grid = planning_grid)
+bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 terra::plot(depth_zones)
 }

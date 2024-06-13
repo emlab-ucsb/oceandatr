@@ -25,3 +25,11 @@ test_that("returns gridded Bermuda depth classes", {
                                                          resolution = 20000,
                                                          output = "sf_hex")), class = "sf")
 })
+
+test_that("returns extra columns as well as depth classes for sf grid", {
+  expect_equal(get_boundary(name = "Bermuda") |> 
+                 get_grid(resolution = 10000, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', output = "sf_square") |> 
+                 dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |> 
+                 get_bathymetry() |>
+                 ncol(), 7)
+})
