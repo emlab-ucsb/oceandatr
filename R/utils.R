@@ -157,3 +157,7 @@ polygon_in_4326 <-
           }
       }
   }
+
+remove_empty_raster_layers <- function(ras){
+  terra::subset(which(terra::global(ras, "sum", na.rm = TRUE) >0))
+}

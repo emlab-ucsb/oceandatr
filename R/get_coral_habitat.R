@@ -30,6 +30,8 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
  
   check_grid(spatial_grid)
   
+  is_sf_grid <- check_sf(spatial_grid)
+  
   if(!raw){
     # Add errors if the thresholds are not correctly specified
     if(antipatharia_threshold < 0 | antipatharia_threshold > 100) { 
@@ -39,69 +41,69 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
       stop("octocoral_threshold must be between 1 and 7, as it represents the number of octocoral species (out of 7) must be present in an area for octocorals as a whole to be considered present")
     }  
   }
-  
-  # Data message 
-  # report_message <- function(coral_data) { 
-  #   if (terra::global(eval(as.name(coral_data)), "sum", na.rm = TRUE) < 1) { 
-  #     message(paste0("No ", gsub("_", " ", coral_data), "in area of interest. Processing output..."))
-  #   } else {
-  #     message(paste0("Data found for ", gsub("_", " ", coral_data), ". Processing output...")) 
-  #   }
-  # }
 
+  if(is_sf_grid){
+    grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
+    
+    if(grid_has_extra_cols) {
+      extra_cols <- sf::st_drop_geometry(spatial_grid)
+      
+      spatial_grid <- spatial_grid %>%
+        sf::st_geometry() %>%
+        sf::st_sf()
+    }
+  }
+  
   antipatharia_global <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "oceandatr", mustWork = TRUE) %>%
     terra::rast() %>%
     stats::setNames("antipatharia")
 
-  meth <- if(check_sf(spatial_grid)) "mean" else "average"
+  meth <- if(is_sf_grid) "mean" else "average"
 
-  antipatharia <- get_data_in_grid(spatial_grid = spatial_grid, dat = antipatharia_global, name = "antipatharia", meth = meth, antimeridian = antimeridian)
+  antipatharia <- get_data_in_grid(spatial_grid = spatial_grid, dat = antipatharia_global, raw = raw, name = "antipatharia", meth = meth, antimeridian = antimeridian)
   rm(antipatharia_global)
   
   #same method for cold water corals and octocorals since these are integer values
-  meth <- if(check_sf(spatial_grid)) "mode" else "near"
+  meth <- if(is_sf_grid) "mode" else "near"
 
   cold_corals_global <- system.file("extdata", "binary_grid_figure7.tif", package = "oceandatr", mustWork = TRUE) %>%
     terra::rast() %>%
     stats::setNames("cold_corals")
 
-  cold_corals <- get_data_in_grid(area_polygon = area_polygon, spatial_grid = spatial_grid, dat = cold_corals_global, name = "cold_corals", meth = meth, antimeridian = antimeridian)
+  cold_corals <- get_data_in_grid(spatial_grid = spatial_grid, dat = cold_corals_global, raw = raw, name = "cold_corals", meth = meth, antimeridian = antimeridian)
   rm(cold_corals_global)
 
   octocorals_global <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "oceandatr", mustWork = TRUE) %>%
     terra::rast() %>%
     stats::setNames("octocorals")
 
-  octocorals <- get_data_in_grid(area_polygon = area_polygon, spatial_grid = spatial_grid, dat = octocorals_global, name = "octocorals", meth = meth, antimeridian = antimeridian)
+  octocorals <- get_data_in_grid(spatial_grid = spatial_grid, dat = octocorals_global, raw = raw, name = "octocorals", meth = meth, antimeridian = antimeridian)
   rm(octocorals_global)
 
-  if(!is.null(area_polygon)){
-    c(antipatharia, cold_corals, octocorals) %>% 
-      terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
+  if(raw){
+    c(antipatharia, cold_corals, octocorals)
   }else{
     antipatharia_breaks <- c(0, antipatharia_threshold, 100)
-    antipatharia_class_names <- c(NA, "antipatharia_coral")
+    #antipatharia_class_names <- c(NA, "antipatharia_coral")
     
     cold_corals_breaks <- c(0, 0.5, 1.1)
-    cold_corals_class_names <- c(NA, "cold_coral")
+    #cold_corals_class_names <- c(NA, "cold_coral")
     
     octocoral_breaks <- c(0, octocoral_threshold, 8)
-    octocoral_class_names <- c(NA, "octocoral")
+    #octocoral_class_names <- c(NA, "octocoral")
     
-    antipatharia <- classify_layers(dat = antipatharia, dat_breaks = antipatharia_breaks, classification_names = antipatharia_class_names)
-
-    cold_corals <- classify_layers(dat = cold_corals, dat_breaks = cold_corals_breaks, classification_names = cold_corals_class_names) 
-
-    octocorals <- classify_layers(dat = octocorals, dat_breaks = octocoral_breaks, classification_names = octocoral_class_names) 
+   #coral_layer_names <- c("antipatharia_coral", "cold_coral", "octocoral")
     
-    coral_layer_names <- c(antipatharia_class_names[2], cold_corals_class_names[2], octocoral_class_names[2])
+    antipatharia <- classify_layers(dat = antipatharia, dat_breaks = antipatharia_breaks, classification_names = "antipatharia_coral")
+
+    cold_corals <- classify_layers(dat = cold_corals, dat_breaks = cold_corals_breaks, classification_names = "cold_coral") 
+
+    octocorals <- classify_layers(dat = octocorals, dat_breaks = octocoral_breaks, classification_names = "octocoral") 
 
     if(check_raster(antipatharia)){
-      c(antipatharia, cold_corals, octocorals) %>%
-        {if(any(names(.) %in% coral_layer_names)) . else stop("No coral habitat within the planning grid.")} %>% 
-        terra::subset(which(names(.) %in% coral_layer_names)) %>% 
-        terra::subset(which(terra::global(., "sum", na.rm = TRUE) >0))
+      c(antipatharia, cold_corals, octocorals) 
     }else{
+      return(list(antipatharia, cold_corals, octocorals))
       cbind(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>% 
         {if(any(colnames(.) %in% coral_layer_names))  dplyr::select(., tidyselect::any_of(coral_layer_names)) else stop("No coral habitat within the planning grid.")}%>% 
         sf::st_sf()
