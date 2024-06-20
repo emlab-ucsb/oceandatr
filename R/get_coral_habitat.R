@@ -23,9 +23,11 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw coral habitat data
 #' coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
+#' terra::plot(coral_habitat)
 #' # Get gridded coral habitat data
 #' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
 #' bermuda_coral_gridded <- get_coral_habitat(spatial_grid = bermuda_grid)
+#' terra::plot(bermuda_coral_gridded)
 get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_threshold = 22, octocoral_threshold = 2, antimeridian = NULL){
  
   check_grid(spatial_grid)
@@ -83,30 +85,29 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
   if(raw){
     c(antipatharia, cold_corals, octocorals)
   }else{
-    antipatharia_breaks <- c(0, antipatharia_threshold, 100)
-    #antipatharia_class_names <- c(NA, "antipatharia_coral")
-    
-    cold_corals_breaks <- c(0, 0.5, 1.1)
-    #cold_corals_class_names <- c(NA, "cold_coral")
-    
-    octocoral_breaks <- c(0, octocoral_threshold, 8)
-    #octocoral_class_names <- c(NA, "octocoral")
-    
-   #coral_layer_names <- c("antipatharia_coral", "cold_coral", "octocoral")
-    
-    antipatharia <- classify_layers(dat = antipatharia, dat_breaks = antipatharia_breaks, classification_names = "antipatharia_coral")
-
-    cold_corals <- classify_layers(dat = cold_corals, dat_breaks = cold_corals_breaks, classification_names = "cold_coral") 
-
-    octocorals <- classify_layers(dat = octocorals, dat_breaks = octocoral_breaks, classification_names = "octocoral") 
-
-    if(check_raster(antipatharia)){
-      c(antipatharia, cold_corals, octocorals) 
-    }else{
-      return(list(antipatharia, cold_corals, octocorals))
-      cbind(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>% 
-        {if(any(colnames(.) %in% coral_layer_names))  dplyr::select(., tidyselect::any_of(coral_layer_names)) else stop("No coral habitat within the planning grid.")}%>% 
-        sf::st_sf()
-    }
+   if(is_sf_grid){
+     dplyr::bind_cols(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>%
+       dplyr::mutate(antipatharia = dplyr::case_when(antipatharia < antipatharia_threshold ~ 0,
+                                                  antipatharia >= antipatharia_threshold ~ 1),
+                     octocorals = dplyr::case_when(octocorals < octocoral_threshold ~ 0,
+                                                   octocorals >= octocoral_threshold ~1),
+                     .keep = "unused") %>% 
+       {if(grid_has_extra_cols) dplyr::bind_cols(extra_cols, .) %>% sf::st_set_geometry("geometry") else .} 
+     
+   } else{
+     antipatharia <- antipatharia %>% 
+       terra::classify(matrix(c(0, antipatharia_threshold, 0,
+                                antipatharia_threshold, 101, 1),
+                              ncol = 3, byrow = TRUE), 
+                       right = FALSE)
+     
+     octocorals <- octocorals %>% 
+       terra::classify(matrix(c(0, octocoral_threshold, 0,
+                                octocoral_threshold, 9, 1),
+                              ncol = 3, byrow = TRUE),
+                       right = FALSE)
+     
+     c(antipatharia, cold_corals, octocorals)
+   }
   }
 }
