@@ -135,13 +135,13 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, show_plots = FA
   }
 }
 
-get_enviro_data <- function(area_polygon = NULL, spatial_grid = NULL, antimeridian){
-  bio_oracle_data <- list.files(system.file("extdata", "bio_oracle", package = "oceandatr", mustWork = TRUE), full.names = TRUE) %>% 
-    terra::rast()
+get_enviro_data <- function(spatial_grid = NULL, antimeridian){
+  
+  
   
   meth <- if(check_sf(spatial_grid)) 'mean' else 'average'
   
-    get_data_in_grid(area_polygon = area_polygon, spatial_grid = spatial_grid, dat = bio_oracle_data, meth = meth, name = names(bio_oracle_data), antimeridian = antimeridian) 
+    get_data_in_grid(spatial_grid = spatial_grid, dat = bio_oracle_data, meth = meth, name = names(bio_oracle_data), antimeridian = antimeridian) 
 }
 
 enviro_regions_boxplot <- function(enviro_region, enviro_data){
