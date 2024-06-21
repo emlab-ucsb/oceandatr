@@ -135,12 +135,13 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
   }
 }
 polygon_in_4326 <-
-  function(spatial_grid, matching_crs) {
+  function(spatial_grid) {
+    crs_is_4326 <- check_matching_crs(spatial_grid, 4326)
       if (check_raster(spatial_grid)) {
         spatial_grid %>%
           terra::as.polygons() %>%
           {
-            if (matching_crs)
+            if (crs_is_4326)
               .
             else
               terra::project(., "epsg:4326")
@@ -150,7 +151,7 @@ polygon_in_4326 <-
       } else{
         spatial_grid %>%
           {
-            if (matching_crs)
+            if (crs_is_4326)
               .
             else
               sf::st_transform(., 4326)

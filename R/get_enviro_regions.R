@@ -1,27 +1,29 @@
 #' Create environmental regions for area of interest
 #'
-#' @description This function gets [Bio-Oracle](https://bio-oracle.org/) environmental data for the area of interest or planning grid and creates environmental regions using k-means clustering. The idea for this comes from Magris et al. [2020](https://doi.org/10.1111/ddi.13183). The number of environmental regions can be specified directly, using `num_clusters`, but the function can also find the 'optimal' number of clusters using the `NbClust()` from the `NbClust` package.
+#' @description This function gets [Bio-Oracle](https://bio-oracle.org/) environmental data for the spatial grid and can then create environmental regions using k-means clustering. The idea for the clustering comes from Magris et al. [2020](https://doi.org/10.1111/ddi.13183). The number of environmental regions can be specified directly, using `num_clusters`, but the function can also find the 'optimal' number of clusters using the `NbClust()` from the `NbClust` package.
 #' 
-#' @details The environmental data used in the clustering, obtained from Bio-Oracle are:
+#' @details The environmental data used in the clustering are all sea surface measurements over the period 2010 - 2020:
 #' \itemize{
-#' \item Carbon phytoplankton biomass (mean)
-#' \item Chlorophyll concentration (mean)
+#' \item Chlorophyll concentration (mean, mg/ m3)
 #' \item Dissolved oxygen concentration (mean)
-#' \item Nitrate concentration (mean)
+#' \item Nitrate concentration (mean, mmol/ m3)
 #' \item pH (mean)
-#' \item Phosphate concentration (mean)
-#' \item Primary production (mean)
-#' \item Sea surface saliinity (mean)
-#' \item Sea surface temperature (max)
-#' \item Sea surface temperature (mean)
-#' \item Sea surface temperature (min)
-#' \item Silicate concentration (mean)
+#' \item Phosphate concentration (mean, mmol/ m3)
+#' \item total Phytoplankton (primary productivity; mean, mmol/ m3)
+#' \item Salinity (mean)
+#' \item Sea surface temperature (max, degree C)
+#' \item Sea surface temperature (mean, degree C)
+#' \item Sea surface temperature (min, degree C)
+#' \item Silicate concentration (mean, mmol/ m3)
 #' }
 #' 
-#' When the number of planning units/ cells for clustering exceeds ~ 10,000, the amount of computer memory required to find the optimal number of clusters using `NbClust::NbClust()` exceeds 10GB, so repeated sampling is used to find a consensus number of clusters. Sensible defaults are provided, namely `sample_size = 5000`, `num_samples = 5`, `max_num_clusters = 6` but can be customised if desired, though see the parameter descriptions below for some words of warning. Parallel processing is offered by specifying `num_cores` >1 (must be an integer), though the package `parallel` must be installed (it is included in most R installations). To find the number of available cores `parallel::detectCores()`.
+#' For full details of the Bio-Oracle data see [Assis et al. 2024](https://onlinelibrary.wiley.com/doi/10.1111/geb.13813).
+#' 
+#' When the number of planning units/ cells for clustering exceeds ~ 10,000, the amount of computer memory required to find the optimal number of clusters using `NbClust::NbClust()` exceeds 10GB, so repeated sampling is used to find a consensus number of clusters. Sensible defaults for `NbClust()` are provided, namely `sample_size = 5000`, `num_samples = 5`, `max_num_clusters = 6` but can be customised if desired, though see the parameter descriptions below for some words of warning. Parallel processing is offered by specifying `num_cores` >1 (must be an integer), though the package `parallel` must be installed (it is included in most R installations). To find the number of available cores on your systems run `parallel::detectCores()`.
 #'  
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw Bio-Oracle environmental data in that polygon(s) will be returned
+#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw Bio-Oracle environmental data in that polygon(s) will be returned, unless enviro_regions = TRUE, in which case the raw data will be classified into environmental regions
+#' @param enviro_regions `logical` if TRUE, environmental regions will be created. If FALSE the gridded Bio-Oracle data will be returned
 #' @param show_plots `logical`; whether to show boxplots for each environmental variable in each environmental region (default is FALSE)
 #' @param num_clusters `numeric`; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)
 #' @param max_num_clusters `numeric`; the maximum number of environmental regions to try when using the clustering algorithm (default is 6)
@@ -31,22 +33,32 @@
 #' @param num_cores `numeric`; default 1. Multi-core sampling is supported if the package `parallel` is installed, but be aware than increasing the number of cores will also increase the memory required.
 #' @param custom_seed `numeric`; default `1234`, but a custom seed can be supplied if desired.
 #'
-#' @return If an `area_polygon` is supplied, a raster stack of environmental regions, or Bio-Oracle data if `raw_data = TRUE`, is returned. If a `spatial_grid` is supplied, a raster stack or `sf` of gridded environmental regions,  or Bio-Oracle data if `raw_data = TRUE`, is returned depending on `spatial_grid` format.
+#' @return If `raw = TRUE`, a raster stack of environmental regions, or Bio-Oracle data if `raw_data = TRUE`, is returned. If a `spatial_grid` is supplied, a raster stack or `sf` of gridded environmental regions,  or Bio-Oracle data if `raw_data = TRUE`, is returned depending on `spatial_grid` format.
 #'
 #' @export
 #'
 #' @examples
 #' # Get EEZ data first 
 #' bermuda_eez <- get_boundary(name = "Bermuda")
-#' # Get the Bio-Oracle environmental data in the area of interest
-#' enviro_data <- get_enviro_regions(spatial_grid = bermuda_eez, raw = TRUE)
-#' # Create three environmental regions for a planning grid
-#' planning_grid <- get_grid(area_polygon = bermuda_eez, projection_crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 5000)
-#' enviro_regions <- get_enviro_regions(spatial_grid = planning_grid, num_clusters = 3)
+#' # Get raw Bio-Oracle environmental data for Bermuda
+#' enviro_data <- get_enviro_regions(spatial_grid = bermuda_eez, raw = TRUE, enviro_regions = FALSE)
+#' terra::plot(enviro_data)
+#' # Get gridded Bio-Oracle data for Bermuda:
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' enviro_data_gridded <- get_enviro_regions(spatial_grid = bermuda_grid, raw = FALSE, enviro_regions = FALSE)
+#' terra::plot(enviro_data_gridded)
+#' # Get 3 environmental regions for Bermuda
+#' bermuda_enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, raw = FALSE, enviro_regions = TRUE, num_clusters = 3)
+#' terra::plot(bermuda_enviro_regions)
+#' Can also create environmental regions from the raw Bio-Oracle data using setting `raw = TRUE` and `enviro_regions = TRUE`
+#' bermuda_enviro_regions2 <- get_enviro_regions(spatial_grid = bermuda_grid, raw = TRUE, enviro_regions = TRUE, num_clusters = 3)
+#' terra::plot(bermuda_enviro_regions2)
 
-get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1, custom_seed = 1234){
+get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions = TRUE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1, custom_seed = 1234){
   
   check_grid(spatial_grid)
+  
+  meth <- if(check_sf(spatial_grid)) 'mean' else 'average'
   
   # Add error for cluster numbers
   if(!is.null(num_clusters)) {
@@ -58,17 +70,12 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, show_plots = FA
   
   if(num_cores > 1 & !requireNamespace("parallel", quietly = TRUE)) message("The 'parallel' package is required to use multiple cores. This function will continue to run but only use 1 core.")
   
-  matching_crs <- check_matching_crs(area_polygon, spatial_grid, sf::st_crs(4326))
+  enviro_data <- get_enviro_data(spatial_grid = spatial_grid) %>% 
+    get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth)
   
-  area_polygon_for_cropping <- area_polygon_lonlat(area_polygon, spatial_grid, matching_crs)
-  
-  enviro_data <- get_enviro_data(spatial_grid = spatial_grid, antimeridian = antimeridian)
-  
- if(raw_data){
-   enviro_data
-  }
-  else{
-    
+ if(!enviro_regions){
+   return(enviro_data)
+  }else{
     df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
     
     if(sample_size > nrow(df_for_clustering)) sample_size <- nrow(df_for_clustering)
@@ -135,13 +142,58 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, show_plots = FA
   }
 }
 
-get_enviro_data <- function(spatial_grid = NULL, antimeridian){
+get_enviro_data <- function(spatial_grid = NULL){
   
+  #for details of how I got the dataset info see "data-raw/biooracle_download_setup.R"
+  biooracle_datasets_info <- structure(
+    list(
+      dataset_id = c(
+        "chl_baseline_2000_2018_depthsurf",
+        "o2_baseline_2000_2018_depthsurf",
+        "no3_baseline_2000_2018_depthsurf",
+        "thetao_baseline_2000_2019_depthsurf",
+        "thetao_baseline_2000_2019_depthsurf",
+        "thetao_baseline_2000_2019_depthsurf",
+        "ph_baseline_2000_2018_depthsurf",
+        "po4_baseline_2000_2018_depthsurf",
+        "so_baseline_2000_2019_depthsurf",
+        "si_baseline_2000_2018_depthsurf",
+        "phyc_baseline_2000_2020_depthsurf"
+      ),
+      variables = c(
+        "chl_mean",
+        "o2_mean",
+        "no3_mean",
+        "thetao_min",
+        "thetao_mean",
+        "thetao_max",
+        "ph_mean",
+        "po4_mean",
+        "so_mean",
+        "si_mean",
+        "phyc_mean"
+      )
+    ),
+    class = "data.frame",
+    row.names = c(NA, -11L)
+  )
   
+  polygon4326 <- polygon_in_4326(spatial_grid)
   
-  meth <- if(check_sf(spatial_grid)) 'mean' else 'average'
+  grid_bbox <- sf::st_bbox(polygon4326)
   
-    get_data_in_grid(spatial_grid = spatial_grid, dat = bio_oracle_data, meth = meth, name = names(bio_oracle_data), antimeridian = antimeridian) 
+  constraints <- list(time = c('2010-01-01T00:00:00Z', '2010-01-01T00:00:00Z'),
+                      latitude = c(as.numeric(grid_bbox["ymin"]), as.numeric(grid_bbox["ymax"])),
+                      longitude = c(as.numeric(grid_bbox["xmin"]), as.numeric(grid_bbox["xmax"])))
+  
+  biooracle_data <- list()
+  
+  for(i in 1:nrow(dataset_info_df)){
+    biooracle_data[[i]] <- biooracler::download_layers(dataset_id = biooracle_datasets_info$dataset_id[i], variables = biooracle_datasets_info$variables[i], constraints = constraints)
+  }
+  
+  terra::rast(biooracle_data) %>%
+    stats::setNames(c("Chlorophyll", "Dissolved_oxygen", "Nitrate", "Minimum_temp", "Mean_temp", "Max_temp", "pH", "Phosphate", "Salinity", "Silicate", "Phytoplankton"))
 }
 
 enviro_regions_boxplot <- function(enviro_region, enviro_data){

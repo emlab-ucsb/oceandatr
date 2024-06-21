@@ -46,17 +46,15 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
   
   meth <- if(check_sf(spatial_grid)) 'mean' else 'average'
   
-  matching_crs <- check_matching_crs(spatial_grid, 4326)
-  
-  area_polygon_for_cropping <- polygon_in_4326(spatial_grid, matching_crs)
+  area_polygon_for_cropping <- polygon_in_4326(spatial_grid)
   
   antimeridian <- check_antimeridian(area_polygon_for_cropping, sf::st_crs(4326))
   
   if(is.null(bathymetry_data_filepath)){
     bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout) %>% 
-      get_data_in_grid(spatial_grid, dat = ., raw = raw, meth, name, antimeridian)
+      get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, name = name, antimeridian = antimeridian)
   } else{
-    bathymetry <- get_data_in_grid(spatial_grid, dat = bathymetry_data_filepath, meth, name, antimeridian) 
+    bathymetry <- get_data_in_grid(spatial_grid = spatial_grid, dat = bathymetry_data_filepath, meth = meth, name = name, antimeridian = antimeridian) 
     }
 
   if(classify_bathymetry){
