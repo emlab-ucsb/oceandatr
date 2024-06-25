@@ -22,7 +22,7 @@
 #' When the number of planning units/ cells for clustering exceeds ~ 10,000, the amount of computer memory required to find the optimal number of clusters using `NbClust::NbClust()` exceeds 10GB, so repeated sampling is used to find a consensus number of clusters. Sensible defaults for `NbClust()` are provided, namely `sample_size = 5000`, `num_samples = 5`, `max_num_clusters = 6` but can be customised if desired, though see the parameter descriptions below for some words of warning. Parallel processing is offered by specifying `num_cores` >1 (must be an integer), though the package `parallel` must be installed (it is included in most R installations). To find the number of available cores on your systems run `parallel::detectCores()`.
 #'  
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw Bio-Oracle environmental data in that polygon(s) will be returned, unless enviro_regions = TRUE, in which case the raw data will be classified into environmental regions
+#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw Bio-Oracle environmental data in that polygon(s) will be returned, unless `enviro_regions = TRUE`, in which case the raw data will be classified into environmental regions
 #' @param enviro_regions `logical` if TRUE, environmental regions will be created. If FALSE the gridded Bio-Oracle data will be returned
 #' @param show_plots `logical`; whether to show boxplots for each environmental variable in each environmental region (default is FALSE)
 #' @param num_clusters `numeric`; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)
@@ -33,7 +33,7 @@
 #' @param num_cores `numeric`; default 1. Multi-core sampling is supported if the package `parallel` is installed, but be aware than increasing the number of cores will also increase the memory required.
 #' @param custom_seed `numeric`; default `1234`, but a custom seed can be supplied if desired.
 #'
-#' @return If `raw = TRUE`, a raster stack of environmental regions, or Bio-Oracle data if `raw_data = TRUE`, is returned. If a `spatial_grid` is supplied, a raster stack or `sf` of gridded environmental regions,  or Bio-Oracle data if `raw_data = TRUE`, is returned depending on `spatial_grid` format.
+#' @return If `enviro_regions = FALSE`, Bio-Oracle data in the `spatial_grid` supplied, or in the original raster file resolution if `raw = TRUE`. If `enviro_regions = TRUE` a multi-layer raster or an `sf` object with one environmental region in each column/ layer is returned, depending on the `spatial_grid` format. If `enviro_regions = TRUE` and `raw = TRUE` (in which case `spatial_grid` should be an `sf` polygon), the raw Bio-Oracle data is classified into environmental zones.
 #'
 #' @export
 #'
@@ -50,11 +50,13 @@
 #' # Get 3 environmental regions for Bermuda
 #' bermuda_enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, raw = FALSE, enviro_regions = TRUE, num_clusters = 3)
 #' terra::plot(bermuda_enviro_regions)
-#' Can also create environmental regions from the raw Bio-Oracle data using setting `raw = TRUE` and `enviro_regions = TRUE`
-#' bermuda_enviro_regions2 <- get_enviro_regions(spatial_grid = bermuda_grid, raw = TRUE, enviro_regions = TRUE, num_clusters = 3)
+#' Can also create environmental regions from the raw Bio-Oracle data using setting `raw = TRUE` and `enviro_regions = TRUE`. In this case, the `spatial_grid` should be a polygon of the area you want the data for
+#' bermuda_enviro_regions2 <- get_enviro_regions(spatial_grid = bermuda_eez, raw = TRUE, enviro_regions = TRUE, num_clusters = 3)
 #' terra::plot(bermuda_enviro_regions2)
 
 get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions = TRUE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1, custom_seed = 1234){
+  
+  rlang::check_installed("biooracler", reason = "to get Bio-Oracle data using `get_enviro_regions()`", action = \(pkg, ...) remotes::install_github("bio-oracle/biooracler"))
   
   check_grid(spatial_grid)
   
@@ -68,7 +70,21 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions 
     stop("max_num_clusters must be greater than 1")}
   if(!all.equal(max_num_clusters, round(max_num_clusters))){ stop("max_num_clusters must be a whole number")}
   
-  if(num_cores > 1 & !requireNamespace("parallel", quietly = TRUE)) message("The 'parallel' package is required to use multiple cores. This function will continue to run but only use 1 core.")
+  if(num_cores > 1 & !rlang::is_installed("parallel")){
+    rlang::check_installed("parallel", reason = "to use multiple cores for clustering.")
+  }
+  
+  #set extra columns aside - only need this is it a spatial grid, so added nrow() check to remove the need for this step if only raw data is required and using an sf polygon with one row
+  if(check_sf(spatial_grid) & nrow(spatial_grid) > 1){
+    grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
+    
+    if(grid_has_extra_cols) {
+      extra_cols <- sf::st_drop_geometry(spatial_grid)
+      spatial_grid <- spatial_grid %>% 
+        sf::st_geometry() %>% 
+        sf::st_sf()
+    }
+  }
   
   enviro_data <- get_enviro_data(spatial_grid = spatial_grid) %>% 
     get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth)
@@ -76,6 +92,7 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions 
  if(!enviro_regions){
    return(enviro_data)
   }else{
+    
     df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
     
     if(sample_size > nrow(df_for_clustering)) sample_size <- nrow(df_for_clustering)
@@ -89,7 +106,7 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions 
      
      df_sample <- lapply(rep(sample_size, num_samples), function(x) df_for_clustering[sample.int(n_df_rows, x),])
      
-     if(num_cores > 1 & requireNamespace("parallel", quietly = TRUE)){
+     if(num_cores > 1 & rlang::is_installed("parallel")){
        
        if(Sys.info()["sysname"]=="Windows"){
          cluster <- parallel::makePSOCKcluster(num_cores)
@@ -127,7 +144,9 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions 
         sf::st_sf() %>% 
         dplyr::mutate(row_id = 1:nrow(.)) %>% 
         dplyr::left_join(enviro_region_cols, by = dplyr::join_by(row_id)) %>% 
-        dplyr::select(-row_id)
+        dplyr::select(-row_id) %>% 
+        {if(grid_has_extra_cols) cbind(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+      
     }else{
       #create environmental regions raster, filled with NAs to start with
       enviro_regions <- terra::rast(enviro_data, nlyrs=1, vals = NA, names = "enviro_region")
@@ -188,7 +207,7 @@ get_enviro_data <- function(spatial_grid = NULL){
   
   biooracle_data <- list()
   
-  for(i in 1:nrow(dataset_info_df)){
+  for(i in 1:nrow(biooracle_datasets_info)){
     biooracle_data[[i]] <- biooracler::download_layers(dataset_id = biooracle_datasets_info$dataset_id[i], variables = biooracle_datasets_info$variables[i], constraints = constraints)
   }
   

@@ -23,7 +23,7 @@ get_bathymetry(
 
 \item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw bathmetry data in that polygon(s) will be returned}
 
-\item{classify_bathymetry}{\code{logical}; whether to classify the bathymetry into depth zones}
+\item{classify_bathymetry}{\code{logical}; whether to classify the bathymetry into depth zones. Original bathymetry data can be classified if \code{raw = TRUE} and \code{spatial_grid} is an \code{sf} polygon.}
 
 \item{above_sea_level_isNA}{\code{logical}; whether to set bathymetry (elevation) data values that are above sea level (i.e. greater than or equal to zero) to \code{NA} (\code{TRUE}) or zero (\code{FALSE})}
 
@@ -42,8 +42,7 @@ get_bathymetry(
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
 }
 \value{
-If \code{classify_bathymetry = FALSE}, bathymetry data gridded using the \code{spatial_grid} supplied, or raw bathymetry data if \code{raw = TRUE}
-If \code{classify_bathymetry = FALSE}, depth zones data in the \code{spatial_grid} supplied, or in the original raster file resolution if \code{raw = TRUE}. For gridded data, a multi-layer raster object or an \code{sf} object with one zone in each column is returned, depending on the \code{spatial_grid} format.
+If \code{classify_bathymetry = FALSE}, bathymetry data in the \code{spatial_grid} supplied, or in the original raster file resolution if \code{raw = TRUE}. If \code{classify_bathymetry = TRUE} a multi-layer raster or an \code{sf} object with one zone in each column is returned, depending on the \code{spatial_grid} format. If \code{classify_bathymetry = TRUE} and \code{raw = TRUE} (in which case \code{spatial_grid} should be an \code{sf} polygon), the raw raster bathymetry data is classified into depth zones.
 }
 \description{
 Get bathymetry data for an area from the ETOPO 2022 Global Relief model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}
@@ -67,8 +66,13 @@ If the user has downloaded bathymetry data for the area of interest, for example
 bermuda_eez <- get_boundary(name = "Bermuda")
 # Get raw bathymetry data, not classified into depth zones
 bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, raw = TRUE, classify_bathymetry = FALSE)
+terra::plot(bathymetry)
 # Get depth zones in spatial_grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 terra::plot(depth_zones)
+It is also possible to get the raw bathymetry data in gridded format by setting `raw = FALSE` and `classify_bathymetry = FALSE`
+bermuda_grid_sf <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000, output = "sf_hex")
+gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, classify_bathymetry = FALSE)
+plot(gridded_bathymetry)
 }

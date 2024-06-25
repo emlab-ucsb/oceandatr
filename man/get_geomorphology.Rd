@@ -27,7 +27,7 @@ Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.20
 bermuda_eez <- get_boundary(name = "Bermuda")
 # Get geomorphology for the EEZ
 bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
-plot(geomorphology)
+plot(bermuda_geomorph)
 # Get geomorphological features in spatial_grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
 geomorph_gridded <- get_geomorphology(spatial_grid = bermuda_grid)

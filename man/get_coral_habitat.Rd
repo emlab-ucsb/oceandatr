@@ -42,7 +42,9 @@ Habitat suitability data are from global Maxent species distribution models for 
 bermuda_eez <- get_boundary(name = "Bermuda")
 # Get raw coral habitat data
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
+terra::plot(coral_habitat)
 # Get gridded coral habitat data
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
 bermuda_coral_gridded <- get_coral_habitat(spatial_grid = bermuda_grid)
+terra::plot(bermuda_coral_gridded)
 }

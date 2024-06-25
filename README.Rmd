@@ -76,22 +76,22 @@ projection_bermuda <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WG
 
 We can now create a grid for Bermuda's EEZ using `get_grid()`. Along with the projection we found above, we will need to set a resolution: how wide and high will each grid cell be, in this case in metres. The units will depend on your crs and can be found using e.g. `sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal`
 
-```{r planning grid, warning=FALSE, fig.height=h, fig.width=w, out.width=ow}
+```{r bermuda-grid, warning=FALSE, fig.height=h, fig.width=w, out.width=ow}
 bermuda_grid <- get_grid(boundary = bermuda_eez, resolution = 5000, crs = projection_bermuda)
 
-#project the eez into same projection as planning grid for plotting
+#project the eez into same projection as grid for plotting
 bermuda_eez_projected <- bermuda_eez %>% 
   sf::st_transform(crs = projection_bermuda) %>% 
   sf::st_geometry()
 
-#plot the planning grid
+#plot the grid
 terra::plot(bermuda_grid, col = "gold3", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
 The raster covers Bermuda's EEZ. The grid cells would be too small to see if we plotted them, but here is a coarser grid (lower resolution) visualized so we can see what the grid cells look like.
 
-```{r planning grid cells, fig.height=h, fig.width=w, out.width=ow}
+```{r grid-cells, fig.height=h, fig.width=w, out.width=ow}
 bermuda_grid_coarse <- get_grid(boundary = bermuda_eez, resolution = 20000, crs = projection_bermuda)
 
 plot(bermuda_eez_projected, axes = FALSE)
@@ -100,7 +100,7 @@ terra::plot(terra::as.polygons(bermuda_grid_coarse, dissolve = FALSE), add=TRUE)
 
 ## Get bathymetry
 
-Now we have a grid, we can get some data. A key piece of data is bathymetry. If the user has bathymetry data for their area of interest already, they can pass the file path to this function and it will grid the data using the supplied planning grid. If no file path is provided, the function will extract bathymetry data for the area from the [ETOPO 2022 Global Relief model](https://www.ncei.noaa.gov/products/etopo-global-relief-model) using a function borrowed from the [`marmap`](https://cran.r-project.org/web/packages/marmap/index.html) package.
+Now we have a grid, we can get some data. A key piece of data is bathymetry. If the user has bathymetry data for their area of interest already, they can pass the file path to this function and it will grid the data using the supplied spatial grid. If no file path is provided, the function will extract bathymetry data for the area from the [ETOPO 2022 Global Relief model](https://www.ncei.noaa.gov/products/etopo-global-relief-model) using a function borrowed from the [`marmap`](https://cran.r-project.org/web/packages/marmap/index.html) package.
 
 ```{r bathymetry, fig.height=h, fig.width=w, out.width=ow}
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
@@ -134,7 +134,8 @@ The seafloor has its own mountains, plains and other geomorphological features j
 ```{r geomorphology, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 geomorphology <- get_geomorphology(spatial_grid = bermuda_grid)
 
-terra::plot(geomorphology, col = "sienna2", axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
+#grey areas are zero, i.e. none of that geomorphological feature present
+terra::plot(geomorphology, col = data.frame(c(0,1), c("grey80", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 ## Get knolls data
@@ -144,19 +145,19 @@ Knolls are another geomorphological feature, which are 'small' seamounts, classi
 ```{r knolls, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 knolls <- get_knolls(spatial_grid = bermuda_grid)
 
-terra::plot(knolls, col = "grey40", axes = FALSE, legend = FALSE)
+terra::plot(knolls, col = c("grey80", "grey20"), axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
 ## Get seamount areas
 
-Seamounts, classified as peaks at least 1000m higher than the surrounding seafloor [Morato et al. 2008](https://doi.org/10.3354/meps07268). These data are from [Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030). Each peak is buffered to the distance specified in the function call. The units of the buffer are in the same units as the area polygon or planning grid, which can be checked using, e.g. `sf::st_crs(bermuda_grid, parameters = TRUE)$units_gdal`
+Seamounts, classified as peaks at least 1000m higher than the surrounding seafloor [Morato et al. 2008](https://doi.org/10.3354/meps07268). These data are from [Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030). Each peak is buffered to the distance specified in the function call. The units of the buffer are in the same units as the spatial grid, which can be checked using, e.g. `sf::st_crs(bermuda_grid, parameters = TRUE)$units_gdal`
 
 ```{r seamounts, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
-#planning grid units are metres, so set buffer to 30000 m = 30 km
+#spatial grid units are metres, so set buffer to 30000 m = 30 km
 seamounts <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 
-terra::plot(seamounts, col = "saddlebrown", axes = FALSE, legend = FALSE)
+terra::plot(seamounts, col = c( "grey80", "saddlebrown"), axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -173,22 +174,30 @@ Retrieve habitat suitability data for 3 deep water coral groups:
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 
 #show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
-plot_add <- function(){
-  terra::lines(terra::vect(bermuda_eez_projected), col = "grey40")
-  terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4")
-  }
 
-terra::plot(coral_habitat, col = "coral", axes = FALSE, fun = plot_add)
+terra::plot(coral_habitat, col = c("grey80", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
 ## Environmental Regions
 
-Bioregions are often included in spatial planning, but available bioregional classifications are either too coarse or too detailed to be useful for planning at the EEZ level. Borrowing methods from [Magris et al. 2020](https://doi.org/10.1111/ddi.13183)
+Bioregions are often included in spatial planning, but available bioregional classifications are either too coarse or too detailed to be useful for planning at the EEZ level. Borrowing methods from [Magris et al. 2020](https://doi.org/10.1111/ddi.13183), we use spatial clustering of biophysical environmental data from [Bio-Oracle](https://bio-oracle.org/), to create 'environmental regions'. Biophysical conditions within a environmental region are more similar than areas outside that region, though the differences may be small. Diagnostic boxplots and a PCA will be shown if `show_plots = TRUE` All the biophysical data are ocean surface data for the period 2010 - 2020:
+
+* Chlorophyll concentration (mean, mg/ m3)
+* Dissolved oxygen concentration (mean)
+* Nitrate concentration (mean, mmol/ m3)
+* pH (mean)
+* Phosphate concentration (mean, mmol/ m3)
+* total Phytoplankton (primary productivity; mean, mmol/ m3)
+* Salinity (mean)
+* Sea surface temperature (max, degree C)
+* Sea surface temperature (mean, degree C)
+* Sea surface temperature (min, degree C)
+* Silicate concentration (mean, mmol/ m3)
 
 ```{r environmental regions, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
-#cluster the data
+
 #set number of clusters to 3 to reduce runtime and memory usage
-enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, num_clusters = 3)
+enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
 

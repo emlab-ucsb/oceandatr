@@ -18,9 +18,11 @@ Imports:
     graphics,
     stats,
     tidyselect,
-    spatialgridr (>= 0.0.2.0)
+    spatialgridr (>= 0.0.2.0),
+    rlang
 Remotes: 
-    github::emlab-ucsb/spatialgridr
+    github::emlab-ucsb/spatialgridr,
+    bio-oracle/biooracler
 RoxygenNote: 7.3.1
 Depends: 
     R (>= 3.5.0)
@@ -30,7 +32,8 @@ Suggests:
     codetools,
     testthat (>= 3.0.0),
     parallel,
-    remotes
+    remotes,
+    biooracler (>= 0.0.0.9000)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/

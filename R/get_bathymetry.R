@@ -17,7 +17,7 @@
 #'
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
 #' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw bathmetry data in that polygon(s) will be returned
-#' @param classify_bathymetry `logical`; whether to classify the bathymetry into depth zones
+#' @param classify_bathymetry `logical`; whether to classify the bathymetry into depth zones. Original bathymetry data can be classified if `raw = TRUE` and `spatial_grid` is an `sf` polygon.
 #' @param above_sea_level_isNA `logical`; whether to set bathymetry (elevation) data values that are above sea level (i.e. greater than or equal to zero) to `NA` (`TRUE`) or zero (`FALSE`)
 #' @param name `string`; name of bathymetry raster or column in sf object that is returned
 #' @param bathymetry_data_filepath `string`; the file path (including file name and extension) where bathymetry raster data are saved locally
@@ -27,8 +27,7 @@
 #' @param download_timeout `numeric`; the maximum number of seconds a query to the NOAA website is allowed to run
 #' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately. 
 #'
-#' @return If `classify_bathymetry = FALSE`, bathymetry data gridded using the `spatial_grid` supplied, or raw bathymetry data if `raw = TRUE`
-#' If `classify_bathymetry = FALSE`, depth zones data in the `spatial_grid` supplied, or in the original raster file resolution if `raw = TRUE`. For gridded data, a multi-layer raster object or an `sf` object with one zone in each column is returned, depending on the `spatial_grid` format.
+#' @return If `classify_bathymetry = FALSE`, bathymetry data in the `spatial_grid` supplied, or in the original raster file resolution if `raw = TRUE`. If `classify_bathymetry = TRUE` a multi-layer raster or an `sf` object with one zone in each column is returned, depending on the `spatial_grid` format. If `classify_bathymetry = TRUE` and `raw = TRUE` (in which case `spatial_grid` should be an `sf` polygon), the raw raster bathymetry data is classified into depth zones.
 #' @export
 #'
 #' @examples
@@ -36,10 +35,15 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw bathymetry data, not classified into depth zones
 #' bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, raw = TRUE, classify_bathymetry = FALSE)
+#' terra::plot(bathymetry)
 #' # Get depth zones in spatial_grid
 #' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
 #' depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 #' terra::plot(depth_zones)
+#' It is also possible to get the raw bathymetry data in gridded format by setting `raw = FALSE` and `classify_bathymetry = FALSE`
+#' bermuda_grid_sf <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000, output = "sf_hex")
+#' gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, classify_bathymetry = FALSE)
+#' plot(gridded_bathymetry)
 get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, keep = FALSE, path = NULL, download_timeout = 300, antimeridian = NULL){
 
   check_grid(spatial_grid)

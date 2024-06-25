@@ -6,9 +6,10 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-`oceandatr` aims to provide simple functions for creating data for
-conducting a spatial conservation prioritization for large scale areas
-of the ocean, specifically offshore areas.
+`oceandatr` aims to provide simple functions for retrieving ocean data.
+Using the associated package `spatialgridr`, it can also easily grid
+data, which is useful for various purposes including spatial
+conservation prioritization.
 
 Fish images in logo modified from original by Tracey Saxby, [Integration
 and Application Network](https://ian.umces.edu/media-library)
@@ -24,7 +25,7 @@ options(timeout = 9999)
 remotes::install_github("emlab-ucsb/oceandatr")
 ```
 
-## Example of usage
+# Getting gridded ocean data
 
 ``` r
 #load oceandatr package
@@ -33,13 +34,13 @@ library(oceandatr)
 
 ### Obtain an EEZ for an area of interest
 
-This function pulls data for EEZs from the [Marine
-Gazetteer](https://marineregions.org/gazetteer.php) using the
-`mregions2` R package; the function is just a wrapper to make the
-process a bit simpler.
+First we need a boundary for the area we are interested in. We can use
+the `get_boundary()` function, imported from `spatialgridr`, to get a
+boundary for land or ocean. In this example we will get Bermuda’s
+Exclusive Economic Zone (EEZ)
 
 ``` r
-bermuda_eez <- get_area(area_name = "Bermuda", mregions_column = "territory1")
+bermuda_eez <- get_boundary(name = "Bermuda")
 
 #plot to check we have Bermuda's EEZ
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
@@ -47,24 +48,19 @@ plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 
 <img src="man/figures/README-area of interest-1.png" width="600" />
 
-# Choose a CRS
+## Get a grid
 
-Best practice is to use a local, equal area projection for all
-geospatial data for use in the prioritization. Finding a suitable
-projection can be tricky, but [projection
-wizard](https://projectionwizard.org) provides a handy tool. Standard
-projections used for countries can also be found at <https://epsg.io/>
-by searching with country name.
+We are going to get gridded data. To create a grid for Bermuda, we use
+`get_grid()`. We need to provide a suitable projection for the area we
+are interested in, <https://projectionwizard.org> is useful for this
+purpose. Standard projections used for countries can also be found at
+<https://epsg.io/> by searching with country name. For spatial planning,
+equal area projections are normally best.
 
-The bounding box coordinates for the area of interest can be used to
-generate the coordinate reference system (CRS) on [projection
+The bounding box coordinates for the area of interest can be found using
+`sf::st_bbox(bermuda_eez)` and these can then be used to generate the
+coordinate reference system (CRS) on [projection
 wizard](https://projectionwizard.org)
-
-``` r
-sf::st_bbox(bermuda_eez)
-#>      xmin      ymin      xmax      ymax 
-#> -68.91706  28.90577 -60.70480  35.80855
-```
 
 The coordinates above should be entered as the ‘Geographic extent’ and
 the map should then have a box drawn around the bounding box of the area
@@ -78,57 +74,59 @@ The projection needs to be placed in quotation marks as follows:
 projection_bermuda <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
 ```
 
-### Get a planning grid for the area of interest
-
-A planning grid is needed for spatial prioritization. This divides the
-area of interest into grid cells. The `get_grid` function will return a
-planning grid for the specified area of interest (polygon), projected
-into the coordinate reference system specified, at the cell resolution
-specified in kilometres.
+We can now create a grid for Bermuda’s EEZ using `get_grid()`. Along
+with the projection we found above, we will need to set a resolution:
+how wide and high will each grid cell be, in this case in metres. The
+units will depend on your crs and can be found using
+e.g. `sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal`
 
 ``` r
-planning_grid <- get_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution = 5000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, resolution = 5000, crs = projection_bermuda)
 
-#project the eez into same projection as planning grid for plotting
+#project the eez into same projection as grid for plotting
 bermuda_eez_projected <- bermuda_eez %>% 
   sf::st_transform(crs = projection_bermuda) %>% 
   sf::st_geometry()
 
-#plot the planning grid
-terra::plot(planning_grid, col = "gold3", axes = FALSE, legend = FALSE)
+#plot the grid
+terra::plot(bermuda_grid, col = "gold3", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-planning grid-1.png" width="600" />
+<img src="man/figures/README-bermuda-grid-1.png" width="600" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
 visualized so we can see what the grid cells look like.
 
 ``` r
-planning_grid_coarse <- get_grid(area_polygon = bermuda_eez, projection_crs = projection_bermuda, resolution = 20000)
+bermuda_grid_coarse <- get_grid(boundary = bermuda_eez, resolution = 20000, crs = projection_bermuda)
 
 plot(bermuda_eez_projected, axes = FALSE)
-terra::plot(terra::as.polygons(planning_grid_coarse, dissolve = FALSE), add=TRUE)
+terra::plot(terra::as.polygons(bermuda_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
-<img src="man/figures/README-planning grid cells-1.png" width="600" />
+<img src="man/figures/README-grid-cells-1.png" width="600" />
 
-### Get bathymetry
+## Get bathymetry
 
-Now we have our planning grid, we can get data for this area of
-interest. A key piece of data is bathymetry. If the user has downloaded
-data for the area of interest from the [GEBCO
-website](https://www.gebco.net), they can pass the file path to this
-function and it will crop and rasterize the data using the supplied
-planning grid. If no file path is provided, the function will extract
-bathymetry data for the area from the [ETOPO 2022 Global Relief
+Now we have a grid, we can get some data. A key piece of data is
+bathymetry. If the user has bathymetry data for their area of interest
+already, they can pass the file path to this function and it will grid
+the data using the supplied spatial grid. If no file path is provided,
+the function will extract bathymetry data for the area from the [ETOPO
+2022 Global Relief
 model](https://www.ncei.noaa.gov/products/etopo-global-relief-model)
-using a function borrowed from the `marmap` package.
+using a function borrowed from the
+[`marmap`](https://cran.r-project.org/web/packages/marmap/index.html)
+package.
 
 ``` r
-bathymetry <- get_bathymetry(spatial_grid = planning_grid, classify_bathymetry = FALSE)
+bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
 #> This may take seconds to minutes, depending on grid size
+```
+
+``` r
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
@@ -150,15 +148,18 @@ We can get the depth zones for Bermuda simply by setting the
 `classify_bathymetry` argument in `get_bathymetry` to `TRUE`.
 
 ``` r
-depth_zones <- get_bathymetry(spatial_grid = planning_grid, classify_bathymetry = TRUE)
+depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
 #> This may take seconds to minutes, depending on grid size
+```
+
+``` r
 
 terra::plot(depth_zones, col = "navyblue", axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-depth classification-1.png" width="600" />
 
-### Get geomorphological data
+## Get geomorphological data
 
 The seafloor has its own mountains, plains and other geomorphological
 features just as on land. These data come from [Harris et al. 2014,
@@ -170,9 +171,10 @@ et al. 2021](https://doi.org/10.3389/fmars.2021.634574) are included in
 this package, so it is not necessary to download them.
 
 ``` r
-geomorphology <- get_geomorphology(spatial_grid = planning_grid)
+geomorphology <- get_geomorphology(spatial_grid = bermuda_grid)
 
-terra::plot(geomorphology, col = "sienna2", axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
+#grey areas are zero, i.e. none of that geomorphological feature present
+terra::plot(geomorphology, col = data.frame(c(0,1), c("grey80", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-geomorphology-1.png" width="600" />
@@ -187,9 +189,9 @@ area data from [Yesson et
 al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004).
 
 ``` r
-knolls <- get_knolls(spatial_grid = planning_grid)
+knolls <- get_knolls(spatial_grid = bermuda_grid)
 
-terra::plot(knolls, col = "grey40", axes = FALSE, legend = FALSE)
+terra::plot(knolls, col = c("grey80", "grey20"), axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -202,15 +204,15 @@ surrounding seafloor [Morato et
 al. 2008](https://doi.org/10.3354/meps07268). These data are from
 [Yesson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030).
 Each peak is buffered to the distance specified in the function call.
-The units of the buffer are in the same units as the area polygon or
-planning grid, which can be checked using,
-e.g. `sf::st_crs(planning_grid, parameters = TRUE)$units_gdal`
+The units of the buffer are in the same units as the spatial grid, which
+can be checked using,
+e.g. `sf::st_crs(bermuda_grid, parameters = TRUE)$units_gdal`
 
 ``` r
-#planning grid units are metres, so set buffer to 30000 m = 30 km
-seamounts <- get_seamounts_buffered(spatial_grid = planning_grid, buffer = 30000)
+#spatial grid units are metres, so set buffer to 30000 m = 30 km
+seamounts <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 
-terra::plot(seamounts, col = "saddlebrown", axes = FALSE, legend = FALSE)
+terra::plot(seamounts, col = c( "grey80", "saddlebrown"), axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -231,15 +233,11 @@ Retrieve habitat suitability data for 3 deep water coral groups:
   al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
 
 ``` r
-coral_habitat <- get_coral_habitat(spatial_grid = planning_grid)
+coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 
 #show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
-plot_add <- function(){
-  terra::lines(terra::vect(bermuda_eez_projected), col = "grey40")
-  terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4")
-  }
 
-terra::plot(coral_habitat, col = "coral", axes = FALSE, fun = plot_add)
+terra::plot(coral_habitat, col = c("grey80", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
 <img src="man/figures/README-coral habitat-1.png" width="600" />
@@ -249,12 +247,31 @@ terra::plot(coral_habitat, col = "coral", axes = FALSE, fun = plot_add)
 Bioregions are often included in spatial planning, but available
 bioregional classifications are either too coarse or too detailed to be
 useful for planning at the EEZ level. Borrowing methods from [Magris et
-al. 2020](https://doi.org/10.1111/ddi.13183)
+al. 2020](https://doi.org/10.1111/ddi.13183), we use spatial clustering
+of biophysical environmental data from
+[Bio-Oracle](https://bio-oracle.org/), to create ‘environmental
+regions’. Biophysical conditions within a environmental region are more
+similar than areas outside that region, though the differences may be
+small. Diagnostic boxplots and a PCA will be shown if
+`show_plots = TRUE` All the biophysical data are ocean surface data for
+the period 2010 - 2020:
+
+- Chlorophyll concentration (mean, mg/ m3)
+- Dissolved oxygen concentration (mean)
+- Nitrate concentration (mean, mmol/ m3)
+- pH (mean)
+- Phosphate concentration (mean, mmol/ m3)
+- total Phytoplankton (primary productivity; mean, mmol/ m3)
+- Salinity (mean)
+- Sea surface temperature (max, degree C)
+- Sea surface temperature (mean, degree C)
+- Sea surface temperature (min, degree C)
+- Silicate concentration (mean, mmol/ m3)
 
 ``` r
-#cluster the data
+
 #set number of clusters to 3 to reduce runtime and memory usage
-enviro_regions <- get_enviro_regions(spatial_grid = planning_grid, num_clusters = 3)
+enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
 <img src="man/figures/README-environmental regions-1.png" width="600" /><img src="man/figures/README-environmental regions-2.png" width="600" />
