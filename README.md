@@ -154,7 +154,8 @@ depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry =
 
 ``` r
 
-terra::plot(depth_zones, col = "navyblue", axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
+#value of 1 indicates that depth zone is present
+terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-depth classification-1.png" width="600" />
@@ -173,8 +174,8 @@ this package, so it is not necessary to download them.
 ``` r
 geomorphology <- get_geomorphology(spatial_grid = bermuda_grid)
 
-#grey areas are zero, i.e. none of that geomorphological feature present
-terra::plot(geomorphology, col = data.frame(c(0,1), c("grey80", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
+#brown colour indicates that geomorphological feature is present
+terra::plot(geomorphology, col = data.frame(c(0,1), c("grey60", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-geomorphology-1.png" width="600" />
@@ -191,7 +192,8 @@ al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004).
 ``` r
 knolls <- get_knolls(spatial_grid = bermuda_grid)
 
-terra::plot(knolls, col = c("grey80", "grey20"), axes = FALSE, legend = FALSE)
+#value of 1 indicates that knolls are present
+terra::plot(knolls, col = c("grey60", "grey20"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -212,7 +214,8 @@ e.g. `sf::st_crs(bermuda_grid, parameters = TRUE)$units_gdal`
 #spatial grid units are metres, so set buffer to 30000 m = 30 km
 seamounts <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 
-terra::plot(seamounts, col = c( "grey80", "saddlebrown"), axes = FALSE, legend = FALSE)
+#value of 1 indicates that seamount is present
+terra::plot(seamounts, col = c( "grey60", "saddlebrown"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
@@ -237,7 +240,8 @@ coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 
 #show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
 
-terra::plot(coral_habitat, col = c("grey80", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
+#value of 1 indicates that coral is present
+terra::plot(coral_habitat, col = c("grey60", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
 <img src="man/figures/README-coral habitat-1.png" width="600" />
@@ -277,8 +281,8 @@ enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = T
 <img src="man/figures/README-environmental regions-1.png" width="600" /><img src="man/figures/README-environmental regions-2.png" width="600" />
 
 ``` r
-#plot
-terra::plot(enviro_regions, col = "forestgreen", axes = FALSE, legend =FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
+#value of 1 indicates that environmental region is present
+terra::plot(enviro_regions, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="600" />

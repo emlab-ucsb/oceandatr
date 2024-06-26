@@ -21,7 +21,7 @@ get_features(
 \arguments{
 \item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw bathmetry data in that polygon(s) will be returned}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw feature data in that polygon(s) will be returned. Note that this will be a list object, since raster and \code{sf} data may be returned.}
 
 \item{features}{a vector of feature names, can include: "bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_regions"}
 
@@ -40,10 +40,10 @@ get_features(
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
 }
 \value{
-If \code{raw = FALSE}, a list of feature data is returned (mixed raster and sf objects). If a \code{spatial_grid} is supplied, a raster stack or \code{sf} of gridded data is returned, depending on \code{spatial_grid} format.
+If \code{raw = TRUE}, a list of feature data is returned (mixed raster and \code{sf} objects). If a \code{spatial_grid} is supplied, a multi-layer raster or \code{sf} object of gridded data is returned, depending on the \code{spatial_grid} format.
 }
 \description{
-This is a wrapper of \code{get_bathymetry()}, \code{get_seamounts_buffered()}, \code{get_knolls()}, \code{get_geomorphology()}, \code{get_coral_habitat()}, and \code{get_enviro_regions()}. See the indvidual functions for details.
+This is a wrapper of \code{get_bathymetry()}, \code{get_seamounts_buffered()}, \code{get_knolls()}, \code{get_geomorphology()}, \code{get_coral_habitat()}, and \code{get_enviro_regions()}. See the individual functions for details.
 }
 \examples{
 # Grab EEZ data first 
@@ -52,7 +52,6 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 # Get feature data in a spatial grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
-# Get gridded features
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 terra::plot(features_gridded)
 }

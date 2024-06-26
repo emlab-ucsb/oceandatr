@@ -121,7 +121,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
     
     dat %>%
       terra::classify(class_matrix, include.lowest = TRUE) %>%
-      terra::segregate(other=NA) %>%
+      terra::segregate() %>%
       {if(!is.null(classification_names)) stats::setNames(., classification_names[as.numeric(names(.))]) else .} 
     
   } else{
@@ -159,6 +159,19 @@ polygon_in_4326 <-
       }
   }
 
-remove_empty_raster_layers <- function(ras){
-  terra::subset(which(terra::global(ras, "sum", na.rm = TRUE) >0))
+#' Remove empty layers in raster or zero columns in sf
+#'
+#' @param dat `sf` or raster object
+#'
+#' @return `sf` or raster depending on input
+#'
+#' @noRd
+remove_empty_layers <- function(dat){
+  if(check_sf(dat)){
+    dat %>% 
+      dplyr::select(which(!colSums(sf::st_drop_geometry(dat), na.rm = TRUE) %in% 0))
+  }else{
+    dat %>% 
+    terra::subset(which(terra::global(dat, "sum", na.rm = TRUE) >0))  
+  }
 }

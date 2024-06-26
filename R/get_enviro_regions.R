@@ -155,7 +155,7 @@ get_enviro_regions <- function(spatial_grid = NULL, raw = FALSE, enviro_regions 
       enviro_regions[as.numeric(names(clust_partition))] <- clust_partition
       
       enviro_regions %>% 
-        terra::segregate(other=NA) %>% 
+        terra::segregate() %>% 
         stats::setNames(paste0("enviro_region_", names(.)))
     }
   }
