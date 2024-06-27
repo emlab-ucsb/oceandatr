@@ -55,7 +55,7 @@ devtools::load_all()
 
 First we need a boundary for the area we are interested in. We can use the `get_boundary()` function, imported from `spatialgridr`, to get a boundary for land or ocean. In this example we will get Bermuda's Exclusive Economic Zone (EEZ)
 
-```{r area of interest, fig.height=h, fig.width=w, out.width=ow}
+```{r area_of_interest, fig.height=h, fig.width=w, out.width=ow}
 bermuda_eez <- get_boundary(name = "Bermuda")
 
 #plot to check we have Bermuda's EEZ
@@ -91,7 +91,7 @@ plot(bermuda_eez_projected, add=TRUE)
 
 The raster covers Bermuda's EEZ. The grid cells would be too small to see if we plotted them, but here is a coarser grid (lower resolution) visualized so we can see what the grid cells look like.
 
-```{r grid-cells, fig.height=h, fig.width=w, out.width=ow}
+```{r grid_cells, fig.height=h, fig.width=w, out.width=ow}
 bermuda_grid_coarse <- get_grid(boundary = bermuda_eez, resolution = 20000, crs = projection_bermuda)
 
 plot(bermuda_eez_projected, axes = FALSE)
@@ -121,7 +121,7 @@ The ocean can be classified into 5 depth zones:
 
 We can get the depth zones for Bermuda simply by setting the `classify_bathymetry` argument in `get_bathymetry` to `TRUE`.
 
-```{r depth classification, fig.height=h, fig.width=w, out.width=ow}
+```{r depth_classification, fig.height=h, fig.width=w, out.width=ow}
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
 
 #value of 1 indicates that depth zone is present
@@ -173,7 +173,7 @@ Retrieve habitat suitability data for 3 deep water coral groups:
 * Octocoral: Important habitats for invertebrates, groundfish, rockfish and other species; global distributions were modeled by [Yesson et al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
 
 
-```{r coral habitat, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
+```{r coral_habitat, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 
 #show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
@@ -198,14 +198,14 @@ Bioregions are often included in spatial planning, but available bioregional cla
 * Sea surface temperature (min, degree C)
 * Silicate concentration (mean, mmol/ m3)
 
-```{r environmental regions, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
+```{r environmental_regions, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 
 #set number of clusters to 3 to reduce runtime and memory usage
 enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
 
-```{r, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
+```{r enviro_regions_maps, warning=FALSE, message=FALSE, fig.height=h, fig.width=w, out.width=ow}
 #value of 1 indicates that environmental region is present
 terra::plot(enviro_regions, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```

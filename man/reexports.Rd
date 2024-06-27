@@ -3,6 +3,7 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
+\alias{get_boundary}
 \alias{get_data_in_grid}
 \alias{get_grid}
 \title{Objects exported from other packages}
@@ -12,6 +13,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{spatialgridr}{\code{\link[spatialgridr]{get_data_in_grid}}, \code{\link[spatialgridr]{get_grid}}}
+  \item{spatialgridr}{\code{\link[spatialgridr]{get_boundary}}, \code{\link[spatialgridr]{get_data_in_grid}}, \code{\link[spatialgridr]{get_grid}}}
 }}
 

@@ -50,7 +50,7 @@ Get bathymetry data for an area from the ETOPO 2022 Global Relief model. If data
 \details{
 Extracts bathymetry data for an \code{area_polygon}, or if a \code{spatial_grid} is supplied, gridded bathymetry is returned.
 
-#' Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}. Depths are classified as follows:
+Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}. Depths are classified as follows:
 \itemize{
 \item Epipelagic Zone: 0-200 m depth
 \item Mesopelagic Zone: 200-1000 m depth
@@ -71,7 +71,7 @@ terra::plot(bathymetry)
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 terra::plot(depth_zones)
-It is also possible to get the raw bathymetry data in gridded format by setting `raw = FALSE` and `classify_bathymetry = FALSE`
+#It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE and classify_bathymetry = FALSE
 bermuda_grid_sf <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000, output = "sf_hex")
 gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, classify_bathymetry = FALSE)
 plot(gridded_bathymetry)

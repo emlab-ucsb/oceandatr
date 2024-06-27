@@ -18,11 +18,13 @@
 #' # Get EEZ data first 
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw seamounts data
-#' seamount_peaks <- get_seamount_peaks(spatial_grid = bermuda_eez, raw = TRUE)
+#' seamount_peaks <- get_seamounts(spatial_grid = bermuda_eez, raw = TRUE)
+#' plot(seamount_peaks["Depth"])
 #' # Get gridded seamount data
 #' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
 #' #buffer seamounts to a distance of 30 km (30,000 m)
-#' seamounts_gridded <- get_seamount_peaks(spatial_grid = bermuda_grid, buffer = 30000)
+#' seamounts_gridded <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
+#' terra::plot(seamounts_gridded)
 get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name = "seamounts", antimeridian = NULL){
   
   check_grid(spatial_grid)

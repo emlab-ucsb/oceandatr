@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Prepares ocean related datasets ready for use in spatial prioritization, i.e. data in gridded format.
+For retrieving and gridding ocean related data.
 }
 \seealso{
 Useful links:

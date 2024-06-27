@@ -46,7 +46,7 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 ```
 
-<img src="man/figures/README-area of interest-1.png" width="600" />
+<img src="man/figures/README-area_of_interest-1.png" width="600" />
 
 ## Get a grid
 
@@ -106,7 +106,7 @@ plot(bermuda_eez_projected, axes = FALSE)
 terra::plot(terra::as.polygons(bermuda_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
-<img src="man/figures/README-grid-cells-1.png" width="600" />
+<img src="man/figures/README-grid_cells-1.png" width="600" />
 
 ## Get bathymetry
 
@@ -158,7 +158,7 @@ depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry =
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-depth classification-1.png" width="600" />
+<img src="man/figures/README-depth_classification-1.png" width="600" />
 
 ## Get geomorphological data
 
@@ -244,7 +244,7 @@ coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 terra::plot(coral_habitat, col = c("grey60", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
-<img src="man/figures/README-coral habitat-1.png" width="600" />
+<img src="man/figures/README-coral_habitat-1.png" width="600" />
 
 ## Environmental Regions
 
@@ -278,11 +278,11 @@ the period 2010 - 2020:
 enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
-<img src="man/figures/README-environmental regions-1.png" width="600" /><img src="man/figures/README-environmental regions-2.png" width="600" />
+<img src="man/figures/README-environmental_regions-1.png" width="600" /><img src="man/figures/README-environmental_regions-2.png" width="600" />
 
 ``` r
 #value of 1 indicates that environmental region is present
 terra::plot(enviro_regions, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="600" />
+<img src="man/figures/README-enviro_regions_maps-1.png" width="600" />

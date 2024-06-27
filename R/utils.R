@@ -127,7 +127,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
   } else{
     dat %>%
       dplyr::mutate(classification = cut(.[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE),
-                    classification = droplevels(classification),
+                    classification = droplevels(.data$classification),
                     value = 1,
                     .after = 1) %>%
       tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = 0) %>%

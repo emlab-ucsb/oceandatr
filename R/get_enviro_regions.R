@@ -50,7 +50,7 @@
 #' # Get 3 environmental regions for Bermuda
 #' bermuda_enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, raw = FALSE, enviro_regions = TRUE, num_clusters = 3)
 #' terra::plot(bermuda_enviro_regions)
-#' Can also create environmental regions from the raw Bio-Oracle data using setting `raw = TRUE` and `enviro_regions = TRUE`. In this case, the `spatial_grid` should be a polygon of the area you want the data for
+#' # Can also create environmental regions from the raw Bio-Oracle data using setting raw = TRUE and enviro_regions = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want the data for
 #' bermuda_enviro_regions2 <- get_enviro_regions(spatial_grid = bermuda_eez, raw = TRUE, enviro_regions = TRUE, num_clusters = 3)
 #' terra::plot(bermuda_enviro_regions2)
 

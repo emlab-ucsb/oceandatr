@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' # Get EEZ data first 
-#' bermuda_eez <- get_area(name = "Bermuda")
+#' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw knolls data for Bermuda's EEZ
 #' knolls <- get_knolls(spatial_grid= bermuda_eez, raw = TRUE)
 #' # Get gridded knolls data: first create a grid
