@@ -1,16 +1,15 @@
 Package: oceandatr
 Type: Package
 Title: Ocean Data Access
-Version: 0.1.0001
+Version: 0.2.0
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
-Description: Prepares ocean related datasets ready for use in spatial prioritization, i.e. data in gridded format.
-License: GPL (>= 3)
+Description: For retrieving and gridding ocean related data.
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
     magrittr,
     methods,
-    mregions2,
     sf,
     terra,
     dplyr,
@@ -18,11 +17,12 @@ Imports:
     NbClust,
     graphics,
     stats,
-    tidyselect,
-    spatialgridr (>= 0.0.0.9001)
-Remotes: 
-    github::lifewatch/mregions2,
-    github::emlab-ucsb/spatialgridr
+    spatialgridr (>= 0.0.2.0),
+    rlang
+Remotes:  
+    github::emlab-ucsb/spatialgridr,
+    github::bio-oracle/biooracler,
+    github::lifewatch/mregions2
 RoxygenNote: 7.3.1
 Depends: 
     R (>= 3.5.0)
@@ -32,7 +32,9 @@ Suggests:
     codetools,
     testthat (>= 3.0.0),
     parallel,
-    remotes
+    remotes,
+    biooracler (>= 0.0.0.9000),
+    mregions2 (>= 1.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/

@@ -1,85 +1,73 @@
 # A file of little functions that we use across the board. 
 
-#' Check planning grid or area polygon input is supplied and is in correct format
+#' Check a spatial grid is supplied and in raster or sf format
 #'
-#' @param spatial_grid sf or raster planning grid
-#' @param area_polygon sf object 
+#' @param spatial_grid
 #'
 #' @noRd
-check_grid_or_polygon <- function(spatial_grid, area_polygon) {
-  if (is.null(area_polygon) & is.null(spatial_grid)) {
-    stop("an area polygon or planning grid must be supplied")
-  } else if (!is.null(area_polygon) & !is.null(spatial_grid)) {
-    stop("please supply either an area polygon or a planning grid, not both")
-  } else if (!is.null(spatial_grid) &
-             !(class(spatial_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) {
+check_grid <- function(spatial_grid) {
+  if (is.null(spatial_grid)) {
+    stop("a spatial grid must be supplied")
+  } else if (!(class(spatial_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) {
     stop("spatial_grid must be a raster or sf object")
-  } else if (!is.null(area_polygon) &
-             !(class(area_polygon)[1] == "sf")) {
-    stop("area_polygon must be an sf object")
   }
 }
 
-
-#' Check if area polygon or planning grid crs is same as data crs
+#' Check if spatial objects have same crs
 #'
-#' @param area_polygon sf object
-#' @param spatial_grid raster or sf 
-#' @param dat raster or sf
+#' @param sp1 raster or sf
+#' @param sp2 raster or sf
 #'
 #' @return `logical` TRUE crs' match, FALSE if they don't
 #' @noRd
-check_matching_crs <- function(area_polygon, spatial_grid, dat){
-  if(is.null(spatial_grid)){
-    ifelse(sf::st_crs(area_polygon) == sf::st_crs(dat), TRUE, FALSE) 
-  }else{
-    ifelse(sf::st_crs(spatial_grid) == sf::st_crs(dat), TRUE, FALSE)
-  } 
+check_matching_crs <- function(sp1, sp2){
+  ifelse(sf::st_crs(sp1) == sf::st_crs(sp2), TRUE, FALSE)
 }
 
 #' Check if sf object spans the antimeridian
 #'
-#' @param sf_object 
+#' @param sf_object
 #'
 #' @return `logical` TRUE if it does span the antimeridian, FALSE if it doesn't
 #' @noRd
-check_antimeridian <- function(sf_object){
+check_antimeridian <- function(sf_object, dat){
   if(sf::st_crs(sf_object) != sf::st_crs(4326)){
-    b_box <- sf::st_transform(sf_object, 4326) %>% 
+    b_box <- sf::st_transform(sf_object, 4326) %>%
       sf::st_bbox()
   } else{
-    b_box <- sf::st_bbox(sf_object) 
+    b_box <- sf::st_bbox(sf_object)
   }
   
-  if(round(b_box$xmin) == -180 & round(b_box$xmax) == 180){
+  if(round(b_box$xmin) == -180 & round(b_box$xmax) == 180 & sf::st_crs(dat) == sf::st_crs(4326)){
     TRUE
-  } else{
+  } else if (round(b_box$xmin) == -180 & round(b_box$xmax) == 180 & sf::st_crs(dat) != sf::st_crs(4326)){
+    message("Your area polygon or grid crosses the antimeridian, but your data are not in long-lat (EPSG 4326) format. This may result in problems when cropping and gridding data, if the data are not in a suitable local projection.")
     FALSE
-  }
+  } else FALSE
 }
 
-#' Check if data is a raster
+#' Check if object is a raster
 #'
-#' @param dat 
+#' @param sp
 #'
 #' @return `logical` TRUE if raster, else FALSE
 #' @noRd
-check_raster <- function(dat){
-  if(class(dat)[1] %in% c("RasterLayer", "SpatRaster")){
+check_raster <- function(sp){
+  if(class(sp)[1] %in% c("RasterLayer", "SpatRaster")){
     return(TRUE)
   }else{
     return(FALSE)
   }
 }
 
-#' Check if data is sf 
+#' Check if object is sf
 #'
-#' @param dat 
+#' @param sp
 #'
 #' @return TRUE if sf, else FALSE
 #' @noRd
-check_sf <- function(dat){
-  if(class(dat)[1] == "sf"){
+check_sf <- function(sp){
+  if(class(sp)[1] == "sf"){
     return(TRUE)
   }else{
     return(FALSE)
@@ -88,7 +76,7 @@ check_sf <- function(dat){
 
 #' If input is character, read in from file pointed to, assuming it is a common vector or raster file format
 #'
-#' @param dat 
+#' @param dat
 #'
 #' @return `sf` or `terra::rast` format data
 #' @noRd
@@ -97,7 +85,7 @@ data_from_filepath <- function(dat){
   if (class(dat)[1] == "character") { # If a file, we need to load the data
     
     ext <- tools::file_ext(dat)
-    nm <- basename(dat) 
+    nm <- basename(dat)
     if (ext %in% c("tif", "tiff", "grd", "gri")) {
       print("Data is in raster format")
       dat <- terra::rast(dat)
@@ -106,7 +94,7 @@ data_from_filepath <- function(dat){
       dat <- sf::read_sf(dat)
     }
   }
-  return(dat) 
+  return(dat)
 }
 
 #' Classify sf or raster data based on data breaks provided
@@ -133,27 +121,27 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
     
     dat %>%
       terra::classify(class_matrix, include.lowest = TRUE) %>%
-      terra::segregate(other=NA) %>%
+      terra::segregate() %>%
       {if(!is.null(classification_names)) stats::setNames(., classification_names[as.numeric(names(.))]) else .} 
     
   } else{
     dat %>%
       dplyr::mutate(classification = cut(.[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE),
-                    classification = droplevels(classification),
+                    classification = droplevels(.data$classification),
                     value = 1,
                     .after = 1) %>%
-      tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = NA) %>%
+      tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = 0) %>%
       dplyr::select(3:ncol(.), 2) #put classification before geometry and drop original values
   }
 }
-area_polygon_lonlat <-
-  function(area_polygon, spatial_grid, matching_crs) {
-    if (!is.null(spatial_grid)) {
+polygon_in_4326 <-
+  function(spatial_grid) {
+    crs_is_4326 <- check_matching_crs(spatial_grid, 4326)
       if (check_raster(spatial_grid)) {
         spatial_grid %>%
           terra::as.polygons() %>%
           {
-            if (matching_crs)
+            if (crs_is_4326)
               .
             else
               terra::project(., "epsg:4326")
@@ -163,21 +151,27 @@ area_polygon_lonlat <-
       } else{
         spatial_grid %>%
           {
-            if (matching_crs)
+            if (crs_is_4326)
               .
             else
               sf::st_transform(., 4326)
           }
       }
-    } else{
-      area_polygon %>%
-        sf::st_geometry() %>%
-        sf::st_as_sf() %>%
-        {
-          if (matching_crs)
-            .
-          else
-            sf::st_transform(., 4326)
-        }
-    }
   }
+
+#' Remove empty layers in raster or zero columns in sf
+#'
+#' @param dat `sf` or raster object
+#'
+#' @return `sf` or raster depending on input
+#'
+#' @noRd
+remove_empty_layers <- function(dat){
+  if(check_sf(dat)){
+    dat %>% 
+      dplyr::select(which(!colSums(sf::st_drop_geometry(dat), na.rm = TRUE) %in% 0))
+  }else{
+    dat %>% 
+    terra::subset(which(terra::global(dat, "sum", na.rm = TRUE) >0))  
+  }
+}
