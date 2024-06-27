@@ -7,9 +7,6 @@
     <loc>https://emlab-ucsb.github.io/oceandatr/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://emlab-ucsb.github.io/oceandatr/articles/getarea_vignette.html</loc>
-  </url>
-  <url>
     <loc>https://emlab-ucsb.github.io/oceandatr/articles/index.html</loc>
   </url>
   <url>
@@ -22,9 +19,6 @@
     <loc>https://emlab-ucsb.github.io/oceandatr/index.html</loc>
   </url>
   <url>
-    <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_area.html</loc>
-  </url>
-  <url>
     <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_bathymetry.html</loc>
   </url>
   <url>
@@ -32,6 +26,9 @@
   </url>
   <url>
     <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_dist_shore.html</loc>
+  </url>
+  <url>
+    <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_ecoregion.html</loc>
   </url>
   <url>
     <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_enviro_regions.html</loc>
@@ -46,10 +43,7 @@
     <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_knolls.html</loc>
   </url>
   <url>
-    <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_seamount_peaks.html</loc>
-  </url>
-  <url>
-    <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_seamounts_buffered.html</loc>
+    <loc>https://emlab-ucsb.github.io/oceandatr/reference/get_seamounts.html</loc>
   </url>
   <url>
     <loc>https://emlab-ucsb.github.io/oceandatr/reference/index.html</loc>
