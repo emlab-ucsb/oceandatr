@@ -3,7 +3,7 @@ pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   pacific_high_seas_example: pacific_high_seas_example.html
-last_built: 2024-06-27T07:36Z
+last_built: 2024-06-28T05:06Z
 urls:
   reference: https://emlab-ucsb.github.io/oceandatr/reference
   article: https://emlab-ucsb.github.io/oceandatr/articles
