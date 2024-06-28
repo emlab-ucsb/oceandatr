@@ -1,0 +1,86 @@
+---
+title: "Retrieving boundaries with oceandatr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Selecting areas with oceandatr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+Suggests:
+    knitr
+VignetteBuilder:
+    knitr
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	collapse = TRUE,
+	comment = "#>"
+)
+
+devtools::load_all()
+```
+
+The `get_boundary()` can be used to retrieve a variety of marine and terrestrial boundary types. Details on the options are in the help file `?get_boundary`, but figuring out exactly how to get a particular type of boundary can still be confusing. Here we provide some examples. 
+
+# Marine boundaries
+
+`get_boundary()` uses the `mrp_get()` function from the [`mregions2`](https://lifewatch.github.io/mregions2/) package - the R package for Marine Regions. This database is quite extensive and has several options for querying areas. `get_boundary()` is not intended to provide all the functionality of `mregions2`, just a slightly simpler interface for getting commonly used boundaries such as exclusive economic zones (EEZs), global ocean boundaries, and high seas areas.
+
+Here is a simple query to get Australia's EEZ:
+
+```{r australia_eez}
+aus_eez <- get_boundary(name = "Australia", type = "eez")
+
+plot(aus_eez["geometry"])
+```
+
+Simple enough. But lets look at what happens if we change the `country_type` from the default `country` to `sovereign`:
+
+```{r australia_eez_sovreign}
+aus_eez_sov <- get_boundary(name = "Australia", type = "eez", country_type = "sovereign")
+
+plot(aus_eez_sov["geometry"])
+```
+
+We now get not just the main country of Australia, but all the islands it has sovereignty over. For more detail, see the [Marine Regions attribute table](https://marineregions.org/eezattribute.php); using `country_type = country` queries using the 'territory1' attribute, and using `country_type = sovereign` uses the 'territory1' attribute.
+
+Here is another example using France. Only the EEZ bordering mainland France is retrieved if `country_type = country`, but setting `country_type = sovereign` we also get all the islands France has sovereignty over.
+
+```{r france_eez}
+fr_eez <- get_boundary(name = "France", type = "eez", country_type = "country")
+
+fr_eez_sov <- get_boundary(name = "France", type = "eez", country_type = "sovereign")
+
+
+plot(sf::st_geometry(fr_eez_sov))
+plot(fr_eez["geometry"], col = "royalblue", add = T)
+```
+
+An example, where you might want to use `sovereign` is when you are trying to get all the islands that make up Kiribati. Using `country_type = country` does not return anything because each island group is listed as a country. Note that the `name` provided is not found, a list of all possible `country_type` options to chose from is provided (note only part of the output is shown for brevity):
+
+```{r kribati_example_wrong, eval=FALSE}
+#if you run 
+get_boundary(name = "Kiribati", type = "eez", country_type = "country")
+
+```
+```{r eez_countries_list, echo=FALSE, out.width='50%'}
+knitr::include_graphics("figs/eez_countries_list.png")
+```
+
+
+The `mregions2` package can be used to query many different marine boundaries, not all of which are included as options for `get_boundary()`:
+
+```{r possible query types, eval=FALSE}
+mregions2::mrp_list[,c("title", "layer")]
+```
+
+```{r possible query types output, echo=FALSE}
+knitr::kable(mregions2::mrp_list[,c("title", "layer")])
+```
+
+# Land boundaries
+
+See `rnaturalearth` package [vignette](https://docs.ropensci.org/rnaturalearth/articles/rnaturalearth.html) about what constitutes a country.
