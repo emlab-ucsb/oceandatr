@@ -46,7 +46,7 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 ```
 
-<img src="man/figures/README-area_of_interest-1.png" width="600" />
+<img src="man/figures/README-area_of_interest-1.png" style="display: block; margin: auto;" />
 
 ## Get a grid
 
@@ -93,7 +93,7 @@ terra::plot(bermuda_grid, col = "gold3", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-bermuda-grid-1.png" width="600" />
+<img src="man/figures/README-bermuda-grid-1.png" style="display: block; margin: auto;" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
@@ -106,7 +106,7 @@ plot(bermuda_eez_projected, axes = FALSE)
 terra::plot(terra::as.polygons(bermuda_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
-<img src="man/figures/README-grid_cells-1.png" width="600" />
+<img src="man/figures/README-grid_cells-1.png" style="display: block; margin: auto;" />
 
 ## Get bathymetry
 
@@ -132,7 +132,7 @@ terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-bathymetry-1.png" width="600" />
+<img src="man/figures/README-bathymetry-1.png" style="display: block; margin: auto;" />
 
 ### Depth classification
 
@@ -158,7 +158,7 @@ depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry =
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-depth_classification-1.png" width="600" />
+<img src="man/figures/README-depth_classification-1.png" style="display: block; margin: auto;" />
 
 ## Get geomorphological data
 
@@ -178,7 +178,7 @@ geomorphology <- get_geomorphology(spatial_grid = bermuda_grid)
 terra::plot(geomorphology, col = data.frame(c(0,1), c("grey60", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-geomorphology-1.png" width="600" />
+<img src="man/figures/README-geomorphology-1.png" style="display: block; margin: auto;" />
 
 ## Get knolls data
 
@@ -197,7 +197,7 @@ terra::plot(knolls, col = c("grey60", "grey20"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-knolls-1.png" width="600" />
+<img src="man/figures/README-knolls-1.png" style="display: block; margin: auto;" />
 
 ## Get seamount areas
 
@@ -219,7 +219,7 @@ terra::plot(seamounts, col = c( "grey60", "saddlebrown"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-seamounts-1.png" width="600" />
+<img src="man/figures/README-seamounts-1.png" style="display: block; margin: auto;" />
 
 ## Habitat suitability models
 
@@ -244,7 +244,7 @@ coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 terra::plot(coral_habitat, col = c("grey60", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
-<img src="man/figures/README-coral_habitat-1.png" width="600" />
+<img src="man/figures/README-coral_habitat-1.png" style="display: block; margin: auto;" />
 
 ## Environmental Regions
 
@@ -257,7 +257,7 @@ of biophysical environmental data from
 regions’. Biophysical conditions within a environmental region are more
 similar than areas outside that region, though the differences may be
 small. Diagnostic boxplots and a PCA will be shown if
-`show_plots = TRUE` All the biophysical data are ocean surface data for
+`show_plots = TRUE`. All the biophysical data are ocean surface data for
 the period 2010 - 2020:
 
 - Chlorophyll concentration (mean, mg/ m3)
@@ -278,11 +278,11 @@ the period 2010 - 2020:
 enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
-<img src="man/figures/README-environmental_regions-1.png" width="600" /><img src="man/figures/README-environmental_regions-2.png" width="600" />
+<img src="man/figures/README-environmental_regions-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-environmental_regions-2.png" style="display: block; margin: auto;" />
 
 ``` r
 #value of 1 indicates that environmental region is present
 terra::plot(enviro_regions, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-enviro_regions_maps-1.png" width="600" />
+<img src="man/figures/README-enviro_regions_maps-1.png" style="display: block; margin: auto;" />

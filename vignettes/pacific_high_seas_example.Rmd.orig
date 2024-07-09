@@ -12,14 +12,19 @@ This example walks though how to do a spatial prioritization using `oceandatr` t
 We use a High Seas area of the Pacific as the planning area for this example since it is outside any states' jurisdiction.
 
 ```{r, include = FALSE}
+#for cropping whitespace from around figures, use crop = TRUE
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
 knitr::opts_chunk$set(
   echo = TRUE,
 	message = FALSE,
 	warning = FALSE,
   collapse = TRUE,
   comment = "#>",
-  fig.width = 10,
-  fig.height = 8
+  fig.align = "center",
+  fig.width = 7,
+  fig.height = 5, 
+  crop = TRUE
 )
 ```
 
@@ -80,7 +85,7 @@ pacific_hs <- high_seas %>%
 
 sf::sf_use_s2(TRUE)
 
-plot(rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs), axes = TRUE, las = 1, main = NULL, key.pos = 4)
+plot(rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs), axes = TRUE, main = NULL, key.pos = 4)
 ```
 
 Now we select a suitable projection for the area and a suitable resolution for the planning grid used for gridding the data. We can use [projection wizard](https://projectionwizard.org) to find an equal-area projection, entering the same extent coordinates we used to crop the high seas area (xmin = 135, xmax = 155, ymin = 0, ymax = 6). 
@@ -142,7 +147,11 @@ Now we have a planning grid, we can get data on conservation features (e.g. habi
 feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000) %>% 
   remove_empty_layers() #use this to remove raster layers that are empty
 
-terra::plot(feature_set, col = c("grey60", "royalblue"), maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
+terra::plot(feature_set, 
+            col = c("grey60", "royalblue"), 
+            maxnl = terra::nlyr(feature_set),
+            axes = FALSE,
+            fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -191,7 +200,7 @@ total_annual_effort <- fishing_effort %>%
                                    dat = .,
                                    name = "fishing_effort")
 
-terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
 
 ```
 
@@ -199,7 +208,7 @@ terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transf
 
 We now have all the data we need to create a conservation problem and solve it to get a map of priority areas for conservation for our Pacific High Seas area. For the prioritization, we need to set targets for how much of each conservation feature must be included in the prioritized areas. We will set this at 20%.
 
-```{r prioritization, fig.cap="Prioritization solution for the Pacific High Seas area. Grey outlines are seamounts."}
+```{r prioritization, fig.cap="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."}
 prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
@@ -209,11 +218,13 @@ prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>%
 
 sol <- solve(prob)
 
-terra::plot(sol, main = "Solution", axes = TRUE, 
+terra::plot(sol, main = "Solution",  
             col = c("grey70", "green4"),
             type = "classes",
             levels = c("Not selected", "Selected"),
-            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)),
+            axes = FALSE, 
+            mar = c(3,3,2,6)+0.1)
 terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 ```
 
@@ -221,7 +232,7 @@ terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 
 To ensure that whole seamount areas area included in the solution, we need to use the `patchwise` package to do some pre-processing of the data we use. The prioritization result is similar to that above, but whole seamount patches equal to at least 20% of the total seamount area are included.
 
-```{r prioritization_patches, fig.cap="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Grey outlines are seamounts."}
+```{r prioritization_patches, fig.cap="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts."}
 # Separate seamount data - we want to protect entire patches
 seamounts_rast <- feature_set[["seamounts"]]
 features_rast <- feature_set[[names(feature_set)[names(feature_set) != "seamounts"]]]
@@ -256,11 +267,13 @@ solution_rast <- solve(problem_rast)
 result_rast <- patchwise::convert_solution(solution = solution_rast, patch_df = patches_df_rast, spatial_grid = pacific_hs_planning_grid)
 
 # Show the results
-terra::plot(result_rast, main = "Solution", axes = TRUE, 
+terra::plot(result_rast, main = "Solution", 
             col = c("grey70", "green4"),
             type = "classes",
             levels = c("Not selected", "Selected"),
-            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), 
+            axes = FALSE,
+            mar = c(3,3,2,6)+0.1)
 terra::plot(terra::as.polygons(seamounts_rast), add=TRUE)
 ```
 

@@ -47,7 +47,10 @@ plot(sf::st_geometry(high_seas), main = "High Seas", col = "royalblue3", axes = 
 plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING"), col = "red", lwd=2, add = TRUE)
 ```
 
-![Map of the High Seas](figure/high_seas_area-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/high_seas_area-1.png" alt="Map of the High Seas"  />
+<p class="caption">Map of the High Seas</p>
+</div>
 
 We are going to use only the highlighted Pacific area which borders Indonesia, Papua New Guinea, Palau and the Federated States of Micronesia. We can get the EEZs of these states using `oceandatr`'s `get_area` function.
 
@@ -75,10 +78,13 @@ pacific_hs <- high_seas %>%
 
 sf::sf_use_s2(TRUE)
 
-plot(rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs), axes = TRUE, las = 1, main = NULL, key.pos = 4)
+plot(rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs), axes = TRUE, main = NULL, key.pos = 4)
 ```
 
-![Map of Pacific High Seas area in regional context](figure/pacific_high_seas-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/pacific_high_seas-1.png" alt="Map of Pacific High Seas area in regional context"  />
+<p class="caption">Map of Pacific High Seas area in regional context</p>
+</div>
 
 Now we select a suitable projection for the area and a suitable resolution for the planning grid used for gridding the data. We can use [projection wizard](https://projectionwizard.org) to find an equal-area projection, entering the same extent coordinates we used to crop the high seas area (xmin = 135, xmax = 155, ymin = 0, ymax = 6). 
 
@@ -97,7 +103,10 @@ pacific_hs_planning_grid <- get_grid(boundary = pacific_hs,
 terra::plot(pacific_hs_planning_grid, col = "grey70")
 ```
 
-![Pacific High Seas area planning grid raster](figure/planning_grid-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/planning_grid-1.png" alt="Pacific High Seas area planning grid raster"  />
+<p class="caption">Pacific High Seas area planning grid raster</p>
+</div>
 
 
 
@@ -109,10 +118,17 @@ Now we have a planning grid, we can get data on conservation features (e.g. habi
 feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000) %>% 
   remove_empty_layers() #use this to remove raster layers that are empty
 
-terra::plot(feature_set, col = c("grey60", "royalblue"), maxnl = terra::nlyr(feature_set), fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
+terra::plot(feature_set, 
+            col = c("grey60", "royalblue"), 
+            maxnl = terra::nlyr(feature_set),
+            axes = FALSE,
+            fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
 
-![Conservation features for the Pacific High Seas planning area](figure/features-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/features-1.png" alt="Conservation features for the Pacific High Seas planning area"  />
+<p class="caption">Conservation features for the Pacific High Seas planning area</p>
+</div>
 
 
 
@@ -148,10 +164,13 @@ total_annual_effort <- fishing_effort %>%
                                    dat = .,
                                    name = "fishing_effort")
 
-terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
 ```
 
-![Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch](figure/fishing-effort-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/fishing-effort-1.png" alt="Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch"  />
+<p class="caption">Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch</p>
+</div>
 
 # Run a simple spatial prioritization
 
@@ -168,15 +187,20 @@ prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>%
 
 sol <- solve(prob)
 
-terra::plot(sol, main = "Solution", axes = TRUE, 
+terra::plot(sol, main = "Solution",  
             col = c("grey70", "green4"),
             type = "classes",
             levels = c("Not selected", "Selected"),
-            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)),
+            axes = FALSE, 
+            mar = c(3,3,2,6)+0.1)
 terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 ```
 
-![Prioritization solution for the Pacific High Seas area. Grey outlines are seamounts.](figure/prioritization-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/prioritization-1.png" alt="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."  />
+<p class="caption">Prioritization solution for the Pacific High Seas area. Black outlines are seamounts.</p>
+</div>
 
 # Prioritization with patches
 
@@ -227,15 +251,20 @@ solution_rast <- solve(problem_rast)
 result_rast <- patchwise::convert_solution(solution = solution_rast, patch_df = patches_df_rast, spatial_grid = pacific_hs_planning_grid)
 
 # Show the results
-terra::plot(result_rast, main = "Solution", axes = TRUE, 
+terra::plot(result_rast, main = "Solution", 
             col = c("grey70", "green4"),
             type = "classes",
             levels = c("Not selected", "Selected"),
-            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)))
+            fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), 
+            axes = FALSE,
+            mar = c(3,3,2,6)+0.1)
 terra::plot(terra::as.polygons(seamounts_rast), add=TRUE)
 ```
 
-![Prioritization solution for the Pacific High Seas area, with whole seamounts included. Grey outlines are seamounts.](figure/prioritization_patches-1.png)
+<div class="figure" style="text-align: center">
+<img src="figure/prioritization_patches-1.png" alt="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts."  />
+<p class="caption">Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts.</p>
+</div>
 
 
 

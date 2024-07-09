@@ -19,11 +19,11 @@ Imports:
     stats,
     spatialgridr (>= 0.0.2.0),
     rlang
-Remotes:  
+Remotes: 
     github::emlab-ucsb/spatialgridr,
     github::bio-oracle/biooracler,
     github::lifewatch/mregions2
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: 
     R (>= 3.5.0)
 Suggests:

@@ -7,26 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-#for cropping whitespace from around figures, use crop = TRUE
-knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
 
-knitr::opts_chunk$set(
-	echo = TRUE,
-	message = FALSE,
-	warning = FALSE,
-	collapse = TRUE,
-	comment = "#>",
-	fig.align = "center",
-  fig.width = 7, 
-  fig.height = 5,
-  crop = TRUE
-)
 
-devtools::load_all()
-```
 
-```{r load_oceandatr, eval=FALSE}
+``` r
 #load oceandatr package
 library(oceandatr)
 ```
@@ -44,25 +28,32 @@ Note that if `type = "ocean"` or `type = "high_seas"`, `country_type` is ignored
 
 Here is a simple query to get Australia's EEZ:
 
-```{r australia_eez, fig.cap = ""}
+
+``` r
 aus_eez <- get_boundary(name = "Australia", type = "eez")
 
 plot(aus_eez["geometry"], axes = TRUE)
 ```
 
+<img src="figure/australia_eez-1.png" style="display: block; margin: auto;" />
+
 But lets look at what happens if we change the `country_type` from the default `"country"` to `"sovereign"`:
 
-```{r australia_eez_sovereign, fig.cap = ""}
+
+``` r
 aus_eez_sov <- get_boundary(name = "Australia", type = "eez", country_type = "sovereign")
 
 plot(aus_eez_sov["geometry"], axes = TRUE)
 ```
 
+<img src="figure/australia_eez_sovereign-1.png" style="display: block; margin: auto;" />
+
 We now get not just the main country of Australia, but all the islands it has sovereignty over. For more detail, see the [Marine Regions attribute table](https://marineregions.org/eezattribute.php); using `country_type = "country"` queries using the 'territory1' attribute, and using `country_type = "sovereign"` uses the 'territory1' attribute.
 
 Here is another example using France. Only the EEZ bordering mainland France is retrieved if `country_type = "country"`, but setting `country_type = "sovereign"` we also get all the islands France has sovereignty over.
 
-```{r france_eez, fig.cap="EEZ of mainland France (blue) and all overseas territories (solid outlines). World coastlines are shown as dashed line for reference."}
+
+``` r
 fr_eez <- get_boundary(name = "France", type = "eez", country_type = "country")
 
 fr_eez_sov <- get_boundary(name = "France", type = "eez", country_type = "sovereign")
@@ -73,34 +64,69 @@ plot(fr_eez["geometry"], col = "royalblue", add = T)
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/france_eez-1.png" alt="EEZ of mainland France (blue) and all overseas territories (solid outlines). World coastlines are shown as dashed line for reference."  />
+<p class="caption">EEZ of mainland France (blue) and all overseas territories (solid outlines). World coastlines are shown as dashed line for reference.</p>
+</div>
+
 An example, where you might want to use `sovereign` is when you are trying to get all the islands that make up Kiribati. Using `country_type = "country"` does not return anything because each island group is listed as a country. Note that if the `name` provided is not found, a list of all possible `country_type` options to chose from is provided (only part of the output is shown for brevity):
 
-```{r kribati_example_wrong, eval=FALSE}
+
+``` r
 get_boundary(name = "Kiribati", type = "eez", country_type = "country")
 ```
-```{r eez_countries_list, echo=FALSE, fig.cap = ""}
-knitr::include_graphics("figs/eez_countries_list.png")
-```
+<img src="figs/eez_countries_list.png" style="display: block; margin: auto;" />
 
 Try again, setting `country_type = "sovereign"`:
 
-```{r kribati_example_right, fig.cap = "Kiribati's EEZ. World coastlines are shown as dashed line for reference."}
+
+``` r
 kir_eez <- get_boundary(name = "Kiribati", type = "eez", country_type = "sovereign")
 
 plot(sf::st_geometry(kir_eez), col = "royalblue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figure/kribati_example_right-1.png" alt="Kiribati's EEZ. World coastlines are shown as dashed line for reference."  />
+<p class="caption">Kiribati's EEZ. World coastlines are shown as dashed line for reference.</p>
+</div>
+
 
 The `mregions2` package can be used to query many different marine boundaries, not all of which are included as options for `get_boundary()`:
 
-```{r possible_query_types, eval=FALSE}
+
+``` r
 mregions2::mrp_list[,c("title", "layer")]
 ```
 
-```{r possible_query_types_output, echo=FALSE}
-knitr::kable(mregions2::mrp_list[,c("title", "layer")])
-```
+
+
+|title                                                                                                                         |layer                        |
+|:-----------------------------------------------------------------------------------------------------------------------------|:----------------------------|
+|Exclusive Economic Zones (200 NM) (v11, world, 2019)                                                                          |eez                          |
+|Maritime Boundaries (v11, world, 2019)                                                                                        |eez_boundaries               |
+|Territorial Seas (12 NM) (v3, world, 2019)                                                                                    |eez_12nm                     |
+|Contiguous Zones (24 NM) (v3, world, 2019)                                                                                    |eez_24nm                     |
+|Internal Waters (v3, world, 2019)                                                                                             |eez_internal_waters          |
+|Archipelagic Waters (v3, world, 2019)                                                                                         |eez_archipelagic_waters      |
+|High Seas (v1, world, 2020)                                                                                                   |high_seas                    |
+|Extended Continental Shelves (v01, world, 2022)                                                                               |ecs                          |
+|Extended Continental Shelves - boundaries (v01, world, 2022)                                                                  |ecs_boundaries               |
+|IHO Sea Areas (v3)                                                                                                            |iho                          |
+|Global Oceans and Seas (v1)                                                                                                   |goas                         |
+|The intersect of the Exclusive Economic Zones and IHO areas (v4)                                                              |eez_iho                      |
+|Marine and land zones: the union of world country boundaries and EEZ's                                                        |eez_land                     |
+|Global Biogeochemical Provinces (Longhurst)                                                                                   |longhurst                    |
+|Global contourite distribution                                                                                                |cds                          |
+|Emission Control Areas (ECAs) designated under regulation 13 of MARPOL Annex VI (NOx emission control)                        |eca_reg13_nox                |
+|Emission Control Areas (ECAs) designated under regulation 14 of MARPOL Annex VI (SOx and particulate matter emission control) |eca_reg14_sox_pm             |
+|UNESCO World Heritage Marine Sites (v02, 2023)                                                                                |worldheritagemarineprogramme |
+|The 66 Large Marine Ecosystems of the World                                                                                   |lme                          |
+|Marine Ecoregions of the World - Ecoregions                                                                                   |ecoregions                   |
+|SeaVoX - Sea Areas Polygons (v18, 2021)                                                                                       |seavox_v18                   |
+
+
 
 # Land boundaries
 
@@ -112,21 +138,27 @@ The `rnaturalearth` package [vignette](https://docs.ropensci.org/rnaturalearth/a
 
 If we query France setting `country_type = "country"` we get:
 
-```{r france_country, fig.cap = ""}
+
+``` r
 france <- get_boundary(name = "France", type = "countries", country_type = "country")
 
 plot(sf::st_geometry(france), col = "blue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
+<img src="figure/france_country-1.png" style="display: block; margin: auto;" />
+
 This is slightly unexpected perhaps, but the islands of Guadeloupe and Martinique in the Caribbean, Mayotte and Réunion in the Western Indian Ocean, and French Guiana in South America, all have the same status as mainland France.
 
 If we use `country_type = "sovereign"`, we also get France's overseas territories in the Pacific, Atlantic and Antarctic:
 
 
-```{r france_country_sovereign, fig.cap = ""}
+
+``` r
 france_sov <- get_boundary(name = "France", type = "countries", country_type = "sovereign")
 
 plot(sf::st_geometry(france_sov), col = "blue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
+
+<img src="figure/france_country_sovereign-1.png" style="display: block; margin: auto;" />
