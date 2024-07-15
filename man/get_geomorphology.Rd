@@ -20,7 +20,43 @@ For gridded data, a multi-layer raster object, or an \code{sf} object with geomo
 Get geomorphological data for a spatial grid or polygon
 }
 \details{
-Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at: https://www.bluehabitats.org. The features included are limited to those listed in \href{https://doi.org/10.3389/fmars.2021.634574}{Cecarelli et al. 2021} Table 5.
+Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at \url{https://www.bluehabitats.org}, excluding depth related features which can be created using \code{get_bathymetry()}:
+
+\itemize{
+\item Basins:
+\itemize{
+\item large basins of seas and oceans
+\item major ocean basins
+\item perched on the shelf
+\item perched on the slope
+\item small basins of seas and oceans
+}
+\item Bridges
+\item Canyons:
+\itemize{
+\item blind
+\item shelf incising
+}
+\item Escarpments
+\item Fans
+\item Glacial troughs
+\item Guyots
+\item Plateaus
+\item Ridges
+\item Rift valleys
+\item Rises
+\item Shelf valleys:
+\itemize{
+\item large shelf valleys and glacial troughs
+\item moderate size
+\item small
+}
+\item Sills
+\item Spreading ridges
+\item Terraces
+\item Trenches
+\item Troughs
+}
 }
 \examples{
 # Grab EEZ data first 

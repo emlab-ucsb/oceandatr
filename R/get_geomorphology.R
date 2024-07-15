@@ -2,7 +2,43 @@
 #' 
 #' @description Get geomorphological data for a spatial grid or polygon
 #' 
-#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at: https://www.bluehabitats.org. The features included are limited to those listed in [Cecarelli et al. 2021](https://doi.org/10.3389/fmars.2021.634574) Table 5.
+#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at [https://www.bluehabitats.org](https://www.bluehabitats.org), excluding depth related features which can be created using `get_bathymetry()`:
+#' 
+#' \itemize{
+#' \item Basins: 
+#'    \itemize{
+#'    \item large basins of seas and oceans
+#'    \item major ocean basins
+#'    \item perched on the shelf
+#'    \item perched on the slope
+#'    \item small basins of seas and oceans
+#'    }
+#' \item Bridges
+#' \item Canyons:
+#'    \itemize{
+#'    \item blind
+#'    \item shelf incising
+#'    } 
+#' \item Escarpments
+#' \item Fans
+#' \item Glacial troughs
+#' \item Guyots
+#' \item Plateaus
+#' \item Ridges
+#' \item Rift valleys
+#' \item Rises
+#' \item Shelf valleys:
+#'    \itemize{
+#'    \item large shelf valleys and glacial troughs
+#'    \item moderate size
+#'    \item small
+#'    }
+#' \item Sills
+#' \item Spreading ridges
+#' \item Terraces
+#' \item Trenches
+#' \item Troughs
+#' }
 #'
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
 #' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw geomorphology data in that polygon(s) will be returned
