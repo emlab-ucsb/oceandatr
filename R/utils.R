@@ -134,6 +134,13 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
       dplyr::select(3:ncol(.), 2) #put classification before geometry and drop original values
   }
 }
+#' Get an sf polygons in lonlat (EPSG 4326) from terra or sf input object
+#'
+#' @param spatial_grid 
+#'
+#' @return `sf` polygons
+#'
+#' @noRd
 polygon_in_4326 <-
   function(spatial_grid) {
     crs_is_4326 <- check_matching_crs(spatial_grid, 4326)
