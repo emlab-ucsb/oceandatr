@@ -154,15 +154,17 @@ polygon_in_4326 <-
               terra::project(., "epsg:4326")
           } %>%
           sf::st_as_sf() %>% 
+          sf::st_union() %>%
+          sf::st_sf() %>% 
+          sf::st_wrap_dateline() %>% 
           {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
       } else{
         spatial_grid %>%
-          {
-            if (crs_is_4326)
-              .
-            else
-              sf::st_transform(., 4326)
-          }
+          {if (crs_is_4326) . else sf::st_transform(., 4326)} %>% 
+          sf::st_union() %>% 
+          sf::st_sf() %>% 
+          sf::st_wrap_dateline() %>% 
+          {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
       }
   }
 
