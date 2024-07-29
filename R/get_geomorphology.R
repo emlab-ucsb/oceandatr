@@ -63,12 +63,14 @@ get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = N
   meth <- if(check_raster(spatial_grid)) 'near' else 'mode'
   
   sf::sf_use_s2(FALSE)
-  geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") %>% 
-    list.files() %>% 
-    system.file("extdata/geomorphology", ., package = "oceandatr") %>% 
-    lapply(readRDS) %>% 
-    do.call(rbind, .) %>%
-    get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
+  suppressWarnings(
+    geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") %>% 
+      list.files() %>% 
+      system.file("extdata/geomorphology", ., package = "oceandatr") %>% 
+      lapply(readRDS) %>% 
+      do.call(rbind, .) %>%
+      get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
+  )
   
   sf::sf_use_s2(TRUE)
   
