@@ -2,9 +2,11 @@
 #' 
 #' @description Get geomorphological data for a spatial grid or polygon
 #' 
-#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at [https://www.bluehabitats.org](https://www.bluehabitats.org), excluding depth related features which can be created using `get_bathymetry()`:
+#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at [https://www.bluehabitats.org](https://www.bluehabitats.org). Data is included in this package, except depth classification features which can be created using `get_bathymetry()` and seamounts which can be retrieved from a more recent dataset using `get_seamounts()`. List of features:
 #' 
 #' \itemize{
+#' \item Abyssal hills
+#' \item Abyssal plains
 #' \item Basins: 
 #'    \itemize{
 #'    \item large basins of seas and oceans
@@ -63,12 +65,14 @@ get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = N
   meth <- if(check_raster(spatial_grid)) 'near' else 'mode'
   
   sf::sf_use_s2(FALSE)
-  geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") %>% 
-    list.files() %>% 
-    system.file("extdata/geomorphology", ., package = "oceandatr") %>% 
-    lapply(readRDS) %>% 
-    do.call(rbind, .) %>%
-    get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
+  suppressWarnings(
+    geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") %>% 
+      list.files() %>% 
+      system.file("extdata/geomorphology", ., package = "oceandatr") %>% 
+      lapply(readRDS) %>% 
+      do.call(rbind, .) %>%
+      get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
+  )
   
   sf::sf_use_s2(TRUE)
   

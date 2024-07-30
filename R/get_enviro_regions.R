@@ -201,9 +201,17 @@ get_enviro_data <- function(spatial_grid = NULL){
   
   grid_bbox <- sf::st_bbox(polygon4326)
   
+  #queries to the ERDDAP server where Bio-Oracle is hosted only allow coordinates -89.975 to 89.975, and -179.975 to 179.975, e.g: https://erddap.bio-oracle.org/erddap/info/tas_baseline_2000_2020_depthsurf/index.html
+  x_min <- if(grid_bbox["xmin"][[1]] < -179.975) -179.975 else grid_bbox["xmin"][[1]]
+  x_max <- if(grid_bbox["xmax"][[1]] > 179.975) 179.975 else grid_bbox["xmax"][[1]]
+  
+  y_min <- if(grid_bbox["ymin"][[1]] < -89.975) -89.975 else grid_bbox["ymin"][[1]]
+  y_max <- if(grid_bbox["ymax"][[1]] > 89.975) 89.975 else grid_bbox["ymax"][[1]]
+  
+  
   constraints <- list(time = c('2010-01-01T00:00:00Z', '2010-01-01T00:00:00Z'),
-                      latitude = c(as.numeric(grid_bbox["ymin"]), as.numeric(grid_bbox["ymax"])),
-                      longitude = c(as.numeric(grid_bbox["xmin"]), as.numeric(grid_bbox["xmax"])))
+                      latitude = c(y_min, y_max),
+                      longitude = c(x_min, x_max))
   
   biooracle_data <- list()
   

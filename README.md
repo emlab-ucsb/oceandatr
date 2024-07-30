@@ -124,9 +124,6 @@ package.
 ``` r
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
 #> This may take seconds to minutes, depending on grid size
-```
-
-``` r
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
@@ -150,9 +147,6 @@ We can get the depth zones for Bermuda simply by setting the
 ``` r
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
 #> This may take seconds to minutes, depending on grid size
-```
-
-``` r
 
 #value of 1 indicates that depth zone is present
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
@@ -162,17 +156,18 @@ terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = func
 
 ## Get geomorphological data
 
-The seafloor has its own mountains, plains and other geomorphological
+The seafloor has its own valleys, plains and other geomorphological
 features just as on land. These data come from [Harris et al. 2014,
 Geomorphology of the
 Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available
-for download from <https://www.bluehabitats.org>. The features that are
-suggested as major habitats for inclusion in no-take MPAs by [Ceccarelli
-et al. 2021](https://doi.org/10.3389/fmars.2021.634574) are included in
-this package, so it is not necessary to download them.
+for download from <https://www.bluehabitats.org>, but all but depth
+classifications (which can be created using `get_bathymetry()`) and
+seamounts (which can be retrieved from a more recent dataset using
+`get_seamounts()`) are included in this package.
 
 ``` r
-geomorphology <- get_geomorphology(spatial_grid = bermuda_grid)
+geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>% 
+  remove_empty_layers() #can remove any empty layers so we don't have so many layers to plot
 
 #brown colour indicates that geomorphological feature is present
 terra::plot(geomorphology, col = data.frame(c(0,1), c("grey60", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})

@@ -18,5 +18,5 @@ test_that("returns gridded Kiribati features - sf with extra cols", {
                                      dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |>
                                      get_features(antimeridian = TRUE) |>
                                   ncol()), 
-               37)
+               39)
 })

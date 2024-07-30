@@ -137,34 +137,17 @@ terra::plot(feature_set,
 
 The other piece of data needed for a spatial prioritization is cost. In terrestrial spatial planning, this can be the actually monetary value of buying the land for conservation. In marine spatial planning, measures of fishing, such as catch and fishing effort, are often used as the opportunity cost for each planning unit.
 
-[Global Fishing Watch](https://globalfishingwatch.org/) has global fishing effort data, and this can be accessed easily using the R package [`gfwr`](https://github.com/GlobalFishingWatch/gfwr). An API key is required, but can be easily generated at no cost; see the `gfwr` website for more details.
+[Global Fishing Watch](https://globalfishingwatch.org/) has global fishing effort data, and this can be accessed easily using `get_gfw()` function in `oceandatr` (which is a wrapper for the `get_raster()` function from the [`gfwr`](https://github.com/GlobalFishingWatch/gfwr) package). An API key is required, but can be easily generated at no cost; see the `gfwr` website for more details.
 
 
 ``` r
-pacific_hs_geojson <- pacific_hs_area_extent %>% #use the larger area extent because using just the pacific_hs polygon results in a slightly truncated area
-  sf::st_as_sfc() %>% 
-  sf::st_as_sf() %>% 
-  gfwr::sf_to_geojson()
 
-fishing_effort <- gfwr::get_raster(spatial_resolution = 'low',
-                                   temporal_resolution = 'yearly',
-                                   group_by = 'gearType', 
-                                   date_range = '2022-01-01,2022-12-31',
-                                   region = pacific_hs_geojson,
-                                   region_source = 'user_json')
+fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 2022, end_year = 2022, summarise = "total_annual_effort") %>% 
+  terra::subst(NA, 0.01) %>% #set NA values to zero otherwise they will be left out of the prioritization
+  terra::mask(pacific_hs_planning_grid) %>% 
+  setNames("fishing_effort")
 
-total_annual_effort <- fishing_effort %>% 
-  dplyr::group_by(Lat, Lon, `Time Range`) %>% 
-  dplyr::summarise(total_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE)) %>% 
-  dplyr::ungroup() %>% 
-  dplyr::select("Lon", "Lat", "total_effort") %>%
-  terra::rast(type = "xyz", crs = "epsg:4326") %>% 
-  terra::subst(NA, 0.01) %>% 
-  get_data_in_grid(spatial_grid = pacific_hs_planning_grid,
-                                   dat = .,
-                                   name = "fishing_effort")
-
-terra::plot(total_annual_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
+terra::plot(fishing_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
 ```
 
 <div class="figure" style="text-align: center">
@@ -178,7 +161,7 @@ We now have all the data we need to create a conservation problem and solve it t
 
 
 ``` r
-prob <- prioritizr::problem(x = total_annual_effort, features = feature_set) %>% 
+prob <- prioritizr::problem(x = fishing_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
   #add_boundary_penalties(penalty = 0.00001) %>% 
@@ -216,16 +199,13 @@ features_rast <- feature_set[[names(feature_set)[names(feature_set) != "seamount
 patches_rast <- patchwise::create_patches(seamounts_rast %>% terra::subst(0, NA)) #patchwise currently expects all non-patches to be NA, some subsituting non-seamounts, which are currently zeroes, with NAs
 
 # Create patches dataframe - this creates several constraints so that entire seamount units are protected together
-patches_df_rast <- patchwise::create_patch_df(spatial_grid = pacific_hs_planning_grid, features = features_rast, patches = patches_rast, costs = total_annual_effort)
+patches_df_rast <- patchwise::create_patch_df(spatial_grid = pacific_hs_planning_grid, features = features_rast, patches = patches_rast, costs = fishing_effort)
 #> [1] "Processing patch 1 of 6"
 #> [1] "Processing patch 2 of 6"
 #> [1] "Processing patch 3 of 6"
 #> [1] "Processing patch 4 of 6"
 #> [1] "Processing patch 5 of 6"
 #> [1] "Processing patch 6 of 6"
-```
-
-``` r
 
 # Create boundary matrix for prioritizr
 boundary_matrix_rast <- patchwise::create_boundary_matrix(spatial_grid = pacific_hs_planning_grid, patches = patches_rast, patch_df = patches_df_rast)
