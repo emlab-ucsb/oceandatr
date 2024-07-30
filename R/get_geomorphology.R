@@ -2,9 +2,11 @@
 #' 
 #' @description Get geomorphological data for a spatial grid or polygon
 #' 
-#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at [https://www.bluehabitats.org](https://www.bluehabitats.org), excluding depth related features which can be created using `get_bathymetry()`:
+#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at [https://www.bluehabitats.org](https://www.bluehabitats.org). Data is included in this package, except depth classification features which can be created using `get_bathymetry()` and seamounts which can be retrieved from a more recent dataset using `get_seamounts()`. List of features:
 #' 
 #' \itemize{
+#' \item Abyssal hills
+#' \item Abyssal plains
 #' \item Basins: 
 #'    \itemize{
 #'    \item large basins of seas and oceans

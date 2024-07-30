@@ -127,10 +127,11 @@ terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = func
 
 ## Get geomorphological data
 
-The seafloor has its own mountains, plains and other geomorphological features just as on land. These data come from [Harris et al. 2014, Geomorphology of the Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available for download from https://www.bluehabitats.org. The features that are suggested as major habitats for inclusion in no-take MPAs by [Ceccarelli et al. 2021](https://doi.org/10.3389/fmars.2021.634574) are included in this package, so it is not necessary to download them.
+The seafloor has its own valleys, plains and other geomorphological features just as on land. These data come from [Harris et al. 2014, Geomorphology of the Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available for download from https://www.bluehabitats.org, but all but depth classifications (which can be created using `get_bathymetry()`) and seamounts (which can be retrieved from a more recent dataset using `get_seamounts()`) are included in this package. 
 
 ```{r geomorphology, warning=FALSE, message=FALSE}
-geomorphology <- get_geomorphology(spatial_grid = bermuda_grid)
+geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>% 
+  remove_empty_layers() #can remove any empty layers so we don't have so many layers to plot
 
 #brown colour indicates that geomorphological feature is present
 terra::plot(geomorphology, col = data.frame(c(0,1), c("grey60", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
@@ -206,18 +207,3 @@ enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = T
 #value of 1 indicates that environmental region is present
 terra::plot(enviro_regions, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
-
-
-```{r pressure, echo = FALSE, include=FALSE}
-## REMINDER FOR ME, WILL DELETE:
-
-# You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-# 
-# You can also embed plots, for example:
-
-#plot(pressure)
-
-#In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
-```
-
-

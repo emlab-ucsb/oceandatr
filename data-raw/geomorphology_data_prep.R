@@ -45,7 +45,7 @@ for (file_name in geomorph_files) {
         filter(class == abyssal_class) %>% 
         st_union() %>% 
         st_sf %>% 
-        dplyr::mutate(geomorph_type = abyssal_class, .before = 1) %>% 
+        dplyr::mutate(geomorph_type = paste0("Abyssal_", abyssal_class), .before = 1) %>% 
         saveRDS(file = file.path("inst/extdata/geomorphology", paste0("Abssyal_", abyssal_class, ".rds")))
     }
   } else{

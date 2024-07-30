@@ -20,9 +20,11 @@ For gridded data, a multi-layer raster object, or an \code{sf} object with geomo
 Get geomorphological data for a spatial grid or polygon
 }
 \details{
-Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at \url{https://www.bluehabitats.org}, excluding depth related features which can be created using \code{get_bathymetry()}:
+Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at \url{https://www.bluehabitats.org}. Data is included in this package, except depth classification features which can be created using \code{get_bathymetry()} and seamounts which can be retrieved from a more recent dataset using \code{get_seamounts()}. List of features:
 
 \itemize{
+\item Abyssal hills
+\item Abyssal plains
 \item Basins:
 \itemize{
 \item large basins of seas and oceans
