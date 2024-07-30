@@ -125,9 +125,8 @@
 <p>Now we have a grid, we can get some data. A key piece of data is bathymetry. If the user has bathymetry data for their area of interest already, they can pass the file path to this function and it will grid the data using the supplied spatial grid. If no file path is provided, the function will extract bathymetry data for the area from the <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" class="external-link">ETOPO 2022 Global Relief model</a> using a function borrowed from the <a href="https://cran.r-project.org/web/packages/marmap/index.html" class="external-link"><code>marmap</code></a> package.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bathymetry</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_bathymetry.html">get_bathymetry</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, classify_bathymetry <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; This may take seconds to minutes, depending on grid size</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; This may take seconds to minutes, depending on grid size</span></span>
+<span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bathymetry</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">255</span>, <span class="st">"Blues"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-bathymetry-1.png" style="display: block; margin: auto;"></p>
@@ -143,11 +142,10 @@
 <li>6000m+: Hadopelagic zone</li>
 </ul>
 <p>We can get the depth zones for Bermuda simply by setting the <code>classify_bathymetry</code> argument in <code>get_bathymetry</code> to <code>TRUE</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">depth_zones</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_bathymetry.html">get_bathymetry</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, classify_bathymetry <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; This may take seconds to minutes, depending on grid size</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; This may take seconds to minutes, depending on grid size</span></span>
+<span></span>
 <span><span class="co">#value of 1 indicates that depth zone is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">depth_zones</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"navyblue"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-depth_classification-1.png" style="display: block; margin: auto;"></p>
@@ -156,9 +154,10 @@
 <div class="section level2">
 <h2 id="get-geomorphological-data">Get geomorphological data<a class="anchor" aria-label="anchor" href="#get-geomorphological-data"></a>
 </h2>
-<p>The seafloor has its own mountains, plains and other geomorphological features just as on land. These data come from <a href="https://doi.org/10.1016/j.margeo.2014.01.011" class="external-link">Harris et al. 2014, Geomorphology of the Oceans</a> and are available for download from <a href="https://www.bluehabitats.org" class="external-link uri">https://www.bluehabitats.org</a>. The features that are suggested as major habitats for inclusion in no-take MPAs by <a href="https://doi.org/10.3389/fmars.2021.634574" class="external-link">Ceccarelli et al. 2021</a> are included in this package, so it is not necessary to download them.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">geomorphology</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_geomorphology.html">get_geomorphology</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span></span>
+<p>The seafloor has its own valleys, plains and other geomorphological features just as on land. These data come from <a href="https://doi.org/10.1016/j.margeo.2014.01.011" class="external-link">Harris et al. 2014, Geomorphology of the Oceans</a> and are available for download from <a href="https://www.bluehabitats.org" class="external-link uri">https://www.bluehabitats.org</a>, but all but depth classifications (which can be created using <code><a href="reference/get_bathymetry.html">get_bathymetry()</a></code>) and seamounts (which can be retrieved from a more recent dataset using <code><a href="reference/get_seamounts.html">get_seamounts()</a></code>) are included in this package.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">geomorphology</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_geomorphology.html">get_geomorphology</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">remove_empty_layers</span><span class="op">(</span><span class="op">)</span> <span class="co">#can remove any empty layers so we don't have so many layers to plot</span></span>
 <span></span>
 <span><span class="co">#brown colour indicates that geomorphological feature is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geomorphology</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"sienna"</span><span class="op">)</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, legend <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
@@ -168,7 +167,7 @@
 <h2 id="get-knolls-data">Get knolls data<a class="anchor" aria-label="anchor" href="#get-knolls-data"></a>
 </h2>
 <p>Knolls are another geomorphological feature, which are ‘small’ seamounts, classified as seamounts between 200 and 1000m higher than the surrounding seafloor <a href="https://doi.org/10.3354/meps07268" class="external-link">Morato et al. 2008</a>. Data are the knoll base area data from <a href="https://doi.org/10.1016/j.dsr.2011.02.004" class="external-link">Yesson et al. 2011</a>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">knolls</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_knolls.html">get_knolls</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#value of 1 indicates that knolls are present</span></span>
@@ -180,7 +179,7 @@
 <h2 id="get-seamount-areas">Get seamount areas<a class="anchor" aria-label="anchor" href="#get-seamount-areas"></a>
 </h2>
 <p>Seamounts, classified as peaks at least 1000m higher than the surrounding seafloor <a href="https://doi.org/10.3354/meps07268" class="external-link">Morato et al. 2008</a>. These data are from <a href="https://doi.org/10.14324/111.444/ucloe.000030" class="external-link">Yesson et al. 2021</a>. Each peak is buffered to the distance specified in the function call. The units of the buffer are in the same units as the spatial grid, which can be checked using, e.g. <code>sf::st_crs(bermuda_grid, parameters = TRUE)$units_gdal</code></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#spatial grid units are metres, so set buffer to 30000 m = 30 km</span></span>
 <span><span class="va">seamounts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_seamounts.html">get_seamounts</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, buffer <span class="op">=</span> <span class="fl">30000</span><span class="op">)</span></span>
 <span></span>
@@ -201,7 +200,7 @@
 <li>Octocoral: Important habitats for invertebrates, groundfish, rockfish and other species; global distributions were modeled by <a href="https://doi.org/10.1111/j.1365-2699.2011.02681.x" class="external-link">Yesson et al. (2012)</a>
 </li>
 </ul>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coral_habitat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_coral_habitat.html">get_coral_habitat</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor</span></span>
@@ -227,12 +226,12 @@
 <li>Sea surface temperature (min, degree C)</li>
 <li>Silicate concentration (mean, mmol/ m3)</li>
 </ul>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#set number of clusters to 3 to reduce runtime and memory usage</span></span>
 <span><span class="va">enviro_regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_enviro_regions.html">get_enviro_regions</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, show_plots <span class="op">=</span> <span class="cn">TRUE</span>, num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-environmental_regions-1.png" style="display: block; margin: auto;"><img src="reference/figures/README-environmental_regions-2.png" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#value of 1 indicates that environmental region is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">enviro_regions</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"forestgreen"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-enviro_regions_maps-1.png" style="display: block; margin: auto;"></p>
