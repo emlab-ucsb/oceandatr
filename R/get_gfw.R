@@ -77,7 +77,6 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
   if(raw){
     return(fishing_effort)
   } 
-  
     grouping_vars <- c("Lon", "Lat", "Time Range") %>% 
       {if(group_by == "location") . else c(., tolower(group_by))} 
 
@@ -85,7 +84,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
       dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>% 
       dplyr::summarise(total_annual_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE)) %>% 
       dplyr::ungroup()  
-    
+
     if(summarise == "total_annual_effort"){
       if(group_by == "location"){
         final_effort <- annual_effort %>% 
@@ -112,7 +111,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
                              values_from = mean_total_annual_effort)
       }
     }
-    
+
     final_effort %>% 
       terra::rast(type = "xyz", crs = "epsg:4326") %>% 
         # terra::subst(NA, 0.01) %>% #too many zero cost value cells leads to prioritization of too much area because they are 'free'
