@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   getboundary: getboundary.html
   pacific_high_seas_example: pacific_high_seas_example.html
-last_built: 2024-08-09T07:16Z
+last_built: 2024-08-27T06:26Z
 urls:
   reference: https://emlab-ucsb.github.io/oceandatr/reference
   article: https://emlab-ucsb.github.io/oceandatr/articles
