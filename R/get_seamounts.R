@@ -33,8 +33,11 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
     readRDS()
   
   if(raw){
-    get_data_in_grid(spatial_grid = spatial_grid, dat = seamounts, raw = TRUE, antimeridian = antimeridian) %>% 
-   {if(is.null(buffer)) . else sf::st_buffer(., buffer)}
+    sf::sf_use_s2(FALSE)
+    raw_seamounts <- get_data_in_grid(spatial_grid = spatial_grid, dat = seamounts, raw = TRUE, antimeridian = antimeridian) %>% 
+      {if(is.null(buffer)) . else sf::st_buffer(., buffer)}
+    sf::sf_use_s2(TRUE)
+    return(raw_seamounts)
   } else{
     
     meth <- if(check_raster(spatial_grid)) "near" else "mode"
