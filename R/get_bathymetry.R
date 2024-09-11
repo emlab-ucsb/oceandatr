@@ -58,7 +58,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
     bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout) %>% 
       get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, name = name, antimeridian = antimeridian)
   } else{
-    bathymetry <- get_data_in_grid(spatial_grid = spatial_grid, dat = bathymetry_data_filepath, meth = meth, name = name, antimeridian = antimeridian) 
+    bathymetry <- get_data_in_grid(spatial_grid = spatial_grid, dat = bathymetry_data_filepath, raw = raw, meth = meth, name = name, antimeridian = antimeridian) 
     }
 
   if(classify_bathymetry){
