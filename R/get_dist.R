@@ -29,13 +29,13 @@ get_dist <- function(spatial_grid, inverse = FALSE, ports = TRUE, ports_data = "
       if(!file.exists(file.path(tempdir(), "wpi_ports.csv"))){
         utils::download.file(url = "https://msi.nga.mil/api/publications/download?type=view&key=16920959/SFH00000/UpdatedPub150.csv", destfile = file.path(tempdir(), "wpi_ports.csv"), method = "curl", quiet = TRUE) 
       }
-      dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv")) %>% 
+      dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv"))[,c("Longitude", "Latitude")]  %>% 
         sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
       
       layer_name <- "dist_ports"
     } else if(ports_data == "gfw"){
     dat <- readRDS(system.file("extdata", "gfw_anchorages.rds", package = "oceandatr", mustWork = TRUE)) %>% 
-      sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+      sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
     
     layer_name <- "dist_anchorages"
     }
