@@ -112,4 +112,41 @@ for(i in 1:length(grids)){
 for (i in 1:length(dist_ports_ras_gfw)) terra::plot(dist_ports_ras_gfw[[i]])
 
 
+#working on GFW ports data clustering
 
+#get a subsample 
+anchorages <- read.csv("../../Nextcloud/emlab-waitt/blue-prosperity-coalition/data/broader-research/gfw-data/named_anchorages_v2_20221206.csv") |> 
+  subset(iso3 == "ATG") |>
+  #get Antigua only
+  subset(lat < 17.3) |>
+  terra::vect(crs = "epsg:4326")
+
+terra::plet(anchorages, "label")
+
+anchorage_label_groups <- anchorages %>% 
+  cbind(., terra::geom(., df = T)[, c("x", "y")]) |>
+  terra::aggregate(by = "label") |>
+  as.data.frame() |>
+  terra::vect(geom = c("mean_x", "mean_y"))
+
+test <- read.csv("../../Nextcloud/emlab-waitt/blue-prosperity-coalition/data/broader-research/gfw-data/named_anchorages_v2_20221206.csv") |> 
+  subset(iso3 == "ATG") |>
+  #get Antigua only
+  subset(lat < 17.3) %>%
+  aggregate(by = list(Name = .[,"label"], Country_code = .[, "iso3"]), FUN = mean) %>% 
+  {.[, c("Name", "Country_code", "lon", "lat")]} %>% 
+  terra::vect(crs = "epsg:4326")
+
+library(tmap)
+tmap_mode("view")
+tm_shape(sf::st_as_sf(anchorages)) +
+  tm_dots(col = "label") +
+  tm_shape(sf::st_as_sf(test)) +
+  tm_dots()
+tmap_mode("plot")
+
+anchorages_mamora_bay <- read.csv("../../Nextcloud/emlab-waitt/blue-prosperity-coalition/data/broader-research/gfw-data/named_anchorages_v2_20221206.csv") |> 
+  subset(iso3 == "ATG") |>
+  #get Mamora Bay only
+  subset(label == "MAMORA BAY") |>
+  terra::vect(crs = "epsg:4326")
