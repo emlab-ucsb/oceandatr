@@ -2,7 +2,8 @@
 #' 
 #' @description
 #' Calculates distance from port or shore for each grid cell in the provided spatial grid. Spatial grid can be `terra::rast()` or `sf` format.
-#' Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI. Alternatively, anchorages can be used instead. The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/).
+#' Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI. Alternatively, anchorages can be used instead. T
+#' The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/).
 #' The Natural Earth high resolution land polygons are used as the shoreline and are downloaded from the Natural Earth website (https://www.naturalearthdata.com/downloads/10m-physical-vectors/), so an internet connection is required.
 #' 
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`.
