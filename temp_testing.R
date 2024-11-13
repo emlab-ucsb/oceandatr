@@ -66,7 +66,7 @@ run_times_sf <- c()
 
 for(i in 1:length(grids_sf)){
   start_time <- Sys.time()
-  dist_ports_sf[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE)
+  dist_ports_sf[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "ports_wpi")
   run_times_sf[i] <- Sys.time() - start_time
 }
 
@@ -80,7 +80,7 @@ countries <- rnaturalearth::countries110 |>
   terra::project(prjs[[4]])
 
 sf_use_s2(TRUE)
-pacific_ports_dist <- get_dist(terra::rast(extent = terra::ext(countries), crs = prjs[[4]], resolution = 1e4, vals = 1), inverse = FALSE)
+pacific_ports_dist <- get_dist(terra::rast(extent = terra::ext(countries), crs = prjs[[4]], resolution = 1e4, vals = 1), inverse = FALSE, data = "ports_wpi")
 
 ports_wpi <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv")) %>% 
   sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
@@ -97,56 +97,24 @@ terra::points(ports_wpi)
 #check the Pacific High seas distance to port calculations look right
 terra::plot(dist_ports_ras[[4]], add =T)
 
-#gfw ports distance
+#anchorages land masked distance
 
-dist_ports_ras_gfw <- list()
-run_times_ras_gfw <- c()
+dist_ports_ras_anchorages_minimal <- list()
+run_times_ras_anchorages_minimal <- c()
 
 for(i in 1:length(grids)){
-  i <- 1
   start_time <- Sys.time()
-  dist_ports_ras_gfw[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, ports_data = "gfw")
-  run_times_ras_gfw[i] <- Sys.time() - start_time
+  dist_ports_ras_anchorages_minimal[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  run_times_ras_anchorages_minimal[i] <- Sys.time() - start_time
 }
 
-for (i in 1:length(dist_ports_ras_gfw)) terra::plot(dist_ports_ras_gfw[[i]])
+pts_anchorages_minimal <- readRDS("inst/extdata/anchorages_grouped.rds") %>% 
+  subset(on_land == FALSE) %>% 
+  {.[,c("x", "y")]} %>% 
+  sf::st_as_sf(coords = c("x", "y"), crs = 4326)
 
+for (i in 1:length(dist_ports_ras_anchorages_minimal)){
+  terra::plot(dist_ports_ras_anchorages_minimal[[i]])
+  terra::points(pts_anchorages_minimal)
+} 
 
-#working on GFW ports data clustering
-
-#get a subsample 
-anchorages <- read.csv("../../Nextcloud/emlab-waitt/blue-prosperity-coalition/data/broader-research/gfw-data/named_anchorages_v2_20221206.csv") |> 
-  subset(iso3 == "ATG") |>
-  #get Antigua only
-  subset(lat < 17.3) |>
-  terra::vect(crs = "epsg:4326")
-
-terra::plet(anchorages, "label")
-
-anchorage_label_groups <- anchorages %>% 
-  cbind(., terra::geom(., df = T)[, c("x", "y")]) |>
-  terra::aggregate(by = "label") |>
-  as.data.frame() |>
-  terra::vect(geom = c("mean_x", "mean_y"))
-
-test <- read.csv("../../Nextcloud/emlab-waitt/blue-prosperity-coalition/data/broader-research/gfw-data/named_anchorages_v2_20221206.csv") |> 
-  subset(iso3 == "ATG") |>
-  #get Antigua only
-  subset(lat < 17.3) %>%
-  aggregate(by = list(Name = .[,"label"], Country_code = .[, "iso3"]), FUN = mean) %>% 
-  {.[, c("Name", "Country_code", "lon", "lat")]} %>% 
-  terra::vect(crs = "epsg:4326")
-
-library(tmap)
-tmap_mode("view")
-tm_shape(sf::st_as_sf(anchorages)) +
-  tm_dots(col = "label") +
-  tm_shape(sf::st_as_sf(test)) +
-  tm_dots()
-tmap_mode("plot")
-
-anchorages_mamora_bay <- read.csv("../../Nextcloud/emlab-waitt/blue-prosperity-coalition/data/broader-research/gfw-data/named_anchorages_v2_20221206.csv") |> 
-  subset(iso3 == "ATG") |>
-  #get Mamora Bay only
-  subset(label == "MAMORA BAY") |>
-  terra::vect(crs = "epsg:4326")
