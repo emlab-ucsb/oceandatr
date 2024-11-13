@@ -40,12 +40,11 @@ terra::plet(terra::crop(anchorages_name_grouped_masked, baltic_ext), "on_land", 
   #save two datasets: one with all the anchorages, points only, and one with anchorages grouped by name with a column for the land mask (TRUE = point is over land)
    
 anchorages_all |>
-  #terra::aggregate() |> 
-  terra::crds() |>
-  terra::vect(crs = "epsg:4326") |> 
+  terra::crds(df = TRUE) |>
   saveRDS("inst/extdata/anchorages_all.rds")
 
 anchorages_name_grouped_masked[, "on_land"] |>
+  terra::as.data.frame(geom = "XY") |>
   saveRDS("inst/extdata/anchorages_grouped.rds")
    
    

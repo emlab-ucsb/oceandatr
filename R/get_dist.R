@@ -1,10 +1,11 @@
 #' Get distance to port or shore for a spatial grid
 #' 
 #' @description
-#' Calculates distance from port or shore for each grid cell in the provided spatial grid. Spatial grid can be `terra::rast()` or `sf` format.
-#' Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI. Alternatively, anchorages can be used instead. T
-#' The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/).
-#' The Natural Earth high resolution land polygons are used as the shoreline and are downloaded from the Natural Earth website (https://www.naturalearthdata.com/downloads/10m-physical-vectors/), so an internet connection is required.
+#' Calculates distance from shore, port or anchorage for each grid cell in the provided spatial grid. Spatial grid can be `terra::rast()` or `sf` format.
+#' Shore: The Natural Earth high resolution land polygons are used as the shoreline and are downloaded from the Natural Earth website (https://www.naturalearthdata.com/downloads/10m-physical-vectors/), so an internet connection is required.
+#' Ports: Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI.
+#' Anchorages: The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/). This results in a very large number of points (>160,000)
+
 #' 
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`.
 #' @param inverse `logical` set to `TRUE` to get the inverse of distance to shore, i.e. highest values become lowest and vice versa. This is useful for use in spatial prioritization as a proxy for fishing activity, where the further a grid cell is from the shore, the less fishing activity there might be. Default is `FALSE` and returns distance from shore.
@@ -19,28 +20,13 @@
 #' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
 #' dist_from_shore_rast <- get_dist_shore(bermuda_grid)
 #' terra::plot(dist_from_shore_rast)
-get_dist <- function(spatial_grid, inverse = FALSE, ports = TRUE, ports_data = "wpi"){
-  
+get_dist <- function(spatial_grid, inverse = FALSE, data = "shore"){
+
   check_grid(spatial_grid)
   
   matching_crs <- check_matching_crs(spatial_grid, 4326)
   
-  if(ports){
-    if(ports_data == "wpi"){
-      if(!file.exists(file.path(tempdir(), "wpi_ports.csv"))){
-        utils::download.file(url = "https://msi.nga.mil/api/publications/download?type=view&key=16920959/SFH00000/UpdatedPub150.csv", destfile = file.path(tempdir(), "wpi_ports.csv"), method = "curl", quiet = TRUE) 
-      }
-      dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv"))[,c("Longitude", "Latitude")]  %>% 
-        sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
-      
-      layer_name <- "dist_ports"
-    } else if(ports_data == "gfw"){
-    dat <- readRDS(system.file("extdata", "gfw_anchorages.rds", package = "oceandatr", mustWork = TRUE)) %>% 
-      sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
-    
-    layer_name <- "dist_anchorages"
-    }
-  } else{
+  if(data == "shore"){
     if(!file.exists(file.path(tempdir(), "ne_10m_land.shp"))){
       #get high res land polygons from Natural Earth
       ne_data_filename <- "ne_land_data.zip"
@@ -53,8 +39,33 @@ get_dist <- function(spatial_grid, inverse = FALSE, ports = TRUE, ports_data = "
       sf::st_geometry() %>% 
       sf::st_sf()
     
-    layer_name <- "dist_shore"
-  }
+  }else if(data == "ports_wpi"){
+    if(!file.exists(file.path(tempdir(), "wpi_ports.csv"))){
+      utils::download.file(url = "https://msi.nga.mil/api/publications/download?type=view&key=16920959/SFH00000/UpdatedPub150.csv", destfile = file.path(tempdir(), "wpi_ports.csv"), method = "curl", quiet = TRUE) 
+    }
+    dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv"))[,c("Longitude", "Latitude")]  %>% 
+      sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+
+  }else if(data == "anchorages_all"){
+    dat <- readRDS(system.file("extdata", "anchorages_all.rds", package = "oceandatr", mustWork = TRUE)) %>% 
+      sf::st_as_sf(coords = c("x", "y"), crs = 4326)
+    
+  }else if(data == "anchorages_grouped" | data == "anchorages_land_masked"){
+    dat <- readRDS(system.file("extdata", "anchorages_grouped.rds", package = "oceandatr", mustWork = TRUE))
+    if(data == "anchorages_grouped"){
+      dat <- dat[,c("x", "y")] %>% 
+        sf::st_as_sf(coords = c("x", "y"), crs = 4326)
+    }else{
+      dat <- dat %>% 
+        subset(on_land == FALSE) %>% 
+        {.[,c("x", "y")]} %>% 
+        sf::st_as_sf(coords = c("x", "y"), crs = 4326)
+    }
+    } else{
+      stop('Data for calculating distance from must be one of: "shore", "ports_wpi", "anchorages_all", "anchorages_grouped", "anchorages_land_masked"')
+    }
+  
+  layer_name <- paste0("dist_", data)
   
      if(check_raster(spatial_grid)){
        

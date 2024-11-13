@@ -33,7 +33,7 @@ grids <- boundaries %>%
 
 for (i in 1:length(grids)) terra::plot(grids[[i]])
 
-dists_shore <- lapply(grids, FUN = function(x) get_dist(x, ports = F))
+dists_shore <- lapply(grids, FUN = function(x) get_dist(x, data = "shore"))
 
 for (i in 1:length(dists_shore)) terra::plot(dists_shore[[i]])
 
@@ -43,7 +43,7 @@ grids_sf <- boundaries  %>%
 
 for (i in 1:length(grids_sf)) plot(grids_sf[[i]])
 
-dists_shore_sf <- lapply(grids_sf, FUN = function(x) get_dist(x, ports = F, inverse = F))
+dists_shore_sf <- lapply(grids_sf, FUN = function(x) get_dist(x, data = "shore", inverse = F))
 
 for (i in 1:length(dists_shore_sf)) plot(dists_shore_sf[[i]], border = F)
 
@@ -54,7 +54,7 @@ run_times <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_ras[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE)
+  dist_ports_ras[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "ports_wpi")
   run_times[i] <- Sys.time() - start_time
 }
 
