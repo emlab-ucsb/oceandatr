@@ -1,14 +1,16 @@
-# The GFW anchorages data can be dowbloaded from the GFW data page (login required, but is free): https://globalfishingwatch.org/data-download/datasets/public-anchorages
-#This datasets is big (~167, 000 rows) and finding distance for each of these points to cells in a grid will take too long on and too much memory. GFW identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more, which can lead to many anchorages very close to each other. Anchorages close together end up with similar names, so to reduce the number of anchorages, I aggregate the anchorages by iso3 code (country code) and label (name) and take the mean lon and lat coordinates to get one anchorage point per name. 
-#To further reduce the number of points, anchorages within countries' land boundaries, e.g. along rivers, can be removed. I do this by buffering the Natural Earth land boundaries by 10km inland so as to avoid cutting off coastal anchorages that fall within the land boundary, likely due inaccuracies in the NE boundaries for e.g. islands and other small scale coastlines, and then masking masking points that fall within the resulting polygons.
+# The GFW anchorages data can be downloaded from the GFW data page (login required, but is free): https://globalfishingwatch.org/data-download/datasets/public-anchorages
+#This datasets is big (~167, 000 rows) and finding distance from each of these points to cells in a grid will take too long on and too much memory for most computers. GFW identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more, which can lead to many anchorages very close to each other, e.g. outside ports where vessels wait for docks to become available. Anchorages close together have the same names, so to reduce the number of anchorages, they are aggregated by iso3 code (country code) and label (name) and the mean longitude and latitude coordinates obtained to get one anchorage point per name in each country.
+#To further reduce the number of points, anchorages within countries' land boundaries, e.g. along rivers, can be removed. I do this by buffering the Natural Earth land boundaries by 10km inland so as to avoid cutting off coastal anchorages that fall within the land boundary, due to inaccuracies in the Natural Earth land boundaries, e.g. for islands and other small scale coastlines, and then masking points that fall within the resulting polygons.
 
 natural_earth_high_res <- rnaturalearth::ne_countries(scale = 10, returnclass = "sv") |> terra::aggregate()
 
 natural_earth_high_res_shrunk <- terra::buffer(natural_earth_high_res, -1e4)
 
+#read in most recent anchorages data. According to GFW, last update was 2023_11_1
 anchorages_all <- read.csv("inst/extdata/named_anchorages_v2_20221206.csv") |>
   subset(!(lat < -90 | lat > 90 | lon < -180 | lon > 180)) #there is a point at longitude = 1001!
 
+#aggregate anchorages to get the mean anchorage (coordinates) per unique label and iso3 code
 anchorages_name_grouped <- anchorages_all |>
   aggregate(cbind(lon, lat) ~ label + iso3, data = _, FUN = function(x) mean(x)) |>
   terra::vect(crs = "epsg:4326") 

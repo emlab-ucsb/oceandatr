@@ -54,7 +54,7 @@ run_times <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_ras[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "ports_wpi")
+  dist_ports_ras[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "ports")
   run_times[i] <- Sys.time() - start_time
 }
 
@@ -66,7 +66,7 @@ run_times_sf <- c()
 
 for(i in 1:length(grids_sf)){
   start_time <- Sys.time()
-  dist_ports_sf[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "ports_wpi")
+  dist_ports_sf[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "ports")
   run_times_sf[i] <- Sys.time() - start_time
 }
 
@@ -111,10 +111,62 @@ for(i in 1:length(grids)){
 pts_anchorages_minimal <- readRDS("inst/extdata/anchorages_grouped.rds") %>% 
   subset(on_land == FALSE) %>% 
   {.[,c("x", "y")]} %>% 
-  sf::st_as_sf(coords = c("x", "y"), crs = 4326)
+  terra::vect(geom = c("x", "y"), crs = "epsg:4326")
+
+pts_anchorages_minimal_ras_overlay <- lapply(grids, function(x) terra::crop(terra::project(pts_anchorages_minimal, terra::crs(x)), x))
 
 for (i in 1:length(dist_ports_ras_anchorages_minimal)){
   terra::plot(dist_ports_ras_anchorages_minimal[[i]])
-  terra::points(pts_anchorages_minimal)
+  terra::points(pts_anchorages_minimal_ras_overlay[[i]])
 } 
 
+#sf anchorages minimal
+
+dist_ports_sf_anchorages_minimal <- list()
+run_times_sf_anchorages_minimal <- c()
+
+for(i in 1:length(grids)){
+  start_time <- Sys.time()
+  dist_ports_sf_anchorages_minimal[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  run_times_sf_anchorages_minimal[i] <- Sys.time() - start_time
+}
+
+pts_anchorages_minimal_sf_overlay <- lapply(grids_sf, function(x) st_crop(st_transform(st_as_sf(pts_anchorages_minimal), st_crs(x)), st_bbox(x)))
+
+for (i in 1:length(dist_ports_sf_anchorages_minimal)){
+  plot(dist_ports_sf_anchorages_minimal[[i]], border = F)
+  points(pts_anchorages_minimal_sf_overlay[[i]])
+} 
+
+#anchorages named anchorages grouped
+
+dist_ports_ras_anchorages_grouped <- list()
+run_times_ras_anchorages_grouped <- c()
+
+for(i in 1:length(grids)){
+  start_time <- Sys.time()
+  dist_ports_ras_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  run_times_ras_anchorages_grouped[i] <- Sys.time() - start_time
+}
+
+for (i in 1:length(dist_ports_ras_anchorages_grouped)){
+  terra::plot(dist_ports_ras_anchorages_grouped[[i]])
+  terra::points(pts_anchorages_minimal_ras_overlay[[i]])
+} 
+
+#sf anchorages grouped
+
+dist_ports_sf_anchorages_grouped <- list()
+run_times_sf_anchorages_grouped <- c()
+
+for(i in 1:length(grids)){
+  start_time <- Sys.time()
+  dist_ports_sf_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  run_times_sf_anchorages_grouped[i] <- Sys.time() - start_time
+}
+
+
+for (i in 1:length(dist_ports_sf_anchorages_grouped)){
+  plot(dist_ports_sf_anchorages_grouped[[i]], border = F)
+  #points(pts_anchorages_minimal_sf_overlay[[i]])
+} 
