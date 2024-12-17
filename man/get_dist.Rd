@@ -4,26 +4,55 @@
 \alias{get_dist}
 \title{Get distance to port or shore for a spatial grid}
 \usage{
-get_dist(spatial_grid, inverse = FALSE, ports = TRUE, ports_data = "wpi")
+get_dist(spatial_grid, inverse = FALSE, data = "shore")
 }
 \arguments{
 \item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}.}
 
-\item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance to shore, i.e. highest values become lowest and vice versa. This is useful for use in spatial prioritization as a proxy for fishing activity, where the further a grid cell is from the shore, the less fishing activity there might be. Default is \code{FALSE} and returns distance from shore.}
+\item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance, i.e. highest values become lowest and vice versa. This is useful for spatial prioritization as a proxy for fishing activity, where the further a grid cell is from the shore, the less fishing activity there might be. Default is \code{FALSE}.}
+
+\item{data}{\code{character} which data to use to calculate distance from. Default is \code{"shore"} (Natural Earth land polygons); other possible values are \code{"ports"} (WPI Ports), \code{"anchorages_land_masked"}, \code{"anchorages_grouped"} and \code{"anchorages_all"} (GFW anchorages).}
 }
 \value{
 a \code{terra::rast} or \code{sf} object (same type as \code{spatial_grid} input) with distance to shore for each grid cell.
 }
 \description{
-Calculates distance from port or shore for each grid cell in the provided spatial grid. Spatial grid can be \code{terra::rast()} or \code{sf} format.
-Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI. Alternatively, anchorages can be used instead. The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/).
+Calculates distance from shore, port or anchorage for each grid cell in the provided spatial grid. Spatial grid can be \code{terra::rast()} or \code{sf} format.
+}
+\section{Shore}{
+
+
 The Natural Earth high resolution land polygons are used as the shoreline and are downloaded from the Natural Earth website (https://www.naturalearthdata.com/downloads/10m-physical-vectors/), so an internet connection is required.
 }
+
+\section{Ports}{
+
+
+Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI.
+}
+
+\section{Anchorages}{
+
+
+The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/). This results in a very large number of points (~167,000). Calculating distance from all these points to each grid cell is computationally expensive. Anchorages close together have the same names, so to reduce the number of anchorages, they are aggregated by iso3 code (country code) and label (name) and the mean longitude and latitude coordinates obtained to get one anchorage point per name in each country. This data can be used by specifying \code{data = "anchorages_grouped"}.
+
+The full anchorages dataset can be used by specifying \code{data = "anchorages_all"}, but this option is not recommended due to the computing time and memory required which may cause the system to hang.
+}
+
 \examples{
-# Get EEZ data first 
-bermuda_eez <- get_boundary(name = "Bermuda")
-# Get a raster spatial grid for Bermuda
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
-dist_from_shore_rast <- get_dist_shore(bermuda_grid)
+# Get some EEZ data first 
+fiji_eez <- get_boundary(name = "Fiji")
+# Get a raster spatial grid for Fiji
+fiji_grid <- get_grid(boundary = fiji_eez, crs = 32760, resolution = 20000)
+#get distance from shore for each cell in the raster
+dist_from_shore_rast <- get_dist(fiji_grid)
 terra::plot(dist_from_shore_rast)
+
+#get distance to ports
+dist_ports <- get_dist(fiji_grid, data = "ports")
+terra::plot(dist_ports)
+
+#get distance to anchorages, as defined by Global Fishing Watch data
+dist_anchorages <- get_dist(fiji_grid, data = "anchorages_land_masked")
+terra::plot(dist_anchorages)
 }

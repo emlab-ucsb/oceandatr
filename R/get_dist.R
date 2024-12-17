@@ -17,11 +17,11 @@
 #' 
 #To further reduce the number of points, anchorages within countries' land boundaries, e.g. along rivers, can be removed. I do this by buffering the Natural Earth land boundaries by 10km inland so as to avoid cutting off coastal anchorages that fall within the land boundary, due to inaccuracies in the Natural Earth land boundaries, e.g. for islands and other small scale coastlines, and then masking points that fall within the resulting polygons. This data can be used by specifying `data = "anchorages_land_masked"`. 
 #' 
-#' The full anchorages dataset can be used by specifying `data = "anchorages_all"`, but this option is not recommended due to the computing time and memory required which may cause the system to hang.
+#' The full anchorages dataset can be used by specifying `data = "anchorages_all"`, but this option may take a long time to calculate and/ or cause your system to hang.
 #' 
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`.
 #' @param inverse `logical` set to `TRUE` to get the inverse of distance, i.e. highest values become lowest and vice versa. This is useful for spatial prioritization as a proxy for fishing activity, where the further a grid cell is from the shore, the less fishing activity there might be. Default is `FALSE`.
-#' @param data `character` which data to use to calculate distance from. Default is `\"shore\"` (Natural Earth land polygons); other possible values are `\"ports\"` (WPI Ports), `\"anchorages_land_masked\"`, `\"anchorages_grouped\"` and `\"anchorages_all\"` (GFW anchorages).
+#' @param data `character` which data to use to calculate distance from. Default is `"shore"` (Natural Earth land polygons); other possible values are `"ports"` (WPI Ports), `"anchorages_land_masked"`, `"anchorages_grouped"` and `"anchorages_all"` (GFW anchorages).
 #'
 #' @return a `terra::rast` or `sf` object (same type as `spatial_grid` input) with distance to shore for each grid cell.
 #' @export
