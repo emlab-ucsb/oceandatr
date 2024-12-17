@@ -33,7 +33,7 @@ grids <- boundaries %>%
 
 for (i in 1:length(grids)) terra::plot(grids[[i]])
 
-dists_shore <- lapply(grids, FUN = function(x) get_dist(x, data = "shore"))
+dists_shore <- lapply(grids, FUN = function(x) get_dist(x, dist_to = "shore"))
 
 for (i in 1:length(dists_shore)) terra::plot(dists_shore[[i]])
 
@@ -43,7 +43,7 @@ grids_sf <- boundaries  %>%
 
 for (i in 1:length(grids_sf)) plot(grids_sf[[i]])
 
-dists_shore_sf <- lapply(grids_sf, FUN = function(x) get_dist(x, data = "shore", inverse = F))
+dists_shore_sf <- lapply(grids_sf, FUN = function(x) get_dist(x, dist_to = "shore", inverse = F))
 
 for (i in 1:length(dists_shore_sf)) plot(dists_shore_sf[[i]], border = F)
 
@@ -54,7 +54,7 @@ run_times <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_ras[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "ports")
+  dist_ports_ras[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, dist_to = "ports")
   run_times[i] <- Sys.time() - start_time
 }
 
@@ -66,7 +66,7 @@ run_times_sf <- c()
 
 for(i in 1:length(grids_sf)){
   start_time <- Sys.time()
-  dist_ports_sf[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "ports")
+  dist_ports_sf[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, dist_to = "ports")
   run_times_sf[i] <- Sys.time() - start_time
 }
 
@@ -79,17 +79,19 @@ countries <- rnaturalearth::countries110 |>
   terra::vect() |>
   terra::project(prjs[[4]])
 
-sf_use_s2(TRUE)
-pacific_ports_dist <- get_dist(terra::rast(extent = terra::ext(countries), crs = prjs[[4]], resolution = 1e4, vals = 1), inverse = FALSE, data = "ports_wpi")
+
+pacific_ports_dist <- get_dist(terra::rast(extent = terra::ext(countries), crs = prjs[[4]], resolution = 1e4, vals = 1), inverse = FALSE, dist_to = "ports")
 
 ports_wpi <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv")) %>% 
   sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
   st_transform(st_crs(prjs[[4]]))
 
+ports_wpi_raw <- get_dist(st_as_sf(countries), dist_to = "ports", raw = TRUE)
+sf_use_s2(TRUE)
 
 terra::plot(dist_ports_ras[[4]], ext = terra::ext(countries))
 terra::lines(countries)
-terra::points(ports_wpi)
+terra::points(terra::vect(ports_wpi_raw))
 
 terra::plot(pacific_ports_dist)
 terra::lines(countries)
@@ -104,7 +106,7 @@ run_times_ras_anchorages_minimal <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_ras_anchorages_minimal[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  dist_ports_ras_anchorages_minimal[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, dist_to = "anchorages_land_masked")
   run_times_ras_anchorages_minimal[i] <- Sys.time() - start_time
 }
 
@@ -127,7 +129,7 @@ run_times_sf_anchorages_minimal <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_sf_anchorages_minimal[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  dist_ports_sf_anchorages_minimal[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, dist_to = "anchorages_land_masked")
   run_times_sf_anchorages_minimal[i] <- Sys.time() - start_time
 }
 
@@ -145,7 +147,7 @@ run_times_ras_anchorages_grouped <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_ras_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  dist_ports_ras_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, dist_to = "anchorages_land_masked")
   run_times_ras_anchorages_grouped[i] <- Sys.time() - start_time
 }
 
@@ -161,7 +163,7 @@ run_times_sf_anchorages_grouped <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_sf_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, data = "anchorages_land_masked")
+  dist_ports_sf_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, dist_to = "anchorages_land_masked")
   run_times_sf_anchorages_grouped[i] <- Sys.time() - start_time
 }
 

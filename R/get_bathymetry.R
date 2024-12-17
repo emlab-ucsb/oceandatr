@@ -19,13 +19,13 @@
 #' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw bathmetry data in that polygon(s) will be returned
 #' @param classify_bathymetry `logical`; whether to classify the bathymetry into depth zones. Original bathymetry data can be classified if `raw = TRUE` and `spatial_grid` is an `sf` polygon.
 #' @param above_sea_level_isNA `logical`; whether to set bathymetry (elevation) data values that are above sea level (i.e. greater than or equal to zero) to `NA` (`TRUE`) or zero (`FALSE`)
-#' @param name `string`; name of bathymetry raster or column in sf object that is returned
+#' @param name `string`; name of raster or column in sf object that is returned
 #' @param bathymetry_data_filepath `string`; the file path (including file name and extension) where bathymetry raster data are saved locally
 #' @param resolution `numeric`; the resolution (in minutes) of data to pull from the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)
 #' @param keep `logical`; whether to save the bathymetry data locally
 #' @param path `string`; the file path where you would like to save bathymetry data
 #' @param download_timeout `numeric`; the maximum number of seconds a query to the NOAA website is allowed to run
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately. 
+#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if `spatial_grid` spans the antimeridian and set this appropriately. 
 #'
 #' @return If `classify_bathymetry = FALSE`, bathymetry data in the `spatial_grid` supplied, or in the original raster file resolution if `raw = TRUE`. If `classify_bathymetry = TRUE` a multi-layer raster or an `sf` object with one zone in each column is returned, depending on the `spatial_grid` format. If `classify_bathymetry = TRUE` and `raw = TRUE` (in which case `spatial_grid` should be an `sf` polygon), the raw raster bathymetry data is classified into depth zones.
 #' @export

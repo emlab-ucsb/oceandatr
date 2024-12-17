@@ -4,14 +4,27 @@
 \alias{get_dist}
 \title{Get distance to port or shore for a spatial grid}
 \usage{
-get_dist(spatial_grid, inverse = FALSE, data = "shore")
+get_dist(
+  spatial_grid,
+  dist_to = "shore",
+  raw = FALSE,
+  inverse = FALSE,
+  name = NULL,
+  antimeridian = NULL
+)
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}.}
+\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance, i.e. highest values become lowest and vice versa. This is useful for spatial prioritization as a proxy for fishing activity, where the further a grid cell is from the shore, the less fishing activity there might be. Default is \code{FALSE}.}
+\item{dist_to}{\code{character} which data to use to calculate distance to. Default is \code{"shore"} (Natural Earth land polygons); other possible values are \code{"ports"} (WPI Ports), \code{"anchorages_land_masked"}, \code{"anchorages_grouped"} and \code{"anchorages_all"} (GFW anchorages).}
 
-\item{data}{\code{character} which data to use to calculate distance from. Default is \code{"shore"} (Natural Earth land polygons); other possible values are \code{"ports"} (WPI Ports), \code{"anchorages_land_masked"}, \code{"anchorages_grouped"} and \code{"anchorages_all"} (GFW anchorages).}
+\item{raw}{\code{logical} set to TRUE to retrieve the raw shore, port or anchorage data for the polygon passed to \code{spatial_grid}}
+
+\item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance, i.e. highest values become lowest and vice versa. Can be useful if the result is to be used as a proxy for fishing activity, where the closer a grid cell is to the port or shore, the more fishing activity there might be. Default is \code{FALSE}.}
+
+\item{name}{\code{string}; name of raster or column in sf object that is returned}
+
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 }
 \value{
 a \code{terra::rast} or \code{sf} object (same type as \code{spatial_grid} input) with distance to shore for each grid cell.
@@ -34,9 +47,9 @@ Port locations are downloaded directly from the World Port Index (Pub 150): http
 \section{Anchorages}{
 
 
-The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/). This results in a very large number of points (~167,000). Calculating distance from all these points to each grid cell is computationally expensive. Anchorages close together have the same names, so to reduce the number of anchorages, they are aggregated by iso3 code (country code) and label (name) and the mean longitude and latitude coordinates obtained to get one anchorage point per name in each country. This data can be used by specifying \code{data = "anchorages_grouped"}.
+The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/). This results in a very large number of points (~167,000). Calculating distance from all these points to each grid cell is computationally expensive. Anchorages close together have the same names, so to reduce the number of anchorages, they are aggregated by iso3 code (country code) and label (name) and the mean longitude and latitude coordinates obtained to get one anchorage point per name in each country. This data can be used by specifying \code{dist_to = "anchorages_grouped"}.
 
-The full anchorages dataset can be used by specifying \code{data = "anchorages_all"}, but this option is not recommended due to the computing time and memory required which may cause the system to hang.
+The full anchorages dataset can be used by specifying \code{dist_to = "anchorages_all"}, but this option may take a long time to calculate and/ or cause your system to hang.
 }
 
 \examples{
@@ -49,10 +62,10 @@ dist_from_shore_rast <- get_dist(fiji_grid)
 terra::plot(dist_from_shore_rast)
 
 #get distance to ports
-dist_ports <- get_dist(fiji_grid, data = "ports")
+dist_ports <- get_dist(fiji_grid, dist_to = "ports")
 terra::plot(dist_ports)
 
 #get distance to anchorages, as defined by Global Fishing Watch data
-dist_anchorages <- get_dist(fiji_grid, data = "anchorages_land_masked")
+dist_anchorages <- get_dist(fiji_grid, dist_to = "anchorages_land_masked")
 terra::plot(dist_anchorages)
 }

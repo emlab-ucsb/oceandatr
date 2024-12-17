@@ -27,7 +27,7 @@ get_bathymetry(
 
 \item{above_sea_level_isNA}{\code{logical}; whether to set bathymetry (elevation) data values that are above sea level (i.e. greater than or equal to zero) to \code{NA} (\code{TRUE}) or zero (\code{FALSE})}
 
-\item{name}{\code{string}; name of bathymetry raster or column in sf object that is returned}
+\item{name}{\code{string}; name of raster or column in sf object that is returned}
 
 \item{bathymetry_data_filepath}{\code{string}; the file path (including file name and extension) where bathymetry raster data are saved locally}
 
@@ -39,7 +39,7 @@ get_bathymetry(
 
 \item{download_timeout}{\code{numeric}; the maximum number of seconds a query to the NOAA website is allowed to run}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 }
 \value{
 If \code{classify_bathymetry = FALSE}, bathymetry data in the \code{spatial_grid} supplied, or in the original raster file resolution if \code{raw = TRUE}. If \code{classify_bathymetry = TRUE} a multi-layer raster or an \code{sf} object with one zone in each column is returned, depending on the \code{spatial_grid} format. If \code{classify_bathymetry = TRUE} and \code{raw = TRUE} (in which case \code{spatial_grid} should be an \code{sf} polygon), the raw raster bathymetry data is classified into depth zones.
