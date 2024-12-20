@@ -16,7 +16,7 @@
 #' If the user has downloaded bathymetry data for the area of interest, for example from GEBCO (https://www.gebco.net), they can pass the file path to this function in `bathymetry_data_filepath`. If no file path is provided, the function will extract bathymetry data for the area from the ETOPO 2022 Global Relief model served by NOAA (https://www.ncei.noaa.gov/products/etopo-global-relief-model). 
 #'
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw bathmetry data in that polygon(s) will be returned
+#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw data in that polygon(s) will be returned
 #' @param classify_bathymetry `logical`; whether to classify the bathymetry into depth zones. Original bathymetry data can be classified if `raw = TRUE` and `spatial_grid` is an `sf` polygon.
 #' @param above_sea_level_isNA `logical`; whether to set bathymetry (elevation) data values that are above sea level (i.e. greater than or equal to zero) to `NA` (`TRUE`) or zero (`FALSE`)
 #' @param name `string`; name of raster or column in sf object that is returned

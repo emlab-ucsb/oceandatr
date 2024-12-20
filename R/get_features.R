@@ -2,7 +2,7 @@
 #'
 #' @description This is a wrapper of `get_bathymetry()`, `get_seamounts_buffered()`, `get_knolls()`, `get_geomorphology()`, `get_coral_habitat()`, and `get_enviro_regions()`. See the individual functions for details.
 #' 
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
+#' @inheritParams get_bathymetry
 #' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw feature data in that polygon(s) will be returned. Note that this will be a list object, since raster and `sf` data may be returned.
 #' @param features a vector of feature names, can include: "bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_regions"
 #' @param bathy_resolution `numeric`; the resolution (in minutes) of data to pull from the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)
@@ -11,7 +11,7 @@
 #' @param octocoral_threshold `numeric` between 0 and 7; the threshold value for how many species (of 7) should be predicted present in an area for octocorals to be considered present (default is 2)
 #' @param enviro_clusters `numeric`; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)
 #' @param max_enviro_clusters `numeric`; the maximum number of environmental regions to try when using the clustering algorithm (default is 8)
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately. 
+#' 
 #' @return If `raw = TRUE`, a list of feature data is returned (mixed raster and `sf` objects). If a `spatial_grid` is supplied, a multi-layer raster or `sf` object of gridded data is returned, depending on the `spatial_grid` format.
 #' @export
 #'

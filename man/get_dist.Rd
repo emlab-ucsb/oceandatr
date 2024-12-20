@@ -18,7 +18,7 @@ get_dist(
 
 \item{dist_to}{\code{character} which data to use to calculate distance to. Default is \code{"shore"} (Natural Earth land polygons); other possible values are \code{"ports"} (WPI Ports), \code{"anchorages_land_masked"}, \code{"anchorages_grouped"} and \code{"anchorages_all"} (GFW anchorages).}
 
-\item{raw}{\code{logical} set to TRUE to retrieve the raw shore, port or anchorage data for the polygon passed to \code{spatial_grid}}
+\item{raw}{\code{logical} set to TRUE to retrieve the raw shore, port or anchorage data within the extent of the \code{spatial_grid}. Note that the closest shore, port or anchorage may be outside the extent.}
 
 \item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance, i.e. highest values become lowest and vice versa. Can be useful if the result is to be used as a proxy for fishing activity, where the closer a grid cell is to the port or shore, the more fishing activity there might be. Default is \code{FALSE}.}
 

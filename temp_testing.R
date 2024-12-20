@@ -1,5 +1,6 @@
 library(magrittr)
 library(sf)
+library(tmap)
 
 devtools::load_all()
 states <- c("Bermuda", "Micronesia", "Kiribati")
@@ -82,16 +83,12 @@ countries <- rnaturalearth::countries110 |>
 
 pacific_ports_dist <- get_dist(terra::rast(extent = terra::ext(countries), crs = prjs[[4]], resolution = 1e4, vals = 1), inverse = FALSE, dist_to = "ports")
 
-ports_wpi <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv")) %>% 
-  sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
-  st_transform(st_crs(prjs[[4]]))
-
-ports_wpi_raw <- get_dist(st_as_sf(countries), dist_to = "ports", raw = TRUE)
+ports_wpi <- get_dist(st_as_sf(terra::ext(countries) |> terra::vect(terra::crs(countries))), dist_to = "ports", raw = TRUE)
 sf_use_s2(TRUE)
 
 terra::plot(dist_ports_ras[[4]], ext = terra::ext(countries))
 terra::lines(countries)
-terra::points(terra::vect(ports_wpi_raw))
+terra::points(terra::vect(ports_wpi))
 
 terra::plot(pacific_ports_dist)
 terra::lines(countries)
@@ -110,16 +107,14 @@ for(i in 1:length(grids)){
   run_times_ras_anchorages_minimal[i] <- Sys.time() - start_time
 }
 
-pts_anchorages_minimal <- readRDS("inst/extdata/anchorages_grouped.rds") %>% 
-  subset(on_land == FALSE) %>% 
-  {.[,c("x", "y")]} %>% 
-  terra::vect(geom = c("x", "y"), crs = "epsg:4326")
+sf_use_s2(FALSE)
+pts_anchorages_minimal <- lapply(grids, function(x) get_dist(x, dist_to = "anchorages_land_masked", raw = TRUE))
+sf_use_s2(TRUE)
 
-pts_anchorages_minimal_ras_overlay <- lapply(grids, function(x) terra::crop(terra::project(pts_anchorages_minimal, terra::crs(x)), x))
 
 for (i in 1:length(dist_ports_ras_anchorages_minimal)){
   terra::plot(dist_ports_ras_anchorages_minimal[[i]])
-  terra::points(pts_anchorages_minimal_ras_overlay[[i]])
+  terra::points(pts_anchorages_minimal[[i]])
 } 
 
 #sf anchorages minimal
@@ -133,13 +128,14 @@ for(i in 1:length(grids)){
   run_times_sf_anchorages_minimal[i] <- Sys.time() - start_time
 }
 
-pts_anchorages_minimal_sf_overlay <- lapply(grids_sf, function(x) st_crop(st_transform(st_as_sf(pts_anchorages_minimal), st_crs(x)), st_bbox(x)))
-
 for (i in 1:length(dist_ports_sf_anchorages_minimal)){
-  plot(dist_ports_sf_anchorages_minimal[[i]], border = F)
-  points(pts_anchorages_minimal_sf_overlay[[i]])
+  tm_shape(dist_ports_sf_anchorages_minimal[[i]]) + 
+    tm_fill(col = "dist_anchorages_land_masked", style = "cont") + 
+    tm_shape(st_as_sf(pts_anchorages_minimal[[i]])) + 
+    tm_dots()
 } 
 
+#carry one testing HERE!!
 #anchorages named anchorages grouped
 
 dist_ports_ras_anchorages_grouped <- list()
@@ -147,13 +143,17 @@ run_times_ras_anchorages_grouped <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_ras_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, dist_to = "anchorages_land_masked")
+  dist_ports_ras_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids[[i]], inverse = FALSE, dist_to = "anchorages_grouped")
   run_times_ras_anchorages_grouped[i] <- Sys.time() - start_time
 }
 
+sf_use_s2(FALSE)
+pts_anchorages_grouped <- lapply(grids, function(x) get_dist(x, dist_to = "anchorages_grouped", raw = TRUE))
+sf_use_s2(TRUE)
+
 for (i in 1:length(dist_ports_ras_anchorages_grouped)){
   terra::plot(dist_ports_ras_anchorages_grouped[[i]])
-  terra::points(pts_anchorages_minimal_ras_overlay[[i]])
+  terra::points(terra::vect(pts_anchorages_grouped[[i]]))
 } 
 
 #sf anchorages grouped
@@ -163,12 +163,13 @@ run_times_sf_anchorages_grouped <- c()
 
 for(i in 1:length(grids)){
   start_time <- Sys.time()
-  dist_ports_sf_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, dist_to = "anchorages_land_masked")
+  dist_ports_sf_anchorages_grouped[[i]] <- get_dist(spatial_grid = grids_sf[[i]], inverse = FALSE, dist_to = "anchorages_grouped")
   run_times_sf_anchorages_grouped[i] <- Sys.time() - start_time
 }
 
-
 for (i in 1:length(dist_ports_sf_anchorages_grouped)){
-  plot(dist_ports_sf_anchorages_grouped[[i]], border = F)
-  #points(pts_anchorages_minimal_sf_overlay[[i]])
+  print(tm_shape(dist_ports_sf_anchorages_grouped[[i]]) + 
+    tm_fill(col = "dist_anchorages_grouped", style = "cont") + 
+    tm_shape(pts_anchorages_grouped[[i]]) + 
+    tm_dots())
 } 

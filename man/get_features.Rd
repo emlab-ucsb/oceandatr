@@ -37,7 +37,7 @@ get_features(
 
 \item{max_enviro_clusters}{\code{numeric}; the maximum number of environmental regions to try when using the clustering algorithm (default is 8)}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 }
 \value{
 If \code{raw = TRUE}, a list of feature data is returned (mixed raster and \code{sf} objects). If a \code{spatial_grid} is supplied, a multi-layer raster or \code{sf} object of gridded data is returned, depending on the \code{spatial_grid} format.

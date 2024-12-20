@@ -21,7 +21,7 @@ get_bathymetry(
 \arguments{
 \item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw bathmetry data in that polygon(s) will be returned}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw data in that polygon(s) will be returned}
 
 \item{classify_bathymetry}{\code{logical}; whether to classify the bathymetry into depth zones. Original bathymetry data can be classified if \code{raw = TRUE} and \code{spatial_grid} is an \code{sf} polygon.}
 

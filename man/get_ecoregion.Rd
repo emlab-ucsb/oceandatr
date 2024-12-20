@@ -14,11 +14,11 @@ get_ecoregion(
 \arguments{
 \item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw Ecoregion data in that polygon(s) will be returned (as opposed to gridded data)}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw data in that polygon(s) will be returned}
 
 \item{type}{\code{character} which ecoregion type is required? Default is \verb{\\"MEOW\\"} (Marine Ecosystems of the World); other possible values are \verb{\\"Longhurst\\"} and \verb{\\"LME\\"}}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 }
 \value{
 For gridded data, a multi-layer raster object, or an \code{sf} object depending on the \code{spatial_grid} format. If \code{raw = TRUE} an \code{sf} object of the Ecoregion.

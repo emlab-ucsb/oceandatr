@@ -15,13 +15,13 @@ get_seamounts(
 \arguments{
 \item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw seamounts data in that polygon(s) will be returned}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw data in that polygon(s) will be returned}
 
 \item{buffer}{\code{numeric}; the distance from the seamount peak to include in the output. Distance should be in the same units as the spatial_grid, use e.g. \code{sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal} to check units. If buffering raw data, units are metres, unless \code{sf::sf_use_s2()} is set to \code{FALSE}, in which case the units are degrees.}
 
-\item{name}{name of raster or column in sf object that is returned}
+\item{name}{\code{string}; name of raster or column in sf object that is returned}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 }
 \value{
 For buffered seamounts as gridded data, a \code{terra::rast()} or \code{sf} object, depending on the \code{spatial_grid} format. If \code{raw = TRUE} and \code{buffer = NULL} an \code{sf} POINT geometry object of seamount peaks within the polygon provided. If \code{raw = TRUE} and \code{buffer} is not \code{NULL} an \code{sf} polygon geometry object of buffered seamount peaks within the polygon provided. Note: at present, it is not possible to return gridded seamount peaks: https://github.com/emlab-ucsb/oceandatr/issues/48

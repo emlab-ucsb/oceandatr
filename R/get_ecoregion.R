@@ -11,10 +11,8 @@
 #' 
 #' All data are downloaded via the `mregions2` R package function `mregions2::mrp_get()`, and more information on the data can be found on the [Marine Regions website](https://marineregions.org/sources.php)
 #' 
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw Ecoregion data in that polygon(s) will be returned (as opposed to gridded data)
+#' @inheritParams get_bathymetry
 #' @param type `character` which ecoregion type is required? Default is `\"MEOW\"` (Marine Ecosystems of the World); other possible values are `\"Longhurst\"` and `\"LME\"`
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
 #'
 #' @return For gridded data, a multi-layer raster object, or an `sf` object depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object of the Ecoregion.
 #' @export

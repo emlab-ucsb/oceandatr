@@ -9,11 +9,9 @@
 #' \item Octocorals: The global habitat suitability modelled for 7 species of cold-water octocoral found deeper than 50m. Data from and described in [Yesson et al. 2012](https://doi.org/10.1111/j.1365-2699.2011.02681.x): "A consensus/summary map incorporating all seven octocoral suborders was constructed by generating binary presence/absence maps from the model outputs indicating areas of high suitability using a score threshold that maximized the sum of the specificity and sensitivity based on the validation data (Carroll, 2010). These binary layers were summed to generate a layer containing the number of octocoral suborders predicted to be present per cell."
 #' }
 #' 
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw coral data in that polygon(s) will be returned
+#' @inheritParams get_bathymetry
 #' @param antipatharia_threshold `numeric` between 0 and 100; the threshold value for habitat suitability for antipatharia corals to be considered present (default is 22, as defined in Yesson et al., 2017)
 #' @param octocoral_threshold `numeric` between 0 and 7; the threshold value for how many species (of 7) should be predicted present in an area for octocorals to be considered present (default is 2)
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
 #'
 #' @return If an `area_polygon` is supplied, a raster stack of coral habitat suitability data is returned; note this is the raw habitat suitability/ no. of species values. If a `spatial_grid` is supplied, a raster stack or `sf` of gridded coral habitat presence/ absence data is returned, depending on `spatial_grid` format.
 #' @export

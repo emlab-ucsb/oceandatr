@@ -15,13 +15,13 @@ get_coral_habitat(
 \arguments{
 \item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw coral data in that polygon(s) will be returned}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw data in that polygon(s) will be returned}
 
 \item{antipatharia_threshold}{\code{numeric} between 0 and 100; the threshold value for habitat suitability for antipatharia corals to be considered present (default is 22, as defined in Yesson et al., 2017)}
 
 \item{octocoral_threshold}{\code{numeric} between 0 and 7; the threshold value for how many species (of 7) should be predicted present in an area for octocorals to be considered present (default is 2)}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 }
 \value{
 If an \code{area_polygon} is supplied, a raster stack of coral habitat suitability data is returned; note this is the raw habitat suitability/ no. of species values. If a \code{spatial_grid} is supplied, a raster stack or \code{sf} of gridded coral habitat presence/ absence data is returned, depending on \code{spatial_grid} format.

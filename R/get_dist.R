@@ -91,7 +91,11 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
 
   layer_name <- if(is.null(name)) paste0("dist_", dist_to) else name
   
-  if(raw == TRUE) return(get_data_in_grid(spatial_grid = sf::st_sf(sf::st_as_sfc(sf::st_bbox(spatial_grid))), dat = dat, raw = TRUE, name = dist_to, antimeridian = antimeridian))
+  if(raw == TRUE){
+    cropping_poly <- if(spatialgridr:::check_raster(spatial_grid)) terra::ext(spatial_grid) |> terra::vect(terra::crs(spatial_grid)) |> terra::densify(1e4) |> sf::st_as_sf() else sf::st_bbox(spatial_grid) |> sf::st_as_sfc(crs = sf::st_crs(spatial_grid)) |> sf::st_sf() |> terra::vect() |> terra::densify(1e4) |> sf::st_as_sf()
+    
+    return(get_data_in_grid(spatial_grid = cropping_poly, dat = dat, raw = TRUE, name = dist_to, antimeridian = antimeridian))
+  } 
   
      if(check_raster(spatial_grid)){
        

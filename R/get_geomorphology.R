@@ -42,9 +42,7 @@
 #' \item Troughs
 #' }
 #'
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw geomorphology data in that polygon(s) will be returned
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
+#' @inheritParams get_bathymetry
 #'
 #' @return For gridded data, a multi-layer raster object, or an `sf` object with geomorphology class in each column, depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object with each row as a different geomorphological feature.
 #' @export

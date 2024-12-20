@@ -31,7 +31,7 @@ get_enviro_regions(
 
 \item{max_num_clusters}{\code{numeric}; the maximum number of environmental regions to try when using the clustering algorithm (default is 6)}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
 
 \item{sample_size}{\code{numeric}; default is 5000. Larger sample sizes will quickly consume memory (>10GB) so should be used with caution.}
 
