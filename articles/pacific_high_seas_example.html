@@ -166,7 +166,7 @@ biodiversity is known to be higher within this distance of seamount
 peaks (see <code>?get_seamounts_buffered</code> for more info).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">feature_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_features.html">get_features</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span>, seamount_buffer <span class="op">=</span> <span class="fl">30000</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">remove_empty_layers</span><span class="op">(</span><span class="op">)</span> <span class="co">#use this to remove raster layers that are empty</span></span>
+<span>  <span class="fu">oceandatr</span><span class="fu">:::</span><span class="fu">remove_empty_layers</span><span class="op">(</span><span class="op">)</span> <span class="co">#use this to remove raster layers that are empty</span></span>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">feature_set</span>, </span>
 <span>            col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"royalblue"</span><span class="op">)</span>, </span>
