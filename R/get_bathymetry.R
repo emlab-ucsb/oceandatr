@@ -1,10 +1,15 @@
-#' Get bathymetry data 
+#' Get bathymetry data
 #'
-#' @description Get bathymetry data for an area from the ETOPO 2022 Global Relief model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting `classify_bathymetry = TRUE`
-#' 
-#' @details Extracts bathymetry data for an `area_polygon`, or if a `spatial_grid` is supplied, gridded bathymetry is returned. 
-#' 
-#' Data can be classified into depth zones by setting `classify_bathymetry = TRUE`. Depths are classified as follows:
+#' @description Get bathymetry data for an area from the ETOPO 2022 Global
+#'   Relief model. If data are already downloaded locally, the user can specify
+#'   the file path of the dataset. Data can be classified into depth zones by
+#'   setting `classify_bathymetry = TRUE`
+#'
+#' @details Extracts bathymetry data for an `area_polygon`, or if a
+#'   `spatial_grid` is supplied, gridded bathymetry is returned.
+#'
+#'   Data can be classified into depth zones by setting `classify_bathymetry =
+#'   TRUE`. Depths are classified as follows:
 #' \itemize{
 #' \item Epipelagic Zone: 0-200 m depth
 #' \item Mesopelagic Zone: 200-1000 m depth
@@ -12,26 +17,52 @@
 #' \item Abyssopelagic Zone: 4000-6000 m depth
 #' \item Hadopelagic Zone: 6000+ m depth
 #' }
-#' 
-#' If the user has downloaded bathymetry data for the area of interest, for example from GEBCO (https://www.gebco.net), they can pass the file path to this function in `bathymetry_data_filepath`. If no file path is provided, the function will extract bathymetry data for the area from the ETOPO 2022 Global Relief model served by NOAA (https://www.ncei.noaa.gov/products/etopo-global-relief-model). 
 #'
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw data in that polygon(s) will be returned
-#' @param classify_bathymetry `logical`; whether to classify the bathymetry into depth zones. Original bathymetry data can be classified if `raw = TRUE` and `spatial_grid` is an `sf` polygon.
-#' @param above_sea_level_isNA `logical`; whether to set bathymetry (elevation) data values that are above sea level (i.e. greater than or equal to zero) to `NA` (`TRUE`) or zero (`FALSE`)
+#'   If the user has downloaded bathymetry data for the area of interest, for
+#'   example from GEBCO (https://www.gebco.net), they can pass the file path to
+#'   this function in `bathymetry_data_filepath`. If no file path is provided,
+#'   the function will extract bathymetry data for the area from the ETOPO 2022
+#'   Global Relief model served by NOAA
+#'   (https://www.ncei.noaa.gov/products/etopo-global-relief-model).
+#'
+#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using
+#'   `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+#'   be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
+#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
+#'   the raw data in that polygon(s) will be returned
+#' @param classify_bathymetry `logical`; whether to classify the bathymetry into
+#'   depth zones. Original bathymetry data can be classified if `raw = TRUE` and
+#'   `spatial_grid` is an `sf` polygon.
+#' @param above_sea_level_isNA `logical`; whether to set bathymetry (elevation)
+#'   data values that are above sea level (i.e. greater than or equal to zero)
+#'   to `NA` (`TRUE`) or zero (`FALSE`)
 #' @param name `string`; name of raster or column in sf object that is returned
-#' @param bathymetry_data_filepath `string`; the file path (including file name and extension) where bathymetry raster data are saved locally
-#' @param resolution `numeric`; the resolution (in minutes) of data to pull from the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)
+#' @param bathymetry_data_filepath `string`; the file path (including file name
+#'   and extension) where bathymetry raster data are saved locally
+#' @param resolution `numeric`; the resolution (in minutes) of data to pull from
+#'   the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30
+#'   arc seconds) and 0.25 (15 arc seconds)
 #' @param keep `logical`; whether to save the bathymetry data locally
-#' @param path `string`; the file path where you would like to save bathymetry data
-#' @param download_timeout `numeric`; the maximum number of seconds a query to the NOAA website is allowed to run
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if `spatial_grid` spans the antimeridian and set this appropriately. 
+#' @param path `string`; the file path where you would like to save bathymetry
+#'   data
+#' @param download_timeout `numeric`; the maximum number of seconds a query to
+#'   the NOAA website is allowed to run
+#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this
+#'   should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+#'   (default) the function will try to check if `spatial_grid` spans the
+#'   antimeridian and set this appropriately.
 #'
-#' @return If `classify_bathymetry = FALSE`, bathymetry data in the `spatial_grid` supplied, or in the original raster file resolution if `raw = TRUE`. If `classify_bathymetry = TRUE` a multi-layer raster or an `sf` object with one zone in each column is returned, depending on the `spatial_grid` format. If `classify_bathymetry = TRUE` and `raw = TRUE` (in which case `spatial_grid` should be an `sf` polygon), the raw raster bathymetry data is classified into depth zones.
+#' @return If `classify_bathymetry = FALSE`, bathymetry data in the
+#'   `spatial_grid` supplied, or in the original raster file resolution if `raw
+#'   = TRUE`. If `classify_bathymetry = TRUE` a multi-layer raster or an `sf`
+#'   object with one zone in each column is returned, depending on the
+#'   `spatial_grid` format. If `classify_bathymetry = TRUE` and `raw = TRUE` (in
+#'   which case `spatial_grid` should be an `sf` polygon), the raw raster
+#'   bathymetry data is classified into depth zones.
 #' @export
 #'
 #' @examples
-#' # Get EEZ data first 
+#' # Get EEZ data first
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw bathymetry data, not classified into depth zones
 #' bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, raw = TRUE, classify_bathymetry = FALSE)
@@ -208,7 +239,8 @@ get_etopo_bathymetry <- function(aoi, resolution, keep, path, download_timeout){
     #increase timeout for download which is 60s by default; too short time to download largers files
     options(timeout = max(download_timeout, getOption("timeout")))
     
-    # message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, " ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
+    # message(paste0("x1 = ", x1, " y1 = ", y1, " x2 = ", x2, " y2 = ", y2, "
+    # ncell.lon = ", ncell.lon, " ncell.lat = ", ncell.lat, "\n"))
     WEB.REQUEST <- paste0("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/DEM_all/ImageServer/exportImage?bbox=", x1, ",", y1, ",", x2, ",", y2, "&bboxSR=4326&size=", ncell.lon, ",", ncell.lat,"&imageSR=4326&format=tiff&pixelType=F32&interpolation=+RSP_NearestNeighbor&compression=LZ77&renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%", database, "%27%22}&f=image")
     filename <- gsub("[.]", "", paste(x1, x2, y1, y2, sep = "_"))
     utils::download.file(url = WEB.REQUEST, destfile = paste0(filename, "_tmp.tif"), mode = "wb", quiet = TRUE)

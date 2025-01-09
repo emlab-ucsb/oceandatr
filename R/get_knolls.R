@@ -1,14 +1,19 @@
 #' Get knolls base areas
 #'
 #' @description Get knolls base area data in a spatial grid or polygon
-#' 
-#' @details Knolls are small seamounts; seamounts with peaks 200-1000 m higher than the surrounding seafloor [(Morato et al., 2008)](https://doi.org/10.3354/meps07268). The knolls base area data is from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
+#'
+#' @details Knolls are small seamounts; seamounts with peaks 200-1000 m higher
+#'   than the surrounding seafloor [(Morato et al.,
+#'   2008)](https://doi.org/10.3354/meps07268). The knolls base area data is
+#'   from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
 #'
 #' @inheritParams get_bathymetry
 #'
-#' @return For gridded data, a `terra::rast()` or `sf` object, depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object crop and intersected with the polygon supplied.
+#' @return For gridded data, a `terra::rast()` or `sf` object, depending on the
+#'   `spatial_grid` format. If `raw = TRUE` an `sf` object crop and intersected
+#'   with the polygon supplied.
 #' @export
-#'
+#' 
 #' @examples
 #' # Get EEZ data first 
 #' bermuda_eez <- get_boundary(name = "Bermuda")

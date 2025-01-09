@@ -16,27 +16,55 @@ get_gfw(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
+\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
+be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} can be an \code{sf} polygon, and the raw GFW data, in tibble format, is returned for a bounding box covering the polygon +/-1 degree. The bounding box is expanded to ensure that the entire polygon has data coverage once the point data is rasterized. This data will not be summarised, i.e. \code{summarise} is ignored.}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} can be an \code{sf} polygon, and the
+raw GFW data, in tibble format, is returned for a bounding box covering the
+polygon +/-1 degree. The bounding box is expanded to ensure that the entire
+polygon has data coverage once the point data is rasterized. This data will
+not be summarised, i.e. \code{summarise} is ignored.}
 
-\item{resolution}{\code{string} either \code{"HIGH"} = 0.01 degree spatial resolution, or \code{"LOW"}  = 0.1.}
+\item{resolution}{\code{string} either \code{"HIGH"} = 0.01 degree spatial resolution,
+or \code{"LOW"}  = 0.1.}
 
-\item{start_year}{\code{numeric} must be 2012 or more recent year. Note that GFW added data from Spire and Orbcomm AIS providers in 2017, so data from 2017 is likely to have greater spatial and temporal coverage (\href{https://doi.org/10.1126/sciadv.abq2109}{Welch et al. 2022}).}
+\item{start_year}{\code{numeric} must be 2012 or more recent year. Note that GFW
+added data from Spire and Orbcomm AIS providers in 2017, so data from 2017
+is likely to have greater spatial and temporal coverage (\href{https://doi.org/10.1126/sciadv.abq2109}{Welch et al. 2022}).}
 
 \item{end_year}{\code{numeric} any year between 2012 and the current year}
 
 \item{group_by}{\code{string} can be \code{"geartype"}, \code{"flag"}, or \code{"location"}.}
 
-\item{summarise}{\code{string} can be \code{"total_annual_effort"}; the sum of all fishing effort for all years, from \code{start_year} to \code{end_year} at each location is returned, grouped by \code{group_by}; or \code{"mean_total_annual_effort"}; the mean of the annual sums of fishing effort for all years at each location is returned, grouped by \code{group_by}.}
+\item{summarise}{\code{string} can be \code{"total_annual_effort"}; the sum of all
+fishing effort for all years, from \code{start_year} to \code{end_year} at each
+location is returned, grouped by \code{group_by}; or
+\code{"mean_total_annual_effort"}; the mean of the annual sums of fishing effort
+for all years at each location is returned, grouped by \code{group_by}.}
 
-\item{key}{\code{string} Authorization token. Can be obtained with gfw_auth() function. See \code{gfwr} \href{https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization}{website} for details on how to request a token.}
+\item{key}{\code{string} Authorization token. Can be obtained with gfw_auth()
+function. See \code{gfwr}
+\href{https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization}{website}
+for details on how to request a token.}
 }
 \value{
-For gridded data, a \code{terra::rast()} or \code{sf} object, depending on the \code{spatial_grid} format. If \code{raw = TRUE}, non-summarised data in \code{tibble} format is returned for the polygon area direct from the GFW query \code{gfwr::get_raster()}.
+For gridded data, a \code{terra::rast()} or \code{sf} object, depending on the
+\code{spatial_grid} format. If \code{raw = TRUE}, non-summarised data in \code{tibble}
+format is returned for the polygon area direct from the GFW query
+\code{gfwr::get_raster()}.
 }
 \description{
-Global Fishing Watch (GFW) provides data on apparent fishing effort (hours) at 0.01 degree spatial resolution, based on automatic identification system (AIS) broadcasts from vessels. Data is principally for larger vessel (> 24m in length); less than 1\% of vessels <12 m length are represented in the data (see \href{https://globalfishingwatch.org/dataset-and-code-fishing-effort/}{GFW website} for detailed information). This function is primarily a wrapper for the \href{https://github.com/GlobalFishingWatch/gfwr}{\code{gfwr} package} function \code{get_raster()}, but allows the user to return multiple years of data in a summarized and gridded format. An API key is required to retrieve GFW data; see the package website for instructions on how to get and save one (free).
+Global Fishing Watch (GFW) provides data on apparent fishing
+effort (hours) at 0.01 degree spatial resolution, based on automatic
+identification system (AIS) broadcasts from vessels. Data is principally
+for larger vessel (> 24m in length); less than 1\% of vessels <12 m length
+are represented in the data (see \href{https://globalfishingwatch.org/dataset-and-code-fishing-effort/}{GFW website}
+for detailed information). This function is primarily a wrapper for the
+\href{https://github.com/GlobalFishingWatch/gfwr}{\code{gfwr} package} function
+\code{get_raster()}, but allows the user to return multiple years of data in a
+summarized and gridded format. An API key is required to retrieve GFW data;
+see the package website for instructions on how to get and save one (free).
 }
 \examples{
 \dontshow{if (nchar(Sys.getenv("GFW_TOKEN"))>0) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

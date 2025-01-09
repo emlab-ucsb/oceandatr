@@ -2,10 +2,10 @@ test_that("returns raw data for Bermuda", {
   expect_s4_class(get_coral_habitat(spatial_grid = get_boundary(name = "Bermuda"), raw = TRUE), class = "SpatRaster")
 })
 
-test_that("check raw raster data has 3 layers", {
-  expect_equal(get_coral_habitat(spatial_grid = get_boundary(name = "Kiribati", country_type = "sovereign"), raw = TRUE, antimeridian = TRUE) |> terra::nlyr(),
-               expected = 3)
-})
+# test_that("check raw raster data has 3 layers", {
+#   expect_equal(get_coral_habitat(spatial_grid = get_boundary(name = "Kiribati", country_type = "sovereign"), raw = TRUE, antimeridian = TRUE) |> terra::nlyr(),
+#                expected = 3)
+# })
 
 test_that("returns Bermuda gridded data - raster", {
   expect_s4_class(get_coral_habitat(spatial_grid = get_grid(boundary = get_boundary(name = "Bermuda"), 

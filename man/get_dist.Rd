@@ -14,42 +14,80 @@ get_dist(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
+\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
+be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{dist_to}{\code{character} which data to use to calculate distance to. Default is \code{"shore"} (Natural Earth land polygons); other possible values are \code{"ports"} (WPI Ports), \code{"anchorages_land_masked"}, \code{"anchorages_grouped"} and \code{"anchorages_all"} (GFW anchorages).}
+\item{dist_to}{\code{character} which data to use to calculate distance to.
+Default is \code{"shore"} (Natural Earth land polygons); other possible values
+are \code{"ports"} (WPI Ports), \code{"anchorages_land_masked"},
+\code{"anchorages_grouped"} and \code{"anchorages_all"} (GFW anchorages).}
 
-\item{raw}{\code{logical} set to TRUE to retrieve the raw shore, port or anchorage data within the extent of the \code{spatial_grid}. Note that the closest shore, port or anchorage may be outside the extent.}
+\item{raw}{\code{logical} set to TRUE to retrieve the raw shore, port or anchorage
+data within the extent of the \code{spatial_grid}. Note that the closest shore,
+port or anchorage may be outside the extent.}
 
-\item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance, i.e. highest values become lowest and vice versa. Can be useful if the result is to be used as a proxy for fishing activity, where the closer a grid cell is to the port or shore, the more fishing activity there might be. Default is \code{FALSE}.}
+\item{inverse}{\code{logical} set to \code{TRUE} to get the inverse of distance, i.e.
+highest values become lowest and vice versa. Can be useful if the result is
+to be used as a proxy for fishing activity, where the closer a grid cell is
+to the port or shore, the more fishing activity there might be. Default is
+\code{FALSE}.}
 
 \item{name}{\code{string}; name of raster or column in sf object that is returned}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
+should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
+(default) the function will try to check if \code{spatial_grid} spans the
+antimeridian and set this appropriately.}
 }
 \value{
-a \code{terra::rast} or \code{sf} object (same type as \code{spatial_grid} input) with distance to shore for each grid cell.
+a \code{terra::rast} or \code{sf} object (same type as \code{spatial_grid} input)
+with distance to shore for each grid cell.
 }
 \description{
-Calculates distance from shore, port or anchorage for each grid cell in the provided spatial grid. Spatial grid can be \code{terra::rast()} or \code{sf} format.
+Calculates distance from shore, port or anchorage for each grid
+cell in the provided spatial grid. Spatial grid can be \code{terra::rast()} or
+\code{sf} format.
 }
 \section{Shore}{
 
 
-The Natural Earth high resolution land polygons are used as the shoreline and are downloaded from the Natural Earth website (https://www.naturalearthdata.com/downloads/10m-physical-vectors/), so an internet connection is required.
+The Natural Earth high resolution land polygons are used as the shoreline
+and are downloaded from the Natural Earth website
+(https://www.naturalearthdata.com/downloads/10m-physical-vectors/), so an
+internet connection is required.
 }
 
 \section{Ports}{
 
 
-Port locations are downloaded directly from the World Port Index (Pub 150): https://msi.nga.mil/Publications/WPI.
+Port locations are downloaded directly from the World Port Index (Pub 150):
+https://msi.nga.mil/Publications/WPI.
 }
 
 \section{Anchorages}{
 
 
-The anchorages data is from Global Fishing Watch and identifies anchorages as anywhere vessels with AIS remain stationary for 12 hours or more (see https://globalfishingwatch.org/datasets-and-code-anchorages/). This results in a very large number of points (~167,000). Calculating distance from all these points to each grid cell is computationally expensive. Anchorages close together have the same names, so to reduce the number of anchorages, they are aggregated by iso3 code (country code) and label (name) and the mean longitude and latitude coordinates obtained to get one anchorage point per name in each country. This data can be used by specifying \code{dist_to = "anchorages_grouped"}.
+The anchorages data is from Global Fishing Watch and identifies anchorages as
+anywhere vessels with AIS remain stationary for 12 hours or more (see
+https://globalfishingwatch.org/datasets-and-code-anchorages/). This results
+in a very large number of points (~167,000). Calculating distance from all
+these points to each grid cell is computationally expensive. Anchorages close
+together have the same names, so to reduce the number of anchorages, they are
+aggregated by iso3 code (country code) and label (name) and the mean
+longitude and latitude coordinates obtained to get one anchorage point per
+name in each country. This data can be used by specifying \code{dist_to = "anchorages_grouped"}.
 
-The full anchorages dataset can be used by specifying \code{dist_to = "anchorages_all"}, but this option may take a long time to calculate and/ or cause your system to hang.
+To further reduce the number of points, anchorages within countries' land
+boundaries, e.g. along rivers, can be removed. I do this by buffering the
+Natural Earth land boundaries by 10km inland so as to avoid cutting off
+coastal anchorages that fall within the land boundary, due to inaccuracies in
+the Natural Earth land boundaries, e.g. for islands and other small scale
+coastlines, and then masking points that fall within the resulting polygons.
+This data can be used by specifying \code{dist_to = "anchorages_land_masked"}.
+
+The full anchorages dataset can be used by specifying \code{dist_to = "anchorages_all"}, but this option may take a long time to calculate and/ or
+cause your system to hang.
 }
 
 \examples{

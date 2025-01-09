@@ -19,36 +19,67 @@ get_enviro_regions(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
+\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
+be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw Bio-Oracle environmental data in that polygon(s) will be returned, unless \code{enviro_regions = TRUE}, in which case the raw data will be classified into environmental regions}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+the raw Bio-Oracle environmental data in that polygon(s) will be returned,
+unless \code{enviro_regions = TRUE}, in which case the raw data will be
+classified into environmental regions}
 
-\item{enviro_regions}{\code{logical} if TRUE, environmental regions will be created. If FALSE the gridded Bio-Oracle data will be returned}
+\item{enviro_regions}{\code{logical} if TRUE, environmental regions will be
+created. If FALSE the gridded Bio-Oracle data will be returned}
 
-\item{show_plots}{\code{logical}; whether to show boxplots for each environmental variable in each environmental region (default is FALSE)}
+\item{show_plots}{\code{logical}; whether to show boxplots for each environmental
+variable in each environmental region (default is FALSE)}
 
-\item{num_clusters}{\code{numeric}; the number of environmental regions to cluster the data into - to be used when a clustering algorithm is not necessary (default is NULL)}
+\item{num_clusters}{\code{numeric}; the number of environmental regions to cluster
+the data into - to be used when a clustering algorithm is not necessary
+(default is NULL)}
 
-\item{max_num_clusters}{\code{numeric}; the maximum number of environmental regions to try when using the clustering algorithm (default is 6)}
+\item{max_num_clusters}{\code{numeric}; the maximum number of environmental
+regions to try when using the clustering algorithm (default is 6)}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if \code{spatial_grid} spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
+should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
+(default) the function will try to check if \code{spatial_grid} spans the
+antimeridian and set this appropriately.}
 
-\item{sample_size}{\code{numeric}; default is 5000. Larger sample sizes will quickly consume memory (>10GB) so should be used with caution.}
+\item{sample_size}{\code{numeric}; default is 5000. Larger sample sizes will
+quickly consume memory (>10GB) so should be used with caution.}
 
-\item{num_samples}{\code{numeric}; default is 5, which resulted in good consensus on the optimal number of clusters in testing.}
+\item{num_samples}{\code{numeric}; default is 5, which resulted in good consensus
+on the optimal number of clusters in testing.}
 
-\item{num_cores}{\code{numeric}; default 1. Multi-core sampling is supported if the package \code{parallel} is installed, but be aware than increasing the number of cores will also increase the memory required.}
+\item{num_cores}{\code{numeric}; default 1. Multi-core sampling is supported if
+the package \code{parallel} is installed, but be aware than increasing the
+number of cores will also increase the memory required.}
 
-\item{custom_seed}{\code{numeric}; default \code{1234}, but a custom seed can be supplied if desired.}
+\item{custom_seed}{\code{numeric}; default \code{1234}, but a custom seed can be
+supplied if desired.}
 }
 \value{
-If \code{enviro_regions = FALSE}, Bio-Oracle data in the \code{spatial_grid} supplied, or in the original raster file resolution if \code{raw = TRUE}. If \code{enviro_regions = TRUE} a multi-layer raster or an \code{sf} object with one environmental region in each column/ layer is returned, depending on the \code{spatial_grid} format. If \code{enviro_regions = TRUE} and \code{raw = TRUE} (in which case \code{spatial_grid} should be an \code{sf} polygon), the raw Bio-Oracle data is classified into environmental zones.
+If \code{enviro_regions = FALSE}, Bio-Oracle data in the \code{spatial_grid}
+supplied, or in the original raster file resolution if \code{raw = TRUE}. If
+\code{enviro_regions = TRUE} a multi-layer raster or an \code{sf} object with one
+environmental region in each column/ layer is returned, depending on the
+\code{spatial_grid} format. If \code{enviro_regions = TRUE} and \code{raw = TRUE} (in
+which case \code{spatial_grid} should be an \code{sf} polygon), the raw Bio-Oracle
+data is classified into environmental zones.
 }
 \description{
-This function gets \href{https://bio-oracle.org/}{Bio-Oracle} environmental data for the spatial grid and can then create environmental regions using k-means clustering. The idea for the clustering comes from Magris et al. \href{https://doi.org/10.1111/ddi.13183}{2020}. The number of environmental regions can be specified directly, using \code{num_clusters}, but the function can also find the 'optimal' number of clusters using the \code{NbClust()} from the \code{NbClust} package.
+This function gets \href{https://bio-oracle.org/}{Bio-Oracle}
+environmental data for the spatial grid and can then create environmental
+regions using k-means clustering. The idea for the clustering comes from
+Magris et al. \href{https://doi.org/10.1111/ddi.13183}{2020}. The number of
+environmental regions can be specified directly, using \code{num_clusters}, but
+the function can also find the 'optimal' number of clusters using the
+\code{NbClust()} from the \code{NbClust} package.
 }
 \details{
-The environmental data used in the clustering are all sea surface measurements over the period 2010 - 2020:
+The environmental data used in the clustering are all sea surface
+measurements over the period 2010 - 2020:
 \itemize{
 \item Chlorophyll concentration (mean, mg/ m3)
 \item Dissolved oxygen concentration (mean)
@@ -65,7 +96,17 @@ The environmental data used in the clustering are all sea surface measurements o
 
 For full details of the Bio-Oracle data see \href{https://onlinelibrary.wiley.com/doi/10.1111/geb.13813}{Assis et al. 2024}.
 
-When the number of planning units/ cells for clustering exceeds ~ 10,000, the amount of computer memory required to find the optimal number of clusters using \code{NbClust::NbClust()} exceeds 10GB, so repeated sampling is used to find a consensus number of clusters. Sensible defaults for \code{NbClust()} are provided, namely \code{sample_size = 5000}, \code{num_samples = 5}, \code{max_num_clusters = 6} but can be customised if desired, though see the parameter descriptions below for some words of warning. Parallel processing is offered by specifying \code{num_cores} >1 (must be an integer), though the package \code{parallel} must be installed (it is included in most R installations). To find the number of available cores on your systems run \code{parallel::detectCores()}.
+When the number of planning units/ cells for clustering exceeds ~ 10,000,
+the amount of computer memory required to find the optimal number of
+clusters using \code{NbClust::NbClust()} exceeds 10GB, so repeated sampling is
+used to find a consensus number of clusters. Sensible defaults for
+\code{NbClust()} are provided, namely \code{sample_size = 5000}, \code{num_samples = 5},
+\code{max_num_clusters = 6} but can be customised if desired, though see the
+parameter descriptions below for some words of warning. Parallel processing
+is offered by specifying \code{num_cores} >1 (must be an integer), though the
+package \code{parallel} must be installed (it is included in most R
+installations). To find the number of available cores on your systems run
+\code{parallel::detectCores()}.
 }
 \examples{
 # Get EEZ data first 

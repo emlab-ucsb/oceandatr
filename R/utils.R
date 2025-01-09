@@ -74,7 +74,8 @@ check_sf <- function(sp){
   }
 }
 
-#' If input is character, read in from file pointed to, assuming it is a common vector or raster file format
+#' If input is character, read in from file pointed to, assuming it is a common
+#' vector or raster file format
 #'
 #' @param dat
 #'
@@ -190,12 +191,14 @@ remove_empty_layers <- function(dat){
 #' Get a grid for Bermuda's EEZ in local equal area projection
 #'
 #' @param resolution `numeric` grid cell width in kilometres
-#' @param output `character` the desired output format, either "raster", "sf_square" (vector), or "sf_hex" (vector); default is "raster"
+#' @param output `character` the desired output format, either "raster",
+#'   "sf_square" (vector), or "sf_hex" (vector); default is "raster"
 #'
-#' @returns Grid for Bermuda's EEZ in local equal area projection and specified format and cell size
-#'
+#' @returns Grid for Bermuda's EEZ in local equal area projection and specified
+#'   format and cell size
+#' 
 #' @noRd
-bermuda_grid <- function(resolution = 20, output = "raster") {
+get_bermuda_grid <- function(resolution = 20, output = "raster") {
   get_grid(boundary = get_boundary(name = "Bermuda"), 
            crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
            resolution = resolution*1e3, 
@@ -205,12 +208,14 @@ bermuda_grid <- function(resolution = 20, output = "raster") {
 #' Get a grid for Kiribati's EEZ in local equal area projection
 #'
 #' @param resolution `numeric` grid cell width in kilometres
-#' @param output `character` the desired output format, either "raster", "sf_square" (vector), or "sf_hex" (vector); default is "raster"
+#' @param output `character` the desired output format, either "raster",
+#'   "sf_square" (vector), or "sf_hex" (vector); default is "raster"
 #'
-#' @returns Grid for Kiribati's EEZ in local equal area projection and specified format and cell size
-#'
+#' @returns Grid for Kiribati's EEZ in local equal area projection and specified
+#'   format and cell size
+#' 
 #' @noRd
-kiribati_grid <- function(resolution = 50, output = "raster") {
+get_kiribati_grid <- function(resolution = 50, output = "raster") {
   get_grid(boundary = get_boundary(name = "Kiribati", country_type = "sovereign"),
            crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
            resolution = resolution*1e3, 
