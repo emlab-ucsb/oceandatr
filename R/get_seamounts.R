@@ -1,19 +1,33 @@
 #' Get seamounts
-#' 
+#'
 #' @description Get seamounts data in a spatial grid or polygon
-#' 
-#' @details Seamounts are classified as peaks at least 1000m higher than the surrounding seafloor [Morato et al. 2008](https://doi.org/10.3354/meps07268). The seamounts peak dataset is from [Yeson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030). 
-#' [Morato et al. 2010](https://doi.org/10.1073/pnas.0910290107) found that seamounts have higher biodiversity within 30 - 40 km of the peak. To enable this radius of higher biodiversity to be included in conservation planning, the `buffer` argument can be set, so that each seamount peak is buffered to the radius specified
 #'
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw seamounts data in that polygon(s) will be returned
-#' @param buffer `numeric`; the distance from the seamount peak to include in the output. Distance should be in the same units as the spatial_grid, use e.g. `sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal` to check units. If buffering raw data, units are metres, unless `sf::sf_use_s2()` is set to `FALSE`, in which case the units are degrees.
-#' @param name name of raster or column in sf object that is returned
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
+#' @details Seamounts are classified as peaks at least 1000m higher than the
+#'   surrounding seafloor [Morato et al.
+#'   2008](https://doi.org/10.3354/meps07268). The seamounts peak dataset is
+#'   from [Yeson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030).
+#'   [Morato et al. 2010](https://doi.org/10.1073/pnas.0910290107) found that
+#'   seamounts have higher biodiversity within 30 - 40 km of the peak. To enable
+#'   this radius of higher biodiversity to be included in conservation planning,
+#'   the `buffer` argument can be set, so that each seamount peak is buffered to
+#'   the radius specified
 #'
-#' @return For buffered seamounts as gridded data, a `terra::rast()` or `sf` object, depending on the `spatial_grid` format. If `raw = TRUE` and `buffer = NULL` an `sf` POINT geometry object of seamount peaks within the polygon provided. If `raw = TRUE` and `buffer` is not `NULL` an `sf` polygon geometry object of buffered seamount peaks within the polygon provided. Note: at present, it is not possible to return gridded seamount peaks: https://github.com/emlab-ucsb/oceandatr/issues/48
+#' @inheritParams get_bathymetry
+#' @param buffer `numeric`; the distance from the seamount peak to include in
+#'   the output. Distance should be in the same units as the spatial_grid, use
+#'   e.g. `sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal` to check
+#'   units. If buffering raw data, units are metres, unless `sf::sf_use_s2()` is
+#'   set to `FALSE`, in which case the units are degrees.
+#'
+#' @return For buffered seamounts as gridded data, a `terra::rast()` or `sf`
+#'   object, depending on the `spatial_grid` format. If `raw = TRUE` and `buffer
+#'   = NULL` an `sf` POINT geometry object of seamount peaks within the polygon
+#'   provided. If `raw = TRUE` and `buffer` is not `NULL` an `sf` polygon
+#'   geometry object of buffered seamount peaks within the polygon provided.
+#'   Note: at present, it is not possible to return gridded seamount peaks:
+#'   https://github.com/emlab-ucsb/oceandatr/issues/48
 #' @export
-#'
+#' 
 #' @examples
 #' # Get EEZ data first 
 #' bermuda_eez <- get_boundary(name = "Bermuda")

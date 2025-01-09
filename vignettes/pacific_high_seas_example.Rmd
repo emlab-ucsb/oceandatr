@@ -110,13 +110,15 @@ terra::plot(pacific_hs_planning_grid, col = "grey70")
 
 
 
+
+
 Now we have a planning grid, we can get data on conservation features (e.g. habitats) using `oceandatr` to use in a spatial prioritization with a single command `get_features()`. We have to set the seamount buffer, which is the area around the seamount that is included as part of the seamount, and we use 30km based since biodiversity is known to be higher within this distance of seamount peaks (see `?get_seamounts_buffered` for more info).
 
 
 
 ``` r
 feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000) %>% 
-  remove_empty_layers() #use this to remove raster layers that are empty
+  oceandatr:::remove_empty_layers() #use this to remove raster layers that are empty
 
 terra::plot(feature_set, 
             col = c("grey60", "royalblue"), 
@@ -155,6 +157,9 @@ terra::plot(fishing_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(p
 <p class="caption">Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch</p>
 </div>
 
+
+
+
 # Run a simple spatial prioritization
 
 We now have all the data we need to create a conservation problem and solve it to get a map of priority areas for conservation for our Pacific High Seas area. For the prioritization, we need to set targets for how much of each conservation feature must be included in the prioritized areas. We will set this at 20%.
@@ -184,6 +189,9 @@ terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 <img src="figure/prioritization-1.png" alt="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."  />
 <p class="caption">Prioritization solution for the Pacific High Seas area. Black outlines are seamounts.</p>
 </div>
+
+
+
 
 # Prioritization with patches
 

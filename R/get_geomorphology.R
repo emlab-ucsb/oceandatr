@@ -1,13 +1,18 @@
 #' Get seafloor geomorphology data
-#' 
+#'
 #' @description Get geomorphological data for a spatial grid or polygon
-#' 
-#' @details Geomorphological features are from the [Harris et al. 2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at [https://www.bluehabitats.org](https://www.bluehabitats.org). Data is included in this package, except depth classification features which can be created using `get_bathymetry()` and seamounts which can be retrieved from a more recent dataset using `get_seamounts()`. List of features:
-#' 
+#'
+#' @details Geomorphological features are from the [Harris et al.
+#'   2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at
+#'   [https://www.bluehabitats.org](https://www.bluehabitats.org). Data is
+#'   included in this package, except depth classification features which can be
+#'   created using `get_bathymetry()` and seamounts which can be retrieved from
+#'   a more recent dataset using `get_seamounts()`. List of features:
+#'
 #' \itemize{
 #' \item Abyssal hills
 #' \item Abyssal plains
-#' \item Basins: 
+#' \item Basins:
 #'    \itemize{
 #'    \item large basins of seas and oceans
 #'    \item major ocean basins
@@ -20,7 +25,7 @@
 #'    \itemize{
 #'    \item blind
 #'    \item shelf incising
-#'    } 
+#'    }
 #' \item Escarpments
 #' \item Fans
 #' \item Glacial troughs
@@ -42,13 +47,14 @@
 #' \item Troughs
 #' }
 #'
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the raw geomorphology data in that polygon(s) will be returned
-#' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the function will try to check if data spans the antimeridian and set this appropriately.
+#' @inheritParams get_bathymetry
 #'
-#' @return For gridded data, a multi-layer raster object, or an `sf` object with geomorphology class in each column, depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object with each row as a different geomorphological feature.
+#' @return For gridded data, a multi-layer raster object, or an `sf` object with
+#'   geomorphology class in each column, depending on the `spatial_grid` format.
+#'   If `raw = TRUE` an `sf` object with each row as a different
+#'   geomorphological feature.
 #' @export
-#'
+#' 
 #' @examples
 #' # Grab EEZ data first 
 #' bermuda_eez <- get_boundary(name = "Bermuda")

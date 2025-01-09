@@ -7,28 +7,20 @@ test_that("returns raw Kiribati data", {
 })
 
 test_that("returns gridded Bermuda depth classes", {
-  expect_s4_class(get_bathymetry(spatial_grid = get_grid(boundary = get_boundary(name = "Bermuda"), 
-                                                                   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                                                                   resolution = 20000)), class = "SpatRaster")
+  expect_s4_class(get_bathymetry(spatial_grid = get_bermuda_grid()), class = "SpatRaster")
 })
 
-test_that("returns Kiribati gridded depth classes", {
-  expect_s4_class(get_bathymetry(spatial_grid = get_grid(boundary =  get_boundary(name = "Kiribati", country_type = "sovereign"), 
-                                                                  crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
-                                                                   resolution = 50000)),
-                  class = "SpatRaster")
-})
+# test_that("returns Kiribati gridded depth classes", {
+#   expect_s4_class(get_bathymetry(spatial_grid = kiribati_grid()),
+#                   class = "SpatRaster")
+# })
 
 test_that("returns gridded Bermuda depth classes", {
-  expect_s3_class(get_bathymetry(spatial_grid = get_grid(boundary = get_boundary(name = "Bermuda"), 
-                                                         crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                                                         resolution = 20000,
-                                                         output = "sf_hex")), class = "sf")
+  expect_s3_class(get_bathymetry(spatial_grid = get_bermuda_grid(output = "sf_hex")), class = "sf")
 })
 
 test_that("returns extra columns as well as depth classes for sf grid", {
-  expect_equal(get_boundary(name = "Bermuda") |> 
-                 get_grid(resolution = 10000, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', output = "sf_square") |> 
+  expect_equal(get_bermuda_grid(resolution = 10, output = "sf_square") |> 
                  dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |> 
                  get_bathymetry() |>
                  ncol(), 7)

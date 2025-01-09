@@ -1,17 +1,45 @@
 #' Get data from Global Fishing Watch
 #'
-#' @description Global Fishing Watch (GFW) provides data on apparent fishing effort (hours) at 0.01 degree spatial resolution, based on automatic identification system (AIS) broadcasts from vessels. Data is principally for larger vessel (> 24m in length); less than 1% of vessels <12 m length are represented in the data (see [GFW website](https://globalfishingwatch.org/dataset-and-code-fishing-effort/) for detailed information). This function is primarily a wrapper for the [`gfwr` package](https://github.com/GlobalFishingWatch/gfwr) function `get_raster()`, but allows the user to return multiple years of data in a summarized and gridded format. An API key is required to retrieve GFW data; see the package website for instructions on how to get and save one (free).
-#' 
-#' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.
-#' @param raw `logical` if TRUE, `spatial_grid` can be an `sf` polygon, and the raw GFW data, in tibble format, is returned for a bounding box covering the polygon +/-1 degree. The bounding box is expanded to ensure that the entire polygon has data coverage once the point data is rasterized. This data will not be summarised, i.e. `summarise` is ignored.
-#' @param resolution `string` either `"HIGH"` = 0.01 degree spatial resolution, or `"LOW"`  = 0.1.
-#' @param start_year `numeric` must be 2012 or more recent year. Note that GFW added data from Spire and Orbcomm AIS providers in 2017, so data from 2017 is likely to have greater spatial and temporal coverage ([Welch et al. 2022](https://doi.org/10.1126/sciadv.abq2109)). 
-#' @param end_year `numeric` any year between 2012 and the current year
-#' @param group_by `string` can be `"geartype"`, `"flag"`, or `"location"`. 
-#' @param summarise `string` can be `"total_annual_effort"`; the sum of all fishing effort for all years, from `start_year` to `end_year` at each location is returned, grouped by `group_by`; or `"mean_total_annual_effort"`; the mean of the annual sums of fishing effort for all years at each location is returned, grouped by `group_by`.
-#' @param key `string` Authorization token. Can be obtained with gfw_auth() function. See `gfwr` [website](https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization) for details on how to request a token.
+#' @description Global Fishing Watch (GFW) provides data on apparent fishing
+#'   effort (hours) at 0.01 degree spatial resolution, based on automatic
+#'   identification system (AIS) broadcasts from vessels. Data is principally
+#'   for larger vessel (> 24m in length); less than 1% of vessels <12 m length
+#'   are represented in the data (see [GFW
+#'   website](https://globalfishingwatch.org/dataset-and-code-fishing-effort/)
+#'   for detailed information). This function is primarily a wrapper for the
+#'   [`gfwr` package](https://github.com/GlobalFishingWatch/gfwr) function
+#'   `get_raster()`, but allows the user to return multiple years of data in a
+#'   summarized and gridded format. An API key is required to retrieve GFW data;
+#'   see the package website for instructions on how to get and save one (free).
 #'
-#' @return For gridded data, a `terra::rast()` or `sf` object, depending on the `spatial_grid` format. If `raw = TRUE`, non-summarised data in `tibble` format is returned for the polygon area direct from the GFW query `gfwr::get_raster()`.
+#' @inheritParams get_bathymetry
+#' @param raw `logical` if TRUE, `spatial_grid` can be an `sf` polygon, and the
+#'   raw GFW data, in tibble format, is returned for a bounding box covering the
+#'   polygon +/-1 degree. The bounding box is expanded to ensure that the entire
+#'   polygon has data coverage once the point data is rasterized. This data will
+#'   not be summarised, i.e. `summarise` is ignored.
+#' @param resolution `string` either `"HIGH"` = 0.01 degree spatial resolution,
+#'   or `"LOW"`  = 0.1.
+#' @param start_year `numeric` must be 2012 or more recent year. Note that GFW
+#'   added data from Spire and Orbcomm AIS providers in 2017, so data from 2017
+#'   is likely to have greater spatial and temporal coverage ([Welch et al.
+#'   2022](https://doi.org/10.1126/sciadv.abq2109)).
+#' @param end_year `numeric` any year between 2012 and the current year
+#' @param group_by `string` can be `"geartype"`, `"flag"`, or `"location"`.
+#' @param summarise `string` can be `"total_annual_effort"`; the sum of all
+#'   fishing effort for all years, from `start_year` to `end_year` at each
+#'   location is returned, grouped by `group_by`; or
+#'   `"mean_total_annual_effort"`; the mean of the annual sums of fishing effort
+#'   for all years at each location is returned, grouped by `group_by`.
+#' @param key `string` Authorization token. Can be obtained with gfw_auth()
+#'   function. See `gfwr`
+#'   [website](https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization)
+#'   for details on how to request a token.
+#'
+#' @return For gridded data, a `terra::rast()` or `sf` object, depending on the
+#'   `spatial_grid` format. If `raw = TRUE`, non-summarised data in `tibble`
+#'   format is returned for the polygon area direct from the GFW query
+#'   `gfwr::get_raster()`.
 #' @export
 #'
 #' @examplesIf nchar(Sys.getenv("GFW_TOKEN"))>0
@@ -79,27 +107,27 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
   } 
     grouping_vars <- c("Lon", "Lat", "Time Range") %>% 
       {if(group_by == "location") . else c(., tolower(group_by))} 
-
+    
     annual_effort <- fishing_effort %>% 
       dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>% 
-      dplyr::summarise(total_annual_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE)) %>% 
+      dplyr::summarise(total_annual_effort = sum(.data[["Apparent Fishing Hours"]], na.rm = TRUE)) %>% 
       dplyr::ungroup()  
 
     if(summarise == "total_annual_effort"){
       if(group_by == "location"){
         final_effort <- annual_effort %>% 
           tidyr::pivot_wider(names_from = "Time Range",
-                             values_from = total_annual_effort) 
+                             values_from = "total_annual_effort") 
         
       }else{
         final_effort <- annual_effort %>% 
           tidyr::pivot_wider(names_from = dplyr::all_of(c(group_by, "Time Range")),
-                             values_from = total_annual_effort) 
+                             values_from = "total_annual_effort") 
       }
     } else{
       mean_total_effort <- annual_effort %>% 
         dplyr::group_by(., dplyr::across(-c("Time Range", total_annual_effort))) %>%
-        dplyr::summarise(mean_total_annual_effort = sum(total_annual_effort, na.rm = TRUE)/number_years) %>% #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
+        dplyr::summarise(mean_total_annual_effort = sum(.data[["total_annual_effort"]], na.rm = TRUE)/number_years) %>% #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
         dplyr::ungroup()
       
       if(group_by == "location"){
@@ -108,7 +136,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
       }else{
         final_effort <- mean_total_effort %>% 
           tidyr::pivot_wider(names_from = dplyr::all_of(group_by),
-                             values_from = mean_total_annual_effort)
+                             values_from = "mean_total_annual_effort")
       }
     }
 

@@ -12,22 +12,32 @@ get_knolls(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
+\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
+be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw knolls data in that polygon(s) will be returned}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+the raw data in that polygon(s) will be returned}
 
-\item{name}{name of raster or column in sf object that is returned}
+\item{name}{\code{string}; name of raster or column in sf object that is returned}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
+should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
+(default) the function will try to check if \code{spatial_grid} spans the
+antimeridian and set this appropriately.}
 }
 \value{
-For gridded data, a \code{terra::rast()} or \code{sf} object, depending on the \code{spatial_grid} format. If \code{raw = TRUE} an \code{sf} object crop and intersected with the polygon supplied.
+For gridded data, a \code{terra::rast()} or \code{sf} object, depending on the
+\code{spatial_grid} format. If \code{raw = TRUE} an \code{sf} object crop and intersected
+with the polygon supplied.
 }
 \description{
 Get knolls base area data in a spatial grid or polygon
 }
 \details{
-Knolls are small seamounts; seamounts with peaks 200-1000 m higher than the surrounding seafloor \href{https://doi.org/10.3354/meps07268}{(Morato et al., 2008)}. The knolls base area data is from \href{https://doi.org/10.1016/j.dsr.2011.02.004}{Yesson et al. 2011}
+Knolls are small seamounts; seamounts with peaks 200-1000 m higher
+than the surrounding seafloor \href{https://doi.org/10.3354/meps07268}{(Morato et al., 2008)}. The knolls base area data is
+from \href{https://doi.org/10.1016/j.dsr.2011.02.004}{Yesson et al. 2011}
 }
 \examples{
 # Get EEZ data first 

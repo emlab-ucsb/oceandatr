@@ -140,12 +140,34 @@ pacific_pus_sf_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_sf_lowres)
 cowplot::plot_grid(pacific_hs_map, pacific_pus_ras_map, pacific_pus_sf_map, ncol = 1, labels = "auto", label_size = 12, rel_heights = c(1.5, 1, 1), rel_widths = c(2, 3, 3), align = "v", axis = "r ")
 ```
 
+```{r include=FALSE, eval=FALSE}
+#case study area map for paper
+pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(c(xmin = 118, ymin = -8, xmax = 167, ymax = 12), crs = 4326)) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE, resolution = 1) %>% 
+  terra::classify(matrix(c(0, Inf, NA), ncol = 3))
+
+world <- rnaturalearth::ne_countries(scale = 10) %>% 
+  sf::st_make_valid()
+
+(case_study_map <- tmap::tm_shape(pacific_bathy*-1) +
+  tmap::tm_raster(title = "Depth (m)", palette = "YlGnBu") +
+   tmap::tm_shape(eezs %>% sf::st_cast(to = "MULTILINESTRING")) +
+  tmap::tm_lines(col = "name", palette = "Dark2", title.col = "Select EEZs") +
+   tmap::tm_shape(pacific_hs %>% sf::st_cast(to = "MULTILINESTRING")) +
+   tmap::tm_lines(col = "name", palette = "red", lwd = 2, title.col = "") +
+   tmap::tm_shape(world) +
+   tmap::tm_borders() + 
+   tmap::tm_graticules(lwd = 0.5) +
+  tmap::tm_layout(inner.margins = 0, legend.outside = TRUE))
+
+tmap_save(case_study_map, "case_study_map.png")
+```
+
 Now we have a planning grid, we can get data on conservation features (e.g. habitats) using `oceandatr` to use in a spatial prioritization with a single command `get_features()`. We have to set the seamount buffer, which is the area around the seamount that is included as part of the seamount, and we use 30km based since biodiversity is known to be higher within this distance of seamount peaks (see `?get_seamounts_buffered` for more info).
 
 
 ```{r features, fig.cap="Conservation features for the Pacific High Seas planning area"}
 feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000) %>% 
-  remove_empty_layers() #use this to remove raster layers that are empty
+  oceandatr:::remove_empty_layers() #use this to remove raster layers that are empty
 
 terra::plot(feature_set, 
             col = c("grey60", "royalblue"), 
@@ -162,11 +184,13 @@ terra::plot(feature_set,
           sep = "", collapse = " ")
 }
 
-tmap::tm_shape(setNames(feature_set, gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence())) +
-  tmap::tm_raster(palette = c("grey60", "forestgreen"), legend.show = FALSE) +
-  tmap::tm_shape(pacific_hs) +
+(features_nice_map <- tmap::tm_shape(setNames(feature_set, gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence())) +
+  tmap::tm_raster(palette = c("grey70", "royalblue"), labels = c("Absent", "Present"), style = "cat", title = "Feature") +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
   tmap::tm_borders() +
-  tmap::tm_layout(panel.label.size = 1.5)
+  tmap::tm_layout(panel.label.size = 1.5))
+
+tmap_save(features_nice_map, "features.png")
 ```
 
 
@@ -185,6 +209,18 @@ fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 
 
 terra::plot(fishing_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
 ```
+
+```{r eval=FALSE, include=FALSE}
+#pretty map of GFW data for paper
+(fishing_effort_map <- tmap::tm_shape(fishing_effort) +
+  tmap::tm_raster(palette = "viridis", style = "cont", title = "Total fishing\neffort 2022", legend.reverse = TRUE) +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(legend.outside = TRUE))
+
+tmap_save(fishing_effort_map, "fishing_effort.png")
+```
+
 
 # Run a simple spatial prioritization
 
@@ -209,6 +245,19 @@ terra::plot(sol, main = "Solution",
             mar = c(3,3,2,6)+0.1)
 terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 ```
+
+```{r eval=FALSE, include=FALSE}
+#pretty map of prioritization solution for paper
+
+(prioritization_map <- tmap::tm_shape(sol) +
+  tmap::tm_raster(palette = c("grey70", "green4"),style = "cat", labels =  c("Not selected", "Selected"), title = "") +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(legend.outside = TRUE))
+
+tmap_save(prioritization_map, "prioritization.png")
+```
+
 
 # Prioritization with patches
 

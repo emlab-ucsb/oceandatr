@@ -7,20 +7,33 @@
 get_geomorphology(spatial_grid = NULL, raw = FALSE, antimeridian = NULL)
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using \code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
+\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
+be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and the raw geomorphology data in that polygon(s) will be returned}
+\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+the raw data in that polygon(s) will be returned}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL} (default) the function will try to check if data spans the antimeridian and set this appropriately.}
+\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
+should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
+(default) the function will try to check if \code{spatial_grid} spans the
+antimeridian and set this appropriately.}
 }
 \value{
-For gridded data, a multi-layer raster object, or an \code{sf} object with geomorphology class in each column, depending on the \code{spatial_grid} format. If \code{raw = TRUE} an \code{sf} object with each row as a different geomorphological feature.
+For gridded data, a multi-layer raster object, or an \code{sf} object with
+geomorphology class in each column, depending on the \code{spatial_grid} format.
+If \code{raw = TRUE} an \code{sf} object with each row as a different
+geomorphological feature.
 }
 \description{
 Get geomorphological data for a spatial grid or polygon
 }
 \details{
-Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at \url{https://www.bluehabitats.org}. Data is included in this package, except depth classification features which can be created using \code{get_bathymetry()} and seamounts which can be retrieved from a more recent dataset using \code{get_seamounts()}. List of features:
+Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at
+\url{https://www.bluehabitats.org}. Data is
+included in this package, except depth classification features which can be
+created using \code{get_bathymetry()} and seamounts which can be retrieved from
+a more recent dataset using \code{get_seamounts()}. List of features:
 
 \itemize{
 \item Abyssal hills
