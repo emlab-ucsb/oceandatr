@@ -1,7 +1,7 @@
 Package: oceandatr
 Type: Package
 Title: Ocean Data Access
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
 Description: For retrieving and gridding ocean related data.
 License: GPL (>= 3) + file LICENSE
@@ -17,7 +17,7 @@ Imports:
     NbClust,
     graphics,
     stats,
-    spatialgridr (>= 0.0.2.0),
+    spatialgridr (>= 0.0.2.1),
     rlang
 Remotes:  
     github::emlab-ucsb/spatialgridr,

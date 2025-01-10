@@ -113,7 +113,7 @@ The `rnaturalearth` package [vignette](https://docs.ropensci.org/rnaturalearth/a
 If we query France setting `country_type = "country"` we get:
 
 ```{r france_country, fig.cap = ""}
-france <- get_boundary(name = "France", type = "countries", country_type = "country")
+france <- get_boundary(name = "France", type = "country", country_type = "country")
 
 plot(sf::st_geometry(france), col = "blue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
@@ -125,7 +125,7 @@ If we use `country_type = "sovereign"`, we also get France's overseas territorie
 
 
 ```{r france_country_sovereign, fig.cap = ""}
-france_sov <- get_boundary(name = "France", type = "countries", country_type = "sovereign")
+france_sov <- get_boundary(name = "France", type = "country", country_type = "sovereign")
 
 plot(sf::st_geometry(france_sov), col = "blue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
