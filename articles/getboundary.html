@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -283,7 +283,7 @@ for querying.</p>
 <p>If we query France setting <code>country_type = "country"</code> we
 get:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">france</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"countries"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">france</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">france</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">rnaturalearth</span><span class="fu">::</span><span class="fu">ne_coastline</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">110</span><span class="op">)</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, lty <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -296,7 +296,7 @@ status as mainland France.</p>
 France’s overseas territories in the Pacific, Atlantic and
 Antarctic:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">france_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"countries"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">france_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">france_sov</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">rnaturalearth</span><span class="fu">::</span><span class="fu">ne_coastline</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">110</span><span class="op">)</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, lty <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
