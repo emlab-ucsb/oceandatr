@@ -10,10 +10,10 @@ test_that("returns gridded Bermuda depth classes", {
   expect_s4_class(get_bathymetry(spatial_grid = get_bermuda_grid()), class = "SpatRaster")
 })
 
-# test_that("returns Kiribati gridded depth classes", {
-#   expect_s4_class(get_bathymetry(spatial_grid = kiribati_grid()),
-#                   class = "SpatRaster")
-# })
+test_that("returns Kiribati gridded depth classes", {
+  expect_s4_class(get_bathymetry(spatial_grid = get_kiribati_grid()),
+                  class = "SpatRaster")
+})
 
 test_that("returns gridded Bermuda depth classes", {
   expect_s3_class(get_bathymetry(spatial_grid = get_bermuda_grid(output = "sf_hex")), class = "sf")
