@@ -83,7 +83,11 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
   
   area_polygon_for_cropping <- polygon_in_4326(spatial_grid)
   
-  antimeridian <- check_antimeridian(area_polygon_for_cropping, sf::st_crs(4326))
+  antimeridian <- area_polygon_for_cropping %>%
+    terra::vect() %>% 
+    terra::densify(interval = 1e4) %>% 
+    sf::st_as_sf() %>% 
+    check_antimeridian(sf::st_crs(4326))
   
   if(is.null(bathymetry_data_filepath)){
     bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout) %>% 

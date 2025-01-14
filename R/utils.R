@@ -219,5 +219,7 @@ get_kiribati_grid <- function(resolution = 50, output = "raster") {
   get_grid(boundary = get_boundary(name = "Kiribati", country_type = "sovereign"),
            crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
            resolution = resolution*1e3, 
-           output = output)
+           output = output,
+           touches = TRUE
+          )
 }
