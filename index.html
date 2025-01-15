@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -210,9 +210,9 @@
 <p><img src="reference/figures/README-coral_habitat-1.png" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
-<h2 id="environmental-regions">Environmental Regions<a class="anchor" aria-label="anchor" href="#environmental-regions"></a>
+<h2 id="environmental-zones">Environmental Zones<a class="anchor" aria-label="anchor" href="#environmental-zones"></a>
 </h2>
-<p>Bioregions are often included in spatial planning, but available bioregional classifications are either too coarse or too detailed to be useful for planning at the EEZ level. Borrowing methods from <a href="https://doi.org/10.1111/ddi.13183" class="external-link">Magris et al. 2020</a>, we use spatial clustering of biophysical environmental data from <a href="https://bio-oracle.org/" class="external-link">Bio-Oracle</a>, to create ‘environmental regions’. Biophysical conditions within a environmental region are more similar than areas outside that region, though the differences may be small. Diagnostic boxplots and a PCA will be shown if <code>show_plots = TRUE</code>. All the biophysical data are ocean surface data for the period 2010 - 2020:</p>
+<p>Bioregions are often included in spatial planning, but available bioregional classifications are either too coarse or too detailed to be useful for planning at the EEZ level. Borrowing methods from <a href="https://doi.org/10.1111/ddi.13183" class="external-link">Magris et al. 2020</a>, we use spatial clustering of biophysical environmental data from <a href="https://bio-oracle.org/" class="external-link">Bio-Oracle</a>, to create ‘environmental zones’. Biophysical conditions within a environmental zone are more similar than areas outside that zone, though the differences may be small. Diagnostic boxplots and a PCA will be shown if <code>show_plots = TRUE</code>. All the biophysical data are ocean surface data for the period 2010 - 2020:</p>
 <ul>
 <li>Chlorophyll concentration (mean, mg/ m3)</li>
 <li>Dissolved oxygen concentration (mean)</li>
@@ -227,14 +227,13 @@
 <li>Silicate concentration (mean, mmol/ m3)</li>
 </ul>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co">#set number of clusters to 3 to reduce runtime and memory usage</span></span>
-<span><span class="va">enviro_regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_enviro_regions.html">get_enviro_regions</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, show_plots <span class="op">=</span> <span class="cn">TRUE</span>, num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-environmental_regions-1.png" style="display: block; margin: auto;"><img src="reference/figures/README-environmental_regions-2.png" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="co">#set number of clusters to 3 to reduce runtime and memory usage</span></span>
+<span><span class="va">enviro_zones</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_enviro_zones.html">get_enviro_zones</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, show_plots <span class="op">=</span> <span class="cn">TRUE</span>, num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-environmental_zones-1.png" style="display: block; margin: auto;"><img src="reference/figures/README-environmental_zones-2.png" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#value of 1 indicates that environmental region is present</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">enviro_regions</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"forestgreen"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-enviro_regions_maps-1.png" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="co">#value of 1 indicates that environmental zone is present</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">enviro_zones</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"forestgreen"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-enviro_zones_maps-1.png" style="display: block; margin: auto;"></p>
 </div>
 </div>
 

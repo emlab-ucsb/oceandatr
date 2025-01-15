@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -165,7 +165,10 @@ that is included as part of the seamount, and we use 30km based since
 biodiversity is known to be higher within this distance of seamount
 peaks (see <code>?get_seamounts_buffered</code> for more info).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">feature_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_features.html">get_features</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span>, seamount_buffer <span class="op">=</span> <span class="fl">30000</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="co">#set seed for reproducibility in the get_enviro_zones() sampling to find optimal cluster number</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">500</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">feature_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_features.html">get_features</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span>, seamount_buffer <span class="op">=</span> <span class="fl">30000</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">oceandatr</span><span class="fu">:::</span><span class="fu">remove_empty_layers</span><span class="op">(</span><span class="op">)</span> <span class="co">#use this to remove raster layers that are empty</span></span>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">feature_set</span>, </span>
