@@ -1,7 +1,7 @@
 Package: oceandatr
 Type: Package
 Title: Ocean Data Access
-Version: 0.2.1.1
+Version: 0.2.1.2
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
 Description: For retrieving and gridding ocean related data.
 License: GPL (>= 3) + file LICENSE

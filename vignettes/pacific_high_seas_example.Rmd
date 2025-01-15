@@ -117,6 +117,9 @@ Now we have a planning grid, we can get data on conservation features (e.g. habi
 
 
 ``` r
+#set seed for reproducibility in the get_enviro_zones() sampling to find optimal cluster number
+set.seed(500)
+
 feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000) %>% 
   oceandatr:::remove_empty_layers() #use this to remove raster layers that are empty
 
