@@ -8,7 +8,7 @@ get_features(
   spatial_grid = NULL,
   raw = FALSE,
   features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals",
-    "enviro_regions"),
+    "enviro_zones"),
   bathy_resolution = 1,
   seamount_buffer = 30000,
   antipatharia_threshold = 22,
@@ -28,7 +28,7 @@ the raw feature data in that polygon(s) will be returned. Note that this
 will be a list object, since raster and \code{sf} data may be returned.}
 
 \item{features}{a vector of feature names, can include: "bathymetry",
-"seamounts", "knolls", "geomorphology", "corals", "enviro_regions"}
+"seamounts", "knolls", "geomorphology", "corals", "enviro_zones"}
 
 \item{bathy_resolution}{\code{numeric}; the resolution (in minutes) of data to
 pull from the ETOPO 2022 Global Relief model. Values less than 1 can only
@@ -47,12 +47,12 @@ present (default is 22, as defined in Yesson et al., 2017)}
 how many species (of 7) should be predicted present in an area for
 octocorals to be considered present (default is 2)}
 
-\item{enviro_clusters}{\code{numeric}; the number of environmental regions to
+\item{enviro_clusters}{\code{numeric}; the number of environmental zones to
 cluster the data into - to be used when a clustering algorithm is not
 necessary (default is NULL)}
 
 \item{max_enviro_clusters}{\code{numeric}; the maximum number of environmental
-regions to try when using the clustering algorithm (default is 8)}
+zones to try when using the clustering algorithm (default is 8)}
 
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
 should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
@@ -68,7 +68,7 @@ format.
 \description{
 This is a wrapper of \code{get_bathymetry()},
 \code{get_seamounts_buffered()}, \code{get_knolls()}, \code{get_geomorphology()},
-\code{get_coral_habitat()}, and \code{get_enviro_regions()}. See the individual
+\code{get_coral_habitat()}, and \code{get_enviro_zones()}. See the individual
 functions for details.
 }
 \examples{
@@ -78,6 +78,8 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 # Get feature data in a spatial grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#set seed for reproducibility in the get_enviro_zones() function
+set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 terra::plot(features_gridded)
 }

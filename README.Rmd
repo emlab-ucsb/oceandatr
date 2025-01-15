@@ -180,9 +180,9 @@ coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 terra::plot(coral_habitat, col = c("grey60", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
-## Environmental Regions
+## Environmental Zones
 
-Bioregions are often included in spatial planning, but available bioregional classifications are either too coarse or too detailed to be useful for planning at the EEZ level. Borrowing methods from [Magris et al. 2020](https://doi.org/10.1111/ddi.13183), we use spatial clustering of biophysical environmental data from [Bio-Oracle](https://bio-oracle.org/), to create 'environmental regions'. Biophysical conditions within a environmental region are more similar than areas outside that region, though the differences may be small. Diagnostic boxplots and a PCA will be shown if `show_plots = TRUE`. All the biophysical data are ocean surface data for the period 2010 - 2020:
+Bioregions are often included in spatial planning, but available bioregional classifications are either too coarse or too detailed to be useful for planning at the EEZ level. Borrowing methods from [Magris et al. 2020](https://doi.org/10.1111/ddi.13183), we use spatial clustering of biophysical environmental data from [Bio-Oracle](https://bio-oracle.org/), to create 'environmental zones'. Biophysical conditions within a environmental zone are more similar than areas outside that zone, though the differences may be small. Diagnostic boxplots and a PCA will be shown if `show_plots = TRUE`. All the biophysical data are ocean surface data for the period 2010 - 2020:
 
 * Chlorophyll concentration (mean, mg/ m3)
 * Dissolved oxygen concentration (mean)
@@ -196,14 +196,13 @@ Bioregions are often included in spatial planning, but available bioregional cla
 * Sea surface temperature (min, degree C)
 * Silicate concentration (mean, mmol/ m3)
 
-```{r environmental_regions, warning=FALSE, message=FALSE}
-
+```{r environmental_zones, warning=FALSE, message=FALSE}
 #set number of clusters to 3 to reduce runtime and memory usage
-enviro_regions <- get_enviro_regions(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
+enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
 
-```{r enviro_regions_maps, warning=FALSE, message=FALSE}
-#value of 1 indicates that environmental region is present
-terra::plot(enviro_regions, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
+```{r enviro_zones_maps, warning=FALSE, message=FALSE}
+#value of 1 indicates that environmental zone is present
+terra::plot(enviro_zones, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
