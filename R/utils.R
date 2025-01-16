@@ -135,8 +135,8 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
       dplyr::select(3:ncol(.), 2) #put classification before geometry and drop original values
   }
 }
-#' Get an sf polygons in lonlat (EPSG 4326) from terra or sf input object
-#'
+#' Get an sf polygon in lonlat (EPSG 4326) from terra or sf input object
+#' 
 #' @param spatial_grid 
 #'
 #' @return `sf` polygons
@@ -169,20 +169,30 @@ polygon_in_4326 <-
       }
   }
 
-#' Remove empty layers in raster or columns with all zeroes in sf
+#' Remove empty layers in spatial object
 #'
-#' @param dat `sf` or raster object
+#' @description
+#' Removes any layers (`terra::rast` object) or columns (`sf` object) that are all zero or NA 
+#' 
+#' @param dat `sf` or `terra::rast` object
 #'
-#' @return `sf` or raster depending on input
+#' @return `sf` or `terra::rast` depending on input
 #'
-#' @noRd
+#' @export
 remove_empty_layers <- function(dat){
   if(check_sf(dat)){
-    dat %>% 
-      dplyr::select(which(!colSums(sf::st_drop_geometry(dat), na.rm = TRUE) %in% 0))
+    column_sums <- colSums(sf::st_drop_geometry(dat), na.rm = TRUE)
+    
+    if(sum(column_sums) == 0){
+      stop("Only NAs and/ or zeroes in sf object")
+    }else dplyr::select(dat, which(!column_sums %in% 0))
+    
   }else{
-    dat %>% 
-    terra::subset(which(terra::global(dat, "sum", na.rm = TRUE) >0))  
+    index_true_false  <- (terra::global(dat, "sum", na.rm = TRUE) >0)
+    
+    if(all(index_true_false %in% c(NA, FALSE))) {
+      stop("Only NAs and/ or zeroes in raster")
+    } else terra::subset(dat, which(index_true_false))  
   }
 }
 
