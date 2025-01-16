@@ -4,43 +4,29 @@ test_that("returns raw Bio-Oracle data - 11 layer raster", {
 
 test_that("returns gridded Bermuda Bio-Oracle data - raster", {
   set.seed(500)
-  expect_s4_class(get_boundary(name = "Bermuda") |> 
-                    get_grid(crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                             resolution = 20000)|> 
+  expect_s4_class(get_bermuda_grid()|> 
                     get_enviro_zones(raw = FALSE, enviro_zones = FALSE), class = "SpatRaster")
 })
 
 test_that("returns gridded Bermuda Bio-Oracle data - sf", {
   set.seed(500)
-  expect_s3_class(get_boundary(name = "Bermuda") |> 
-                    get_grid(crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                             resolution = 20000,
-                             output = "sf_square")|> 
+  expect_s3_class(get_bermuda_grid(output = "sf_square")|> 
                     get_enviro_zones(raw = FALSE, enviro_zones = FALSE), class = "sf")
 })
 
 test_that("returns gridded Bermuda envirozones - raster", {
-  expect_s4_class(get_boundary(name = "Bermuda") |> 
-                    get_grid(crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                             resolution = 20000,
-                             output = "raster")|> 
+  expect_s4_class(get_bermuda_grid()|> 
                     get_enviro_zones(raw = FALSE, enviro_zones = TRUE, num_clusters = 3), class = "SpatRaster")
 })
 
 test_that("returns gridded Kiribati envirozones - sf", {
-  expect_s3_class(get_boundary(name = "Kiribati", country_type = "sovereign") |> 
-                    get_grid(crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
-                             resolution = 50000,
-                             output = "sf_square") |>
+  expect_s3_class(get_kiribati_grid(output = "sf_square") |>
                     get_enviro_zones(raw = FALSE, enviro_zones = TRUE, num_clusters = 3), class = "sf")
 })
 
 test_that("returns gridded Bermuda envirozones data with extra input columns - sf", {
   set.seed(500)
-  expect_equal(get_boundary(name = "Bermuda") |> 
-                    get_grid(crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                             resolution = 20000,
-                             output = "sf_square") |> 
+  expect_equal(get_bermuda_grid(output = "sf_square") |> 
                     dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |>
                     get_enviro_zones(raw = FALSE, enviro_zones = TRUE, show_plots = TRUE) |>
                  ncol(), 6)

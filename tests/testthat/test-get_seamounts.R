@@ -24,18 +24,14 @@ test_that("returns Kiribati raw peaks data buffered - sf", {
 })
 
 test_that("returns buffered gridded Bermuda seamounts - raster", {
-  expect_s4_class(suppressWarnings(get_seamounts(spatial_grid = get_grid(boundary = get_boundary(name = "Bermuda"), 
-                                                                         crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                                                                         resolution = 20000),
+  expect_s4_class(suppressWarnings(get_seamounts(spatial_grid = get_bermuda_grid(),
                                                  raw = FALSE,
                                                  buffer = 30000)),
                   class = "SpatRaster")
 })
 
 test_that("returns buffered gridded Kiribati seamounts - raster", {
-  expect_s4_class(suppressWarnings(get_seamounts(spatial_grid = get_grid(boundary = get_boundary(name = "Kiribati", country_type = "sovereign"), 
-                                                                                        crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
-                                                                                        resolution = 50000),
+  expect_s4_class(suppressWarnings(get_seamounts(spatial_grid = get_kiribati_grid(),
                                    raw = FALSE, 
                                    buffer = 30000, 
                                    antimeridian = TRUE)), 
@@ -43,20 +39,14 @@ test_that("returns buffered gridded Kiribati seamounts - raster", {
 })
 
 test_that("returns buffered gridded Bermuda seamounts - sf", {
-  expect_s3_class(suppressWarnings(get_seamounts(spatial_grid = get_grid(boundary = get_boundary(name = "Bermuda"), 
-                                                                         crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-                                                                         resolution = 20000, 
-                                                                         output = "sf_square"),
+  expect_s3_class(suppressWarnings(get_seamounts(spatial_grid = get_bermuda_grid(output = "sf_square"),
                                                  raw = FALSE,
                                                  buffer = 30000)),
                   class = "sf")
 })
 
 test_that("returns buffered gridded Kiribati seamounts - sf", {
-  expect_s3_class(suppressWarnings(get_seamounts(spatial_grid = get_grid(boundary = get_boundary(name = "Kiribati", country_type = "sovereign"), 
-                                                                         crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
-                                                                         resolution = 50000,
-                                                                         output = "sf_hex"),
+  expect_s3_class(suppressWarnings(get_seamounts(spatial_grid = get_kiribati_grid(output = "sf_hex"),
                                                  raw = FALSE, 
                                                  buffer = 30000, 
                                                  antimeridian = TRUE)), 
