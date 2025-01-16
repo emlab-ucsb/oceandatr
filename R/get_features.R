@@ -97,7 +97,7 @@ get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathyme
   if("enviro_zones" %in% features) { 
     message("Getting environmental zones data... This could take several minutes")
     suppressMessages({
-      enviro_zones <- get_enviro_zones(spatial_grid = spatial_grid, raw = raw, show_plots = FALSE, num_clusters = enviro_clusters, max_num_clusters = max_enviro_clusters, antimeridian = antimeridian)
+      enviro_zones <- get_enviro_zones(spatial_grid = spatial_grid, raw = raw, enviro_zones = !raw, show_plots = FALSE, num_clusters = enviro_clusters, max_num_clusters = max_enviro_clusters, antimeridian = antimeridian)
     })
   }
   
