@@ -11,20 +11,35 @@ This example walks though how to do a spatial prioritization using `oceandatr` t
 
 We use a High Seas area of the Pacific as the planning area for this example since it is outside any states' jurisdiction.
 
+```{r, include = FALSE}
+#for cropping whitespace from around figures, use crop = TRUE
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
 
+knitr::opts_chunk$set(
+  echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.width = 7,
+  fig.height = 5, 
+  crop = TRUE
+)
+```
 
-
-``` r
+```{r eval=FALSE}
 #load oceandatr package
 library(oceandatr)
 ```
 
-
+```{r include=FALSE}
+devtools::load_all()
+```
 
 Along with `oceandatr` we will need to load `prioritizr` for the spatial prioritization and we will use the open source solver `lsymphony` to solve the prioritization problem, so this needs to be installed and loaded via th Bioconductor website 
 
-
-``` r
+```{r setup}
 library(gfwr)
 library(prioritizr)
 #remotes::install_bioc("lpsymphony")
@@ -37,8 +52,7 @@ library(patchwise)
 
 First we retrieve geospatial data for the North Pacific Ocean using `get_boundary()`, then we will crop for the area we are interested in, highlighted in red on the map.
 
-
-``` r
+```{r high_seas_area, fig.cap="Map of the High Seas"}
 high_seas <- get_boundary(type = "high_seas")
 
 pacific_hs_area_extent <- sf::st_bbox(c(xmin = 135, xmax = 155, ymin = 0, ymax = 6), crs = 4326)
@@ -47,15 +61,9 @@ plot(sf::st_geometry(high_seas), main = "High Seas", col = "royalblue3", axes = 
 plot(pacific_hs_area_extent %>% sf::st_as_sfc() %>% sf::st_cast(to = "LINESTRING"), col = "red", lwd=2, add = TRUE)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/high_seas_area-1.png" alt="Map of the High Seas"  />
-<p class="caption">Map of the High Seas</p>
-</div>
-
 We are going to use only the highlighted Pacific area which borders Indonesia, Papua New Guinea, Palau and the Federated States of Micronesia. We can get the EEZs of these states using `oceandatr`'s `get_area` function.
 
-
-``` r
+```{r get_surrounding_eezs}
 
 country_names <- c("Indonesia", "Papua New Guinea", "Palau", "Micronesia")
 
@@ -66,8 +74,7 @@ eezs <- lapply(country_names, FUN = function(x) get_boundary(name = x) %>% dplyr
 
 We only want the high sea portion of the area outlined above. We can now create a polygon of this by remove the bordering states EEZs.
 
-
-``` r
+```{r pacific_high_seas, fig.cap="Map of Pacific High Seas area in regional context"}
 sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
 
 pacific_hs <- high_seas %>%
@@ -81,17 +88,19 @@ sf::sf_use_s2(TRUE)
 plot(rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs), axes = TRUE, main = NULL, key.pos = 4)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/pacific_high_seas-1.png" alt="Map of Pacific High Seas area in regional context"  />
-<p class="caption">Map of Pacific High Seas area in regional context</p>
-</div>
+```{r eval=FALSE}
+# code for Figure in paper
+# show just the boundary
+
+plot(pacific_hs["geometry"], lwd = 2)
+```
+
 
 Now we select a suitable projection for the area and a suitable resolution for the planning grid used for gridding the data. We can use [projection wizard](https://projectionwizard.org) to find an equal-area projection, entering the same extent coordinates we used to crop the high seas area (xmin = 135, xmax = 155, ymin = 0, ymax = 6). 
 
 We will use 10km square planning units so that there the data processing and prioritization run reasonably fast (smaller planning units will require more time/ computer memory get data for)
 
-
-``` r
+```{r planning_grid, fig.cap="Pacific High Seas area planning grid raster"}
 
 pacific_hs_projection <- "+proj=cea +lon_0=145 +lat_ts=3 +datum=WGS84 +units=m +no_defs"
 
@@ -103,20 +112,77 @@ pacific_hs_planning_grid <- get_grid(boundary = pacific_hs,
 terra::plot(pacific_hs_planning_grid, col = "grey70")
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/planning_grid-1.png" alt="Pacific High Seas area planning grid raster"  />
-<p class="caption">Pacific High Seas area planning grid raster</p>
-</div>
+```{r}
+#code for Figure in the paper
+#show grid
+
+#terra::plot(pacific_hs_planning_grid, col = "grey70")
+terra::plot(terra::as.polygons(terra::aggregate(pacific_hs_planning_grid, fact = 2), dissolve = FALSE), axes = FALSE) #aggregate cells for better visibility in small image
+```
 
 
+```{r eval=FALSE, include=FALSE}
+
+pacific_hs_planning_grid_ras_lowres <- get_grid(boundary = pacific_hs,
+                                   crs = pacific_hs_projection,
+                                   resolution = 30000) 
+
+pacific_hs_planning_grid_sf_lowres <- get_grid(boundary = pacific_hs,
+                                   crs = pacific_hs_projection,
+                                   output = "sf_hex",
+                                   resolution = 30000)
+
+pacific_hs_map <- ggplot2::ggplot(data = rbind(sf::st_cast(pacific_hs, to = "MULTIPOLYGON"), eezs)) +
+  ggplot2::geom_sf(ggplot2::aes(fill = name)) +
+  ggplot2::geom_sf(data = pacific_hs, fill = "transparent", col = "black", lwd = 0.4) +
+  ggplot2::scale_fill_brewer(type = "qual", palette = "Set2") +
+  ggplot2::labs(fill = NULL) +
+  ggplot2::theme_bw()
+
+pacific_pus_ras_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_ras_lowres %>% terra::project("epsg:4326") %>%  terra::as.data.frame(xy = TRUE)) +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = layer), fill = "grey70") +
+  ggplot2::coord_sf() +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(legend.position = "none",
+                 axis.title = ggplot2::element_blank())
 
 
+pacific_pus_sf_map <- ggplot2::ggplot(data = pacific_hs_planning_grid_sf_lowres) +
+  ggplot2::geom_sf(ggplot2::aes(), col = "black") +
+  ggplot2::theme_bw()
+
+
+cowplot::plot_grid(pacific_hs_map, pacific_pus_ras_map, pacific_pus_sf_map, ncol = 1, labels = "auto", label_size = 12, rel_heights = c(1.5, 1, 1), rel_widths = c(2, 3, 3), align = "v", axis = "r ")
+```
+
+```{r include=FALSE, eval=FALSE}
+#case study area map for paper
+pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(c(xmin = 118, ymin = -8, xmax = 167, ymax = 12), crs = 4326)) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE, resolution = 1) %>% 
+  terra::classify(matrix(c(0, Inf, NA), ncol = 3))
+
+world <- rnaturalearth::ne_countries(scale = 10) %>% 
+  sf::st_make_valid()
+
+(case_study_map <- tmap::tm_shape(pacific_bathy*-1) +
+  tmap::tm_raster(title = "Depth (m)", palette = "YlGnBu") +
+   tmap::tm_shape(eezs %>% sf::st_cast(to = "MULTILINESTRING")) +
+  tmap::tm_lines(col = "name", palette = "Dark2", title.col = "Select EEZs") +
+   tmap::tm_shape(pacific_hs %>% sf::st_cast(to = "MULTILINESTRING")) +
+   tmap::tm_lines(col = "name", palette = "red", lwd = 2, title.col = "") +
+   tmap::tm_shape(world) +
+   tmap::tm_borders() + 
+   tmap::tm_graticules(lwd = 0.5) +
+  tmap::tm_layout(inner.margins = 0, legend.outside = TRUE))
+
+tmap_save(case_study_map, "case_study_map.png")
+```
 
 Now we have a planning grid, we can get data on conservation features (e.g. habitats) using `oceandatr` to use in a spatial prioritization with a single command `get_features()`. We have to set the seamount buffer, which is the area around the seamount that is included as part of the seamount, and we use 30km based since biodiversity is known to be higher within this distance of seamount peaks (see `?get_seamounts_buffered` for more info).
 
 
-
-``` r
+```{r features, fig.cap="Conservation features for the Pacific High Seas planning area"}
 #set seed for reproducibility in the get_enviro_zones() sampling to find optimal cluster number
 set.seed(500)
 
@@ -130,12 +196,29 @@ terra::plot(feature_set,
             fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/features-1.png" alt="Conservation features for the Pacific High Seas planning area"  />
-<p class="caption">Conservation features for the Pacific High Seas planning area</p>
-</div>
+```{r eval=FALSE, include=FALSE}
+#nicer maps for paper
+.simpleCap <- function(x) {
+    s <- strsplit(x, " ")[[1]]
+    paste(toupper(substring(s, 1, 1)), substring(s, 2),
+          sep = "", collapse = " ")
+}
 
+(features_nice_map <- tmap::tm_shape(setNames(feature_set, gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence())) +
+  tmap::tm_raster(palette = c("grey70", "royalblue"), labels = c("Absent", "Present"), style = "cat", title = "Feature") +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(panel.label.size = 1.5))
 
+tmap_save(features_nice_map, "features.png")
+
+(features_nice_map2 <- tmap::tm_shape(setNames(feature_set, gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence())[[c(1,4,8,17)]]) +
+  tmap::tm_raster(palette = c("grey70", "royalblue"), labels = c("Absent", "Present"), style = "cat", title = "Feature", legend.show = FALSE) +
+    tmap::tm_facets(ncol = 1) +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(panel.label.size = 1, panel.t))
+```
 
 
 # Cost data: Global Fishing Watch data
@@ -144,8 +227,7 @@ The other piece of data needed for a spatial prioritization is cost. In terrestr
 
 [Global Fishing Watch](https://globalfishingwatch.org/) has global fishing effort data, and this can be accessed easily using `get_gfw()` function in `oceandatr` (which is a wrapper for the `get_raster()` function from the [`gfwr`](https://github.com/GlobalFishingWatch/gfwr) package). An API key is required, but can be easily generated at no cost; see the `gfwr` website for more details.
 
-
-``` r
+```{r fishing-effort, fig.cap="Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch", message=FALSE}
 
 fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 2022, end_year = 2022, summarise = "total_annual_effort") %>% 
   terra::subst(NA, 0.01) %>% #set NA values to zero otherwise they will be left out of the prioritization
@@ -155,20 +237,23 @@ fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 
 terra::plot(fishing_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/fishing-effort-1.png" alt="Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch"  />
-<p class="caption">Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch</p>
-</div>
+```{r eval=FALSE, include=FALSE}
+#pretty map of GFW data for paper
+(fishing_effort_map <- tmap::tm_shape(fishing_effort) +
+  tmap::tm_raster(palette = "viridis", style = "cont", title = "Total fishing\neffort 2022", legend.reverse = TRUE) +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(legend.outside = TRUE))
 
-
+tmap_save(fishing_effort_map, "fishing_effort.png")
+```
 
 
 # Run a simple spatial prioritization
 
 We now have all the data we need to create a conservation problem and solve it to get a map of priority areas for conservation for our Pacific High Seas area. For the prioritization, we need to set targets for how much of each conservation feature must be included in the prioritized areas. We will set this at 20%.
 
-
-``` r
+```{r prioritization, fig.cap="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."}
 prob <- prioritizr::problem(x = fishing_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
@@ -188,20 +273,30 @@ terra::plot(sol, main = "Solution",
 terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/prioritization-1.png" alt="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."  />
-<p class="caption">Prioritization solution for the Pacific High Seas area. Black outlines are seamounts.</p>
-</div>
+```{r eval=FALSE, include=FALSE}
+#pretty map of prioritization solution for paper
 
+(prioritization_map <- tmap::tm_shape(sol) +
+  tmap::tm_raster(palette = c("grey70", "green4"),style = "cat", labels =  c("Not selected", "Selected"), title = "") +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(legend.outside = TRUE))
 
+tmap_save(prioritization_map, "prioritization.png")
+
+tmap::tm_shape(sol) +
+  tmap::tm_raster(palette = c("grey70", "green4"),style = "cat", legend.show = FALSE) +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders() +
+  tmap::tm_layout(frame = FALSE)
+```
 
 
 # Prioritization with patches
 
 To ensure that whole seamount areas area included in the solution, we need to use the `patchwise` package to do some pre-processing of the data we use. The prioritization result is similar to that above, but whole seamount patches equal to at least 20% of the total seamount area are included.
 
-
-``` r
+```{r prioritization_patches, fig.cap="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts."}
 # Separate seamount data - we want to protect entire patches
 seamounts_rast <- feature_set[["seamounts"]]
 features_rast <- feature_set[[names(feature_set)[names(feature_set) != "seamounts"]]]
@@ -211,12 +306,6 @@ patches_rast <- patchwise::create_patches(seamounts_rast %>% terra::subst(0, NA)
 
 # Create patches dataframe - this creates several constraints so that entire seamount units are protected together
 patches_df_rast <- patchwise::create_patch_df(spatial_grid = pacific_hs_planning_grid, features = features_rast, patches = patches_rast, costs = fishing_effort)
-#> [1] "Processing patch 1 of 6"
-#> [1] "Processing patch 2 of 6"
-#> [1] "Processing patch 3 of 6"
-#> [1] "Processing patch 4 of 6"
-#> [1] "Processing patch 5 of 6"
-#> [1] "Processing patch 6 of 6"
 
 # Create boundary matrix for prioritizr
 boundary_matrix_rast <- patchwise::create_boundary_matrix(spatial_grid = pacific_hs_planning_grid, patches = patches_rast, patch_df = patches_df_rast)
@@ -252,10 +341,67 @@ terra::plot(result_rast, main = "Solution",
 terra::plot(terra::as.polygons(seamounts_rast), add=TRUE)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/prioritization_patches-1.png" alt="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts."  />
-<p class="caption">Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts.</p>
-</div>
+```{r eval = FALSE, include=FALSE}
+#nice maps for publication
+
+# tmap::tm_shape(total_annual_effort) +
+#   tmap::tm_raster(palette = "viridis", title = "Total apparent fishing\neffort (hours)", style = "quantile", n = 8) +
+#   tmap::tm_layout(legend.outside = TRUE)
+
+ggplot_gfw <- ggplot2::ggplot() +
+  ggplot2::geom_raster(data = terra::as.data.frame(total_annual_effort %>% terra::project("epsg:4326"), xy = TRUE), ggplot2::aes(x=x, y=y, fill = fishing_effort)) +
+  ggplot2::coord_sf() +
+  ggplot2::scale_fill_viridis_c(name = "Apparent fishing\neffort (hours)") +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.title = ggplot2::element_blank())
+
+ggplot_sol_no_patches <- ggplot2::ggplot() +
+  ggplot2::geom_raster(data = terra::as.data.frame(sol %>% terra::project("epsg:4326", method = "near"), xy = TRUE), ggplot2::aes(x=x, y=y, fill = factor(fishing_effort))) +
+  ggplot2::geom_sf(data = seamounts_rast %>% terra::as.polygons() %>% terra::project("epsg:4326") %>% sf::st_as_sf() %>% dplyr::mutate(type = "Seamounts"), ggplot2::aes(colour = type), fill = NA, lwd = 0.2) +
+  ggplot2::coord_sf() +
+  ggplot2::scale_fill_manual(values = c("grey", "forestgreen"),
+                             labels = c("Not selected", "Selected"),
+                             name = NULL) +
+  ggplot2::scale_color_manual(values = c("Seamounts" = "black"),
+                              labels = "Seamounts",
+                              name = NULL) +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.title = ggplot2::element_blank())
+
+ggplot_sol_patches <- ggplot2::ggplot() +
+  ggplot2::geom_raster(data = terra::as.data.frame(result_rast %>% terra::project("epsg:4326", method = "near"), xy = TRUE), ggplot2::aes(x=x, y=y, fill = factor(layer))) +
+    ggplot2::geom_sf(data = seamounts_rast %>% terra::as.polygons() %>% terra::project("epsg:4326") %>% sf::st_as_sf() %>% dplyr::mutate(type = "Seamounts"), ggplot2::aes(colour = type), fill = NA, lwd = 0.2) +
+  ggplot2::coord_sf() +
+  ggplot2::scale_fill_manual(values = c("grey", "forestgreen"),
+                             labels = c("Not selected", "Selected"),
+                             name = NULL) +
+    ggplot2::scale_color_manual(values = c("Seamounts" = "black"),
+                              labels = "Seamounts",
+                              name = NULL) +
+  ggplot2::scale_y_continuous(labels = ~ paste0(.x, "°N")) +
+  ggplot2::scale_x_continuous(labels = ~ paste0(.x, "°E")) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(axis.title = ggplot2::element_blank())
 
 
+legend_gfw <- cowplot::get_legend(
+  # create some space to the left of the legend
+  ggplot_gfw + ggplot2::theme(legend.box.margin = ggplot2::margin(0, 0, 0, 0))
+)
+
+legend_sols <- cowplot::get_legend(
+  # create some space to the left of the legend
+  ggplot_sol_no_patches + ggplot2::theme(legend.box.margin = ggplot2::margin(0, 0, 0, 0))
+)
+
+plots <- cowplot::plot_grid(ggplot_gfw+ ggplot2::theme(legend.position = "none", plot.margin = ggplot2::margin(0,0,6,0)), ggplot_sol_no_patches + ggplot2::theme(legend.position = "none", plot.margin = ggplot2::margin(0,0,6,0)), ggplot_sol_patches + ggplot2::theme(legend.position = "none", plot.margin = ggplot2::margin(0,0,6,0)), ncol = 1, labels = "auto", label_size = 12)
+
+legends <- cowplot::plot_grid(legend_gfw, legend_sols, ncol = 1, rel_heights = c(0.4, 1))
+
+cowplot::plot_grid(plots, legends, ncol = 2, rel_widths = c(0.8, 0.2))
+```
 
