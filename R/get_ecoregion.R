@@ -6,15 +6,15 @@
 #' * Marine Ecosystems of the World [dataset](https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas)
 #' * [Longhurst Provinces](https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=)
 #' * [Large Marine Ecosystems of the World](http://geonode.iwlearn.org/layers/geonode:lmes)
+#' * [Mesopelagic Ecoregions](https://www.sciencedirect.com/science/article/pii/S0967063717301437?via%3Dihub)
 #'
-#' All data are downloaded via the `mregions2` R package function
-#' `mregions2::mrp_get()`, and more information on the data can be found on the
-#' [Marine Regions website](https://marineregions.org/sources.php)
+#'   All data are downloaded via the [Marine Regions
+#'   website](https://marineregions.org/sources.php)
 #'
 #' @inheritParams get_bathymetry
 #' @param type `character` which ecoregion type is required? Default is
 #'   `\"MEOW\"` (Marine Ecosystems of the World); other possible values are
-#'   `\"Longhurst\"` and `\"LME\"`
+#'   `\"Longhurst\"`, `\"LME\"`, and `\"meso\"`
 #'
 #' @return For gridded data, a multi-layer raster object, or an `sf` object
 #'   depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object of
@@ -37,6 +37,8 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
   
   no_sf_cols <- if(check_sf(spatial_grid)) ncol(spatial_grid)-1
   
+  marine_ecoregions <- NULL
+  
   if(type == "MEOW"){
     type <- "ecoregions"
     col_name <- "ecoregion"
@@ -46,9 +48,13 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
   } else if(type == "LME"){
     type <- "lme"
     col_name <- "lme_name"
-  }else message("type must be one of MEOW, Longhurst or LME.")
+  } else if(type == "meso"){
+    marine_ecoregions <- sf::st_read("https://geo.vliz.be/geoserver/wfs?request=getfeature&service=wfs&version=1.1.0&typename=MarineRegions:mesopelagiczones&outputformat=json")
+    col_name <- "provname"
+  }else message("type must be one of MEOW, Longhurst, LME or meso.")
 
-  marine_ecoregions <- mregions2::mrp_get(type)
+  if(is.null(marine_ecoregions))  marine_ecoregions <- mregions2::mrp_get(type)
+  
   sf::sf_use_s2(FALSE)
  ecoregion_data <- get_data_in_grid(spatial_grid = spatial_grid, dat = marine_ecoregions, raw = raw, antimeridian = antimeridian, feature_names = col_name)
  
