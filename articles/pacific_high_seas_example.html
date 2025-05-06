@@ -99,7 +99,7 @@ interested in, highlighted in red on the map.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">high_seas</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"High Seas"</span>, col <span class="op">=</span> <span class="st">"royalblue3"</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pacific_hs_area_extent</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd<span class="op">=</span><span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Fhigh_seas_area-1.png" alt="Map of the High Seas"><p class="caption">
+<img src="figure/high_seas_area-1.png" alt="Map of the High Seas"><p class="caption">
 Map of the High Seas
 </p>
 </div>
@@ -129,7 +129,7 @@ now create a polygon of this by remove the bordering states EEZs.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="va">pacific_hs</span>, to <span class="op">=</span> <span class="st">"MULTIPOLYGON"</span><span class="op">)</span>, <span class="va">eezs</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">TRUE</span>, main <span class="op">=</span> <span class="cn">NULL</span>, key.pos <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Fpacific_high_seas-1.png" alt="Map of Pacific High Seas area in regional context"><p class="caption">
+<img src="figure/pacific_high_seas-1.png" alt="Map of Pacific High Seas area in regional context"><p class="caption">
 Map of Pacific High Seas area in regional context
 </p>
 </div>
@@ -153,7 +153,7 @@ units will require more time/ computer memory get data for)</p>
 <span><span class="co">#get_grid returns a raster by default, so we can plot it using the terra package</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pacific_hs_planning_grid</span>, col <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Fplanning_grid-1.png" alt="Pacific High Seas area planning grid raster"><p class="caption">
+<img src="figure/planning_grid-1.png" alt="Pacific High Seas area planning grid raster"><p class="caption">
 Pacific High Seas area planning grid raster
 </p>
 </div>
@@ -177,7 +177,7 @@ peaks (see <code>?get_seamounts_buffered</code> for more info).</p>
 <span>            axes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co">#set maximum number of layers to plot to the same as the number of layers in the feature set</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Ffeatures-1.png" alt="Conservation features for the Pacific High Seas planning area"><p class="caption">
+<img src="figure/features-1.png" alt="Conservation features for the Pacific High Seas planning area"><p class="caption">
 Conservation features for the Pacific High Seas planning area
 </p>
 </div>
@@ -205,7 +205,7 @@ cost; see the <code>gfwr</code> website for more details.</p>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fishing_effort</span>, fun <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Ffishing-effort-1.png" alt="Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch"><p class="caption">
+<img src="figure/fishing-effort-1.png" alt="Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch"><p class="caption">
 Map of total apparent fishing effort in 2022 for the Pacific High Seas
 area. Data from Global Fishing Watch
 </p>
@@ -238,7 +238,7 @@ areas. We will set this at 20%.</p>
 <span>            mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">6</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">feature_set</span><span class="op">[[</span><span class="st">"seamounts"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Fprioritization-1.png" alt="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."><p class="caption">
+<img src="figure/prioritization-1.png" alt="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."><p class="caption">
 Prioritization solution for the Pacific High Seas area. Black outlines
 are seamounts.
 </p>
@@ -302,7 +302,7 @@ area are included.</p>
 <span>            mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">6</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">seamounts_rast</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figure%2Fprioritization_patches-1.png" alt="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts."><p class="caption">
+<img src="figure/prioritization_patches-1.png" alt="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Black outlines are seamounts."><p class="caption">
 Prioritization solution for the Pacific High Seas area, with whole
 seamounts included. Black outlines are seamounts.
 </p>
@@ -319,7 +319,7 @@ seamounts included. Black outlines are seamounts.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
