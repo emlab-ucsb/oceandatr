@@ -72,7 +72,7 @@ eezs <- lapply(country_names, FUN = function(x) get_boundary(name = x) %>% dplyr
   sf::st_cast(to = "MULTIPOLYGON")
 ```
 
-We only want the high sea portion of the area outlined above. We can now create a polygon of this by remove the bordering states EEZs.
+We only want the high seas portion of the area outlined above. We can now create a polygon of this by removing the bordering states EEZs.
 
 ```{r pacific_high_seas, fig.cap="Map of Pacific High Seas area in regional context"}
 sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
