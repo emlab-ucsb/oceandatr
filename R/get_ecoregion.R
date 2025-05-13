@@ -31,7 +31,7 @@
 #' longhurst_gridded <- get_ecoregion(spatial_grid = bermuda_grid, type = "Longhurst")
 get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antimeridian = NULL){
   
-  rlang::check_installed("mregions2", reason = "to get Ecoregions data using `get_ecoregion()`", action = \(pkg, ...) remotes::install_github("lifewatch/mregions2"))
+  rlang::check_installed("mregions2", reason = "to get Ecoregions data using `get_ecoregion()`", action = function(pkg, ...) remotes::install_github("lifewatch/mregions2"))
   
   check_grid(spatial_grid)
   

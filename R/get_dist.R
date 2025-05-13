@@ -124,7 +124,7 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
   layer_name <- if(is.null(name)) paste0("dist_", dist_to) else name
   
   if(raw == TRUE){
-    cropping_poly <- if(spatialgridr:::check_raster(spatial_grid)) terra::ext(spatial_grid) |> terra::vect(terra::crs(spatial_grid)) |> terra::densify(1e4) |> sf::st_as_sf() else sf::st_bbox(spatial_grid) |> sf::st_as_sfc(crs = sf::st_crs(spatial_grid)) |> sf::st_sf() |> terra::vect() |> terra::densify(1e4) |> sf::st_as_sf()
+    cropping_poly <- if(spatialgridr:::check_raster(spatial_grid)) terra::ext(spatial_grid) %>% terra::vect(terra::crs(spatial_grid)) %>% terra::densify(1e4) %>% sf::st_as_sf() else sf::st_bbox(spatial_grid) %>% sf::st_as_sfc(crs = sf::st_crs(spatial_grid)) %>% sf::st_sf() %>% terra::vect() %>% terra::densify(1e4) %>% sf::st_as_sf()
     
     return(get_data_in_grid(spatial_grid = cropping_poly, dat = dat, raw = TRUE, name = dist_to, antimeridian = antimeridian))
   } 
@@ -171,18 +171,19 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          
          if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)
          
-       temp_grid <- spatial_grid %>% 
-         {if(grid_has_extra_cols) sf::st_geometry(.) %>% sf::st_sf() else .} %>% 
+       temp_pts <- spatial_grid %>% 
+         sf::st_centroid() %>%
          {if(matching_crs) . else sf::st_transform(., 4326)}
        
-       temp_grid %>% 
-         sf::st_centroid() %>% 
+       temp_pts %>% 
          sf::st_distance(dat) %>% 
          {do.call(pmin, as.data.frame(.))} %>% 
-         cbind(temp_grid) %>% 
+         as.numeric() %>% 
+         cbind(temp_pts) %>% 
          dplyr::rename({{layer_name}} := 1) %>% 
          {if(matching_crs) . else sf::st_transform(., sf::st_crs(spatial_grid))} %>%
-         {if(inverse) dplyr::mutate(., dist_shore = max(.data[[1]], na.rm = TRUE) - .data[["dist_shore"]] - min(.data[[1]], na.rm = TRUE)) else .} %>% 
-         {if(grid_has_extra_cols) cbind(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+         sf::st_drop_geometry() %>% 
+         cbind(spatial_grid, .) %>% 
+         {if(inverse) dplyr::mutate(., dist_shore = max(.data[[1]], na.rm = TRUE) - .data[["dist_shore"]] - min(.data[[1]], na.rm = TRUE)) else .}
      }
 }

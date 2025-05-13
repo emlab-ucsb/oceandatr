@@ -3,7 +3,7 @@ test_that("returns raw MEOW data for Bermuda - sf", {
 })
 
 test_that("returns 6 ecoregions for Kiribati - sf", {
-  expect_equal(get_ecoregion(spatial_grid = get_boundary(name = "Kiribati", country_type = "sovereign"), raw = TRUE, antimeridian = TRUE) |> nrow(),
+  expect_equal(get_ecoregion(spatial_grid = get_boundary(name = "Kiribati", country_type = "sovereign"), raw = TRUE, antimeridian = TRUE) %>% nrow(),
                expected = 6)
 })
 
@@ -21,8 +21,8 @@ test_that("returns gridded data for Kiribati - sf", {
 })
 
 test_that("returns extra columns as well as empty data for sf grid", {
-  expect_equal(get_bermuda_grid(output = "sf_square") |> 
-                 dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |> 
-                 get_ecoregion(type = "LME") |>
+  expect_equal(get_bermuda_grid(output = "sf_square") %>% 
+                 dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) %>%
+                 get_ecoregion(type = "LME") %>%
                  ncol(), 4)
 })

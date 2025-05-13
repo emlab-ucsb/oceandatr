@@ -95,7 +95,7 @@
 
 get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TRUE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1){
   
-  rlang::check_installed("biooracler", reason = "to get Bio-Oracle data using `get_enviro_zones()`", action = \(pkg, ...) remotes::install_github("bio-oracle/biooracler"))
+  rlang::check_installed("biooracler", reason = "to get Bio-Oracle data using `get_enviro_zones()`", action = function(pkg, ...) remotes::install_github("bio-oracle/biooracler"))
   
   check_grid(spatial_grid)
   

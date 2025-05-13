@@ -3,7 +3,7 @@ test_that("returns raw data for Bermuda", {
 })
 
 # test_that("check raw raster data has 3 layers", {
-#   expect_equal(get_coral_habitat(spatial_grid = get_boundary(name = "Kiribati", country_type = "sovereign"), raw = TRUE, antimeridian = TRUE) |> terra::nlyr(),
+#   expect_equal(get_coral_habitat(spatial_grid = get_boundary(name = "Kiribati", country_type = "sovereign"), raw = TRUE, antimeridian = TRUE) %>% terra::nlyr(),
 #                expected = 3)
 # })
 
@@ -22,9 +22,9 @@ test_that("returns gridded data for Bermuda - sf", {
 })
 
 test_that("returns extra columns as well as coral data for sf grid", {
-  expect_equal(get_bermuda_grid(output = "sf_square") |> 
-                 dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |> 
-                 get_coral_habitat() |>
+  expect_equal(get_bermuda_grid(output = "sf_square") %>% 
+                 dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) %>% 
+                 get_coral_habitat() %>%
                  ncol(), 6)
 })
 
