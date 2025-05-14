@@ -37,7 +37,7 @@ library(oceandatr)
 devtools::load_all()
 ```
 
-Along with `oceandatr` we will need to load `prioritizr` for the spatial prioritization and we will use the open source solver `lsymphony` to solve the prioritization problem, so this needs to be installed and loaded via th Bioconductor website 
+Along with `oceandatr` we will need to load `prioritizr` for the spatial prioritization and we will use the open source solver `lsymphony` to solve the prioritization problem, so this needs to be installed and loaded via the Bioconductor website 
 
 ```{r setup}
 library(gfwr)
@@ -50,7 +50,7 @@ library(patchwise)
 
 # High Seas area of the Pacific Ocean
 
-First we retrieve geospatial data for the North Pacific Ocean using `get_boundary()`, then we will crop for the area we are interested in, highlighted in red on the map.
+First we retrieve geospatial data for the North Pacific Ocean using `get_boundary()`, then we will crop for the area we are interested in, the planning region, highlighted in red on the map.
 
 ```{r high_seas_area, fig.cap="Map of the High Seas"}
 high_seas <- get_boundary(type = "high_seas")
@@ -72,7 +72,7 @@ eezs <- lapply(country_names, FUN = function(x) get_boundary(name = x) %>% dplyr
   sf::st_cast(to = "MULTIPOLYGON")
 ```
 
-We only want the high seas portion of the area outlined above. We can now create a polygon of this by removing the bordering states EEZs.
+We only want the high seas portion of the area outlined above. We can create a polygon for this planning region by removing the bordering states EEZs.
 
 ```{r pacific_high_seas, fig.cap="Map of Pacific High Seas area in regional context"}
 sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
@@ -80,7 +80,7 @@ sf::sf_use_s2(FALSE) #turn off S2 to avoid errors
 pacific_hs <- high_seas %>%
   sf::st_crop(pacific_hs_area_extent) %>% 
   sf::st_sf() %>% 
-  dplyr::mutate(name = "Pacific High Seas area") %>% 
+  dplyr::mutate(name = "Planning region") %>% 
   dplyr::select(name)
 
 sf::sf_use_s2(TRUE)
@@ -166,17 +166,24 @@ world <- rnaturalearth::ne_countries(scale = 10) %>%
   sf::st_make_valid()
 
 (case_study_map <- tmap::tm_shape(pacific_bathy*-1) +
-  tmap::tm_raster(title = "Depth (m)", palette = "YlGnBu") +
+  tmap::tm_raster(col.scale = tmap::tm_scale_continuous(values = "brewer.yl_gn_bu"),
+                  col.legend = tmap::tm_legend(title = "Depth (m)",
+                                               position = tmap::tm_pos_out("right"))) +
    tmap::tm_shape(eezs %>% sf::st_cast(to = "MULTILINESTRING")) +
-  tmap::tm_lines(col = "name", palette = "Dark2", title.col = "Select EEZs") +
+  tmap::tm_lines(col = "name",
+                 col.scale = tmap::tm_scale_categorical(values = "brewer.dark2"), 
+                 col.legend = tmap::tm_legend(title = "Select EEZs")) +
    tmap::tm_shape(pacific_hs %>% sf::st_cast(to = "MULTILINESTRING")) +
-   tmap::tm_lines(col = "name", palette = "red", lwd = 2, title.col = "") +
+   tmap::tm_lines(col = "name", 
+                  lwd = 2,
+                  col.scale = tmap::tm_scale_categorical(values = "red"), 
+                  col.legend = tmap::tm_legend(title = "")) +
    tmap::tm_shape(world) +
    tmap::tm_borders() + 
    tmap::tm_graticules(lwd = 0.5) +
-  tmap::tm_layout(inner.margins = 0, legend.outside = TRUE))
+  tmap::tm_layout(inner.margins = 0))
 
-tmap_save(case_study_map, "case_study_map.png")
+tmap::tmap_save(case_study_map, "case_study_map.png")
 ```
 
 Now we have a planning grid, we can get data on conservation features (e.g. habitats) using `oceandatr` to use in a spatial prioritization with a single command `get_features()`. We have to set the seamount buffer, which is the area around the seamount that is included as part of the seamount, and we use 30km based since biodiversity is known to be higher within this distance of seamount peaks (see `?get_seamounts_buffered` for more info).
