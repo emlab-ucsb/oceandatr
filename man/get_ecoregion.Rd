@@ -21,7 +21,7 @@ the raw data in that polygon(s) will be returned}
 
 \item{type}{\code{character} which ecoregion type is required? Default is
 \verb{\\"MEOW\\"} (Marine Ecosystems of the World); other possible values are
-\verb{\\"Longhurst\\"} and \verb{\\"LME\\"}}
+\verb{\\"Longhurst\\"}, \verb{\\"LME\\"}, and \verb{\\"meso\\"}}
 
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
 should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
@@ -42,11 +42,10 @@ The Following ecoregions can be obtained:
 \item Marine Ecosystems of the World \href{https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas}{dataset}
 \item \href{https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=}{Longhurst Provinces}
 \item \href{http://geonode.iwlearn.org/layers/geonode:lmes}{Large Marine Ecosystems of the World}
-}
+\item \href{https://www.sciencedirect.com/science/article/pii/S0967063717301437?via\%3Dihub}{Mesopelagic Ecoregions}
 
-All data are downloaded via the \code{mregions2} R package function
-\code{mregions2::mrp_get()}, and more information on the data can be found on the
-\href{https://marineregions.org/sources.php}{Marine Regions website}
+All data are downloaded via the \href{https://marineregions.org/sources.php}{Marine Regions website}
+}
 }
 \examples{
 #' # Get EEZ data first

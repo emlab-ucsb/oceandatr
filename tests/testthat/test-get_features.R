@@ -11,9 +11,9 @@ test_that("returns gridded Bermuda features - raster", {
 
 test_that("returns gridded Kiribati features - sf with extra cols", {
   set.seed(1234)
-  expect_equal(suppressWarnings(get_kiribati_grid(output = "sf_square") |>
-                                     dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |>
-                                     get_features(antimeridian = TRUE) |>
+  expect_equal(suppressWarnings(get_kiribati_grid(output = "sf_square") %>%
+                                     dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) %>%
+                                     get_features(antimeridian = TRUE) %>%
                                   ncol()), 
                41)
 })
