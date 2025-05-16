@@ -99,10 +99,13 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
    if(is_sf_grid){
      dplyr::bind_cols(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>%
        dplyr::mutate(antipatharia = dplyr::case_when(antipatharia < antipatharia_threshold ~ 0,
-                                                  antipatharia >= antipatharia_threshold ~ 1),
+                                                  antipatharia >= antipatharia_threshold ~ 1,
+                                                  is.na(antipatharia) ~ 0),
                      octocorals = dplyr::case_when(octocorals < octocoral_threshold ~ 0,
-                                                   octocorals >= octocoral_threshold ~1),
-                     .keep = "unused") %>% 
+                                                   octocorals >= octocoral_threshold ~1,
+                                                   is.na(octocorals) ~ 0),
+                     cold_corals = dplyr::case_when(is.na(cold_corals) ~0,
+                                                    .default = as.numeric(cold_corals))) %>% 
        {if(grid_has_extra_cols) dplyr::bind_cols(extra_cols, .) %>% sf::st_set_geometry("geometry") else .} 
      
    } else{
@@ -118,7 +121,9 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
                               ncol = 3, byrow = TRUE),
                        right = FALSE)
      
-     c(antipatharia, cold_corals, octocorals)
+     c(antipatharia, cold_corals, octocorals) %>%
+       terra::subst(NA, 0) %>%
+       terra::mask(spatial_grid)
    }
   }
 }
