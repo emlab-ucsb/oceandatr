@@ -257,8 +257,11 @@ get_enviro_data <- function(spatial_grid = NULL){
     biooracle_data[[i]] <- biooracler::download_layers(dataset_id = biooracle_datasets_info$dataset_id[i], variables = biooracle_datasets_info$variables[i], constraints = constraints)
   }
   
-  terra::rast(biooracle_data) %>%
+  biooracle_data <- terra::rast(biooracle_data) %>%
     stats::setNames(c("Chlorophyll", "Dissolved_oxygen", "Nitrate", "Minimum_temp", "Mean_temp", "Max_temp", "pH", "Phosphate", "Salinity", "Silicate", "Phytoplankton"))
+  
+  terra::crs(biooracle_data) <- "epsg:4326"
+  return(biooracle_data)
 }
 
 enviro_zones_boxplot <- function(enviro_zone, enviro_data){
