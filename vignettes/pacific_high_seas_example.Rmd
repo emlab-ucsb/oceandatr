@@ -88,7 +88,7 @@ sf::sf_use_s2(TRUE)
 
 To make a nice context map, we can download bathymetry data using `oceandatr`'s `get_bathymetry()` function, using the bounding box of the EEZs as the input extent (grid). To get country boundaries to add to the map, we use the `get_boundary()` functions from `oceandatr`, setting `name = NULL` so that all countries are downloaded. We can then plot everything using the `tmap` package, which is great for making nice maps.
 
-```{r pacific_high_sea_maps, fig.cap="Map of Pacific High Seas planning region in regional context"}
+```{r pacific_high_sea_maps, message=FALSE, fig.cap="Map of Pacific High Seas planning region in regional context"}
 
 #retrieve bathymetry for the planning regions and surrounding area bounded by the EEZs
 pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(eezs), crs = 4326) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE, resolution = 1) %>% 
@@ -118,10 +118,7 @@ tmap::tm_shape(pacific_bathy * -1) + #multiply bathymetry by -1 to make values p
   ) +
   tmap::tm_shape(world) +
   tmap::tm_borders() +
-  tmap::tm_graticules(lwd = 0.5) +
-  tmap::tm_layout(inner.margins = 0)
-
-tmap::tmap_save(test, "../../../Downloads/case_study.png")
+  tmap::tm_graticules(lwd = 0.5)
 ```
 
 
@@ -153,36 +150,36 @@ Now we have a planning grid, we can get data on conservation features (e.g. habi
 #set seed for reproducibility in the get_enviro_zones() sampling to find optimal cluster number
 set.seed(500)
 
-feature_set <- get_features(spatial_grid = pacific_hs_planning_grid, seamount_buffer = 30000) %>% 
-  oceandatr:::remove_empty_layers() %>%  #use this to remove raster layers that are empty
-  terra::subst(NA, 1) %>%
-  terra::mask(pacific_hs)
+feature_set <- get_features(spatial_grid = pacific_hs_planning_grid) %>% 
+  remove_empty_layers()  #use this to remove raster layers that are empty
+```
 
+```{r include=FALSE, eval=FALSE}
 terra::plot(feature_set, 
             col = c("grey60", "royalblue"), 
             maxnl = terra::nlyr(feature_set),
             axes = FALSE,
             fun = function(x)terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection))) #set maximum number of layers to plot to the same as the number of layers in the feature set
+
 ```
 
-```{r }
-#eval=FALSE, include=FALSE
-#nicer maps for paper
-.simpleCap <- function(x) {
-    s <- strsplit(x, " ")[[1]]
-    paste(toupper(substring(s, 1, 1)), substring(s, 2),
-          sep = "", collapse = " ")
-}
 
-tmap::tm_shape(setNames(feature_set2, gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence())) +
-  tmap::tm_raster(col.scale = tmap::tm_scale_categorical(values = c("grey70", "royalblue"),
-                                                      labels = c("Absent", "Present")),
-                  col.legend = tmap::tm_legend(show = FALSE)) +
+```{r message=FALSE, fig.cap="Map of all features in the planning regions"}
+tmap::tm_shape(setNames(
+  feature_set,
+  gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence()
+)) +
+  tmap::tm_raster(
+    col.scale = tmap::tm_scale_categorical(
+      values = c("grey70", "royalblue"),
+      labels = c("Absent", "Present")
+    ),
+    col.legend = tmap::tm_legend(show = FALSE)
+  ) +
+  tmap::tm_facets(ncol = 3) +
   tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
   tmap::tm_borders() +
   tmap::tm_layout(panel.label.size = 1.5)
-
-
 ```
 
 
@@ -199,26 +196,17 @@ fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 
   terra::mask(pacific_hs_planning_grid) %>% 
   setNames("fishing_effort")
 
-terra::plot(fishing_effort, fun = terra::lines(pacific_hs %>% sf::st_transform(pacific_hs_projection)), axes = FALSE)
+tmap::tm_shape(fishing_effort) +
+  tmap::tm_raster(col.scale = tmap::tm_scale(values = "viridis"),
+                  col.legend = tmap::tm_legend(orientation = "landscape",
+                                               title = ""))
 ```
-
-```{r eval=FALSE, include=FALSE}
-#pretty map of GFW data for paper
-(fishing_effort_map <- tmap::tm_shape(fishing_effort) +
-  tmap::tm_raster(palette = "viridis", style = "cont", title = "Total fishing\neffort 2022", legend.reverse = TRUE) +
-  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
-  tmap::tm_borders() +
-  tmap::tm_layout(legend.outside = TRUE))
-
-tmap_save(fishing_effort_map, "fishing_effort.png")
-```
-
 
 # Run a simple spatial prioritization
 
 We now have all the data we need to create a conservation problem and solve it to get a map of priority areas for conservation for our Pacific High Seas area. For the prioritization, we need to set targets for how much of each conservation feature must be included in the prioritized areas. We will set this at 20%.
 
-```{r prioritization, fig.cap="Prioritization solution for the Pacific High Seas area. Black outlines are seamounts."}
+```{r prioritization, fig.cap="Prioritization solution for the Pacific High Seas area."}
 prob <- prioritizr::problem(x = fishing_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
   add_relative_targets(0.2) %>% 
@@ -228,6 +216,19 @@ prob <- prioritizr::problem(x = fishing_effort, features = feature_set) %>%
 
 sol <- solve(prob)
 
+tmap::tm_shape(sol) +
+  tmap::tm_raster(
+    col.scale = tmap::tm_scale_categorical(values = c("grey70", "green4"),
+                                           labels =  c("Not selected", "Selected")),
+    col.legend = tmap::tm_legend(title = "",
+                                 position = tmap::tm_pos_in("right", "top"))) +
+  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
+  tmap::tm_borders()
+```
+
+
+
+```{r eval=FALSE, include=FALSE}
 terra::plot(sol, main = "Solution",  
             col = c("grey70", "green4"),
             type = "classes",
@@ -236,24 +237,6 @@ terra::plot(sol, main = "Solution",
             axes = FALSE, 
             mar = c(3,3,2,6)+0.1)
 terra::plot(terra::as.polygons(feature_set[["seamounts"]]), add=TRUE)
-```
-
-```{r eval=FALSE, include=FALSE}
-#pretty map of prioritization solution for paper
-
-(prioritization_map <- tmap::tm_shape(sol) +
-  tmap::tm_raster(palette = c("grey70", "green4"),style = "cat", labels =  c("Not selected", "Selected"), title = "") +
-  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
-  tmap::tm_borders() +
-  tmap::tm_layout(legend.outside = TRUE))
-
-tmap_save(prioritization_map, "prioritization.png")
-
-tmap::tm_shape(sol) +
-  tmap::tm_raster(palette = c("grey70", "green4"),style = "cat", legend.show = FALSE) +
-  tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
-  tmap::tm_borders() +
-  tmap::tm_layout(frame = FALSE)
 ```
 
 
