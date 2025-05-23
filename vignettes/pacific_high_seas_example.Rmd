@@ -202,7 +202,9 @@ fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 
 tmap::tm_shape(fishing_effort) +
   tmap::tm_raster(col.scale = tmap::tm_scale(values = "viridis"),
                   col.legend = tmap::tm_legend(orientation = "landscape",
-                                               title = ""))
+                                               title = "Apparent fishing hours",
+                                               title.size = 1,
+                                               text.size = 1))
 ```
 
 <div class="figure" style="text-align: center">
@@ -233,7 +235,8 @@ tmap::tm_shape(sol) +
     col.scale = tmap::tm_scale_categorical(values = c("grey70", "green4"),
                                            labels =  c("Not selected", "Selected")),
     col.legend = tmap::tm_legend(title = "",
-                                 position = tmap::tm_pos_in("right", "top"))) +
+                                 position = tmap::tm_pos_out("center", "bottom"),
+                                 text.size = 1)) +
   tmap::tm_shape(pacific_hs %>% sf::st_transform(pacific_hs_projection)) +
   tmap::tm_borders()
 ```
