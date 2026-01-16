@@ -61,11 +61,11 @@ Extracts bathymetry data for an \code{area_polygon}, or if a
 
 Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}. Depths are classified as follows:
 \itemize{
-\item Epipelagic Zone: 0-200 m depth
-\item Mesopelagic Zone: 200-1000 m depth
-\item Bathypelagic Zone: 1000-4000 m depth
-\item Abyssopelagic Zone: 4000-6000 m depth
-\item Hadopelagic Zone: 6000+ m depth
+\item Continental Shelf: 0 - 200 m depth
+\item Upper Bathyal: 200 - 800 m depth
+\item Lower Bathyal: 800 - 3500 m depth
+\item Abyssal: 3500 - 6500 m depth
+\item Hadal: 6500+ m depth
 }
 
 If the user has downloaded bathymetry data for the area of interest, for

@@ -4,12 +4,11 @@
 # oceandatr <a href="https://emlab-ucsb.github.io/oceandatr/"><img src="man/figures/logo.png" align="right" height="139" alt="oceandatr website" /></a>
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-`oceandatr` aims to provide simple functions for retrieving ocean data.
-Using the associated package `spatialgridr`, it can also easily grid
-data, which is useful for various purposes including spatial
-conservation prioritization.
+`oceandatr` aims to provide simple functions for retrieving, processing
+and gridding ocean data.
 
 Fish images in logo modified from original by Tracey Saxby, [Integration
 and Application Network](https://ian.umces.edu/media-library)
@@ -46,7 +45,7 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 ```
 
-<img src="man/figures/README-area_of_interest-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-area_of_interest-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Get a grid
 
@@ -93,7 +92,7 @@ terra::plot(bermuda_grid, col = "gold3", axes = FALSE, legend = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-bermuda-grid-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-bermuda-grid-1.png" alt="" style="display: block; margin: auto;" />
 
 The raster covers Bermuda’s EEZ. The grid cells would be too small to
 see if we plotted them, but here is a coarser grid (lower resolution)
@@ -106,7 +105,7 @@ plot(bermuda_eez_projected, axes = FALSE)
 terra::plot(terra::as.polygons(bermuda_grid_coarse, dissolve = FALSE), add=TRUE)
 ```
 
-<img src="man/figures/README-grid_cells-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-grid_cells-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Get bathymetry
 
@@ -114,45 +113,40 @@ Now we have a grid, we can get some data. A key piece of data is
 bathymetry. If the user has bathymetry data for their area of interest
 already, they can pass the file path to this function and it will grid
 the data using the supplied spatial grid. If no file path is provided,
-the function will extract bathymetry data for the area from the [ETOPO
-2022 Global Relief
-model](https://www.ncei.noaa.gov/products/etopo-global-relief-model)
-using a function borrowed from the
-[`marmap`](https://cran.r-project.org/web/packages/marmap/index.html)
-package.
+the function will extract bathymetry data for the area from the [GEBCO
+2025 global terrain model](https://www.gebco.net).
 
 ``` r
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
-#> This may take seconds to minutes, depending on grid size
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-bathymetry-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-bathymetry-1.png" alt="" style="display: block; margin: auto;" />
 
 ### Depth classification
 
 The ocean can be classified into 5 depth zones:
 
-- 0 - 200m: Epipelagic zone
-- 200 - 1000m: Mesopelagic zone
-- 1000 - 4000m: Bathypelagic zone
-- 4000 - 6000m: Abyssopelagic zone
-- 6000m+: Hadopelagic zone
+- Continental Shelf: 0 - 200 m depth
+- Upper Bathyal: 200 - 800 m depth
+- Lower Bathyal: 800 - 3500 m depth
+- Abyssal: 3500 - 6500 m depth
+- Hadal: 6500+ m depth
 
 We can get the depth zones for Bermuda simply by setting the
 `classify_bathymetry` argument in `get_bathymetry` to `TRUE`.
 
 ``` r
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
-#> This may take seconds to minutes, depending on grid size
+#> Bathymetry data already downloaded, using cached version
 
 #value of 1 indicates that depth zone is present
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-depth_classification-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-depth_classification-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Get geomorphological data
 
@@ -173,7 +167,7 @@ geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>%
 terra::plot(geomorphology, col = data.frame(c(0,1), c("grey60", "sienna")), axes = FALSE, legend = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-geomorphology-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-geomorphology-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Get knolls data
 
@@ -192,7 +186,7 @@ terra::plot(knolls, col = c("grey60", "grey20"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-knolls-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-knolls-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Get seamount areas
 
@@ -214,7 +208,7 @@ terra::plot(seamounts, col = c( "grey60", "saddlebrown"), axes = FALSE)
 plot(bermuda_eez_projected, add=TRUE)
 ```
 
-<img src="man/figures/README-seamounts-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-seamounts-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Habitat suitability models
 
@@ -239,7 +233,7 @@ coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 terra::plot(coral_habitat, col = c("grey60", "coral"), axes = FALSE, fun = function()terra::lines(terra::as.polygons(seamounts, dissolve = TRUE), col = "orangered4"))
 ```
 
-<img src="man/figures/README-coral_habitat-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-coral_habitat-1.png" alt="" style="display: block; margin: auto;" />
 
 ## Environmental Zones
 
@@ -271,11 +265,11 @@ biophysical data are ocean surface data for the period 2010 - 2020:
 enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
 
-<img src="man/figures/README-environmental_zones-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-environmental_zones-2.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-environmental_zones-1.png" alt="" style="display: block; margin: auto;" /><img src="man/figures/README-environmental_zones-2.png" alt="" style="display: block; margin: auto;" />
 
 ``` r
 #value of 1 indicates that environmental zone is present
 terra::plot(enviro_zones, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```
 
-<img src="man/figures/README-enviro_zones_maps-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-enviro_zones_maps-1.png" alt="" style="display: block; margin: auto;" />
