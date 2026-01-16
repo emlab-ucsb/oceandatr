@@ -4,11 +4,11 @@
 \name{oceandatr-package}
 \alias{oceandatr}
 \alias{oceandatr-package}
-\title{oceandatr: Ocean Data Access}
+\title{oceandatr: Ocean Data Acquisition and processing}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-For retrieving and gridding ocean related data.
+For acquiring, processing, and gridding ocean related data
 }
 \seealso{
 Useful links:

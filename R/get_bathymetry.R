@@ -1,9 +1,6 @@
 #' Get bathymetry data
 #'
-#' @description Get bathymetry data for an area from the ETOPO 2022 Global
-#'   Relief model. If data are already downloaded locally, the user can specify
-#'   the file path of the dataset. Data can be classified into depth zones by
-#'   setting `classify_bathymetry = TRUE`
+#' @description Get bathymetry data from the GEBCO 2025 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting `classify_bathymetry = TRUE`
 #'
 #' @details Extracts bathymetry data for an `area_polygon`, or if a
 #'   `spatial_grid` is supplied, gridded bathymetry is returned.
@@ -21,9 +18,9 @@
 #'   If the user has downloaded bathymetry data for the area of interest, for
 #'   example from GEBCO (https://www.gebco.net), they can pass the file path to
 #'   this function in `bathymetry_data_filepath`. If no file path is provided,
-#'   the function will extract bathymetry data for the area from the ETOPO 2022
-#'   Global Relief model served by NOAA
-#'   (https://www.ncei.noaa.gov/products/etopo-global-relief-model).
+#'   the function will extract bathymetry data for the area from the GEBCO 2025
+#'   global terrain model (sub-ice) from  the Natural Environment Research Council's (NERC) Centre for Environmental Data Analysis (CEDA)
+#'   (https://data.ceda.ac.uk/bodc/gebco/global/gebco_2025). 
 #'
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using
 #'   `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
@@ -36,16 +33,11 @@
 #' @param above_sea_level_isNA `logical`; whether to set bathymetry (elevation)
 #'   data values that are above sea level (i.e. greater than or equal to zero)
 #'   to `NA` (`TRUE`) or zero (`FALSE`)
-#' @param name `string`; name of raster or column in sf object that is returned
 #' @param bathymetry_data_filepath `string`; the file path (including file name
 #'   and extension) where bathymetry raster data are saved locally
-#' @param resolution `numeric`; the resolution (in minutes) of data to pull from
-#'   the ETOPO 2022 Global Relief model. Values less than 1 can only be 0.5 (30
-#'   arc seconds) and 0.25 (15 arc seconds)
+#' @param name `string`; name of raster or column in sf object that is returned
 #' @param path `string`; the folder path where you would like to save the bathymetry
 #'   data. Defaults to `tempdir()`
-#' @param download_timeout `numeric`; the maximum number of seconds a query to
-#'   the NOAA website is allowed to run
 #' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this
 #'   should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
 #'   (default) the function will try to check if `spatial_grid` spans the
@@ -74,7 +66,7 @@
 #' bermuda_grid_sf <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000, output = "sf_hex")
 #' gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, classify_bathymetry = FALSE)
 #' plot(gridded_bathymetry)
-get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, resolution = 1, path = NULL, download_timeout = 300, antimeridian = NULL){
+get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, path = NULL, antimeridian = NULL){
 
   check_grid(spatial_grid)
   
@@ -82,14 +74,16 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
   
   area_polygon_for_cropping <- polygon_in_4326(spatial_grid)
   
-  antimeridian <- area_polygon_for_cropping %>%
-    terra::vect() %>% 
-    terra::densify(interval = 1e4) %>% 
-    sf::st_as_sf() %>% 
-    check_antimeridian(sf::st_crs(4326))
+  if(is.null(antimeridian)){
+    antimeridian <- area_polygon_for_cropping %>%
+      terra::vect() %>% 
+      terra::densify(interval = 1e4) %>% 
+      sf::st_as_sf() %>% 
+      check_antimeridian(sf::st_crs(4326))
+  }
   
   if(is.null(bathymetry_data_filepath)){
-    bathymetry <- get_etopo_bathymetry(area_polygon_for_cropping, resolution = resolution, keep = keep, path = path, download_timeout = download_timeout) %>% 
+    bathymetry <- get_gebco_bathymetry(area_polygon_for_cropping, path = path, antimeridian = antimeridian) %>% 
       get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, name = name, antimeridian = antimeridian)
   } else{
     bathymetry <- get_data_in_grid(spatial_grid = spatial_grid, dat = bathymetry_data_filepath, raw = raw, meth = meth, name = name, antimeridian = antimeridian) 
@@ -131,22 +125,17 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
 #This function extracts relief data for the area of interest from the GEBCO 2025 grid
 #This is a helper function for get_bathymetry()
 
-get_gebco_bathymetry <- function(area_polygon_for_cropping, resolution, keep, path, download_timeout){
+get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
   #Get spatial indices of desired extent
   
   spat_ext <- terra::ext(area_polygon_for_cropping)
   
-  min_x <- as.numeric(spat_ext[1])
-  max_x <- as.numeric(spat_ext[2])
-  min_y <- as.numeric(spat_ext[3])
-  max_y <- as.numeric(spat_ext[4])
+  min_x <- as.numeric(spat_ext[1]) |> round(2)
+  max_x <- as.numeric(spat_ext[2]) |> round(2)
+  min_y <- as.numeric(spat_ext[3]) |> round(2)
+  max_y <- as.numeric(spat_ext[4]) |> round(2)
   
-  #Check for data that might extend over the antimeridian
-  if(is.null(antimeridian)) {
-    if(min_x == -180 & max_x == 180) antimeridian = TRUE  else antimeridian = FALSE
-  }
-  
-  # Get two left and right sides of the antimeridian x extents if antimeridian
+  # Get x extents of polygon left and right sides of the antimeridian 
   if(antimeridian) { 
     suppressMessages({
       aoi_left <- sf::st_crop(sf::st_geometry(area_polygon_for_cropping), xmin = 0, xmax = 180, ymin = -90, ymax = 90)
@@ -165,16 +154,16 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, resolution, keep, pa
   if(file_name %in% list.files(path = path)) {
     message("Bathymetry data already downloaded, using cached version", 
             sep = "")
-    return(rast(file.path(path, file_name)))  
+    return(terra::rast(file.path(path, file_name)))  
   }
   
   gebco_data_fetch <- function(min_x, max_x){
-    #Add or subtract 30 arc seconds (2 steps in the index) to each coordinate to ensure we get the full extent
+    #Add or subtract 1 arc minute (4 steps in the index) to each coordinate to ensure we get the full extent
     
-    index_min_x <- which.min(abs(nc_lon_vals - min_x)) -2
-    index_max_x <- which.min(abs(nc_lon_vals - max_x)) +2
-    index_min_y <- which.min(abs(nc_lat_vals - min_y)) -2
-    index_max_y <- which.min(abs(nc_lat_vals - max_y)) +2
+    index_min_x <- which.min(abs(nc_lon_vals - min_x)) -4
+    index_max_x <- which.min(abs(nc_lon_vals - max_x)) +4
+    index_min_y <- which.min(abs(nc_lat_vals - min_y)) -4
+    index_max_y <- which.min(abs(nc_lat_vals - max_y)) +4
     
     #make sure we don't go out of the index range (due to the +/-2 adjustment)
     if(index_min_x < 1) index_min_x <- 1
@@ -193,6 +182,7 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, resolution, keep, pa
                ext = c(nc_lon_vals[index_min_x], nc_lon_vals[index_max_x], nc_lat_vals[index_min_y], nc_lat_vals[index_max_y])) |> 
      terra::flip()
   }
+  
   #GEBCO data url
   url <- "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2025/sub_ice_topography_bathymetry/netcdf/gebco_2025_sub_ice.nc"
   
