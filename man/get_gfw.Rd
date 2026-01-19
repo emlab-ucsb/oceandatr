@@ -67,7 +67,7 @@ summarized and gridded format. An API key is required to retrieve GFW data;
 see the package website for instructions on how to get and save one (free).
 }
 \examples{
-\dontshow{if (nchar(Sys.getenv("GFW_TOKEN"))>0) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (nchar(Sys.getenv("GFW_TOKEN"))>0) withAutoprint(\{ # examplesIf}
 #get mean total annual fishing effort for Bermuda for the years 2022-2023
 #first get a grid for Bermuda
 bermuda_grid <- get_boundary(name = "Bermuda") \%>\% get_grid(resolution = 0.1, crs = 4326)

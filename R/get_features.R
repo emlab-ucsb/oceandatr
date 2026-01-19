@@ -11,9 +11,6 @@
 #'   will be a list object, since raster and `sf` data may be returned.
 #' @param features a vector of feature names, can include: "bathymetry",
 #'   "seamounts", "knolls", "geomorphology", "corals", "enviro_zones"
-#' @param bathy_resolution `numeric`; the resolution (in minutes) of data to
-#'   pull from the ETOPO 2022 Global Relief model. Values less than 1 can only
-#'   be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)
 #' @param seamount_buffer `numeric`; the distance from the seamount peak to
 #'   include in the output. Distance should be in the same units as the
 #'   area_polygon or spatial_grid provided, use e.g. `sf::st_crs(spatial_grid,
@@ -49,7 +46,7 @@
 #' features_gridded <- get_features(spatial_grid = bermuda_grid)
 #' terra::plot(features_gridded)
 
-get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_zones"), bathy_resolution = 1, seamount_buffer = 30000, antipatharia_threshold = 22, octocoral_threshold = 2, enviro_clusters = NULL, max_enviro_clusters = 6, antimeridian = NULL){
+get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_zones"), seamount_buffer = 30000, antipatharia_threshold = 22, octocoral_threshold = 2, enviro_clusters = NULL, max_enviro_clusters = 6, antimeridian = NULL){
   
   #set extra columns aside - only need this is it a spatial grid, so added
   #nrow() check to remove the need for this step if only raw data is required
@@ -67,7 +64,7 @@ get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathyme
   
   if("bathymetry" %in% features) { 
     message("Getting depth zones...")
-    bathymetry <- get_bathymetry(spatial_grid = spatial_grid, raw = raw, classify_bathymetry = ifelse(raw, FALSE, TRUE) , resolution = bathy_resolution, antimeridian = antimeridian)
+    bathymetry <- get_bathymetry(spatial_grid = spatial_grid, raw = raw, classify_bathymetry = ifelse(raw, FALSE, TRUE) , antimeridian = antimeridian)
   }
   
   if("seamounts" %in% features) { 

@@ -9,7 +9,6 @@ get_features(
   raw = FALSE,
   features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals",
     "enviro_zones"),
-  bathy_resolution = 1,
   seamount_buffer = 30000,
   antipatharia_threshold = 22,
   octocoral_threshold = 2,
@@ -29,10 +28,6 @@ will be a list object, since raster and \code{sf} data may be returned.}
 
 \item{features}{a vector of feature names, can include: "bathymetry",
 "seamounts", "knolls", "geomorphology", "corals", "enviro_zones"}
-
-\item{bathy_resolution}{\code{numeric}; the resolution (in minutes) of data to
-pull from the ETOPO 2022 Global Relief model. Values less than 1 can only
-be 0.5 (30 arc seconds) and 0.25 (15 arc seconds)}
 
 \item{seamount_buffer}{\code{numeric}; the distance from the seamount peak to
 include in the output. Distance should be in the same units as the
