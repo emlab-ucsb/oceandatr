@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@
     <li><a class="dropdown-item" href="../articles/pacific_high_seas_example.html">Pacific High Seas Example</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -84,7 +85,8 @@ Bioconductor website</p>
 <span><span class="co">#remotes::install_bioc("lpsymphony")</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">lpsymphony</span><span class="op">)</span></span>
 <span><span class="co">#remotes::install_github("emlab-ucsb/patchwise")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">patchwise</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">patchwise</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap" class="external-link">tmap</a></span><span class="op">)</span> <span class="co">#for making nice maps</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="high-seas-area-of-the-pacific-ocean">High Seas area of the Pacific Ocean<a class="anchor" aria-label="anchor" href="#high-seas-area-of-the-pacific-ocean"></a>
 </h2>
@@ -134,37 +136,64 @@ boundaries to add to the map, we use the <code><a href="https://emlab-ucsb.githu
 functions from <code>oceandatr</code>, setting <code>name = NULL</code>
 so that all countries are downloaded. We can then plot everything using
 the <code>tmap</code> package, which is great for making nice maps.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co">#retrieve bathymetry for the planning regions and surrounding area bounded by the EEZs</span></span>
-<span><span class="va">pacific_bathy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_bathymetry.html">get_bathymetry</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">eezs</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, classify_bathymetry <span class="op">=</span> <span class="cn">FALSE</span>, resolution <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/classify.html" class="external-link">classify</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span>, <span class="cn">NA</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#retrieve country boundaries using oceandatr</span></span>
-<span><span class="va">world</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_bathy</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="co">#multiply bathymetry by -1 to make values positive for nicer legend</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_raster</span><span class="op">(</span></span>
-<span>    col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale_continuous</span><span class="op">(</span>values <span class="op">=</span> <span class="st">"brewer.yl_gn_bu"</span><span class="op">)</span>,</span>
-<span>    col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Depth (m)"</span>, position <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_pos_out</span><span class="op">(</span><span class="st">"right"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">eezs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"MULTILINESTRING"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_lines</span><span class="op">(</span></span>
-<span>    col <span class="op">=</span> <span class="st">"name"</span>,</span>
-<span>    lwd <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>    col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale_categorical</span><span class="op">(</span>values <span class="op">=</span> <span class="st">"brewer.dark2"</span><span class="op">)</span>,</span>
-<span>    col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Select EEZs"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"MULTILINESTRING"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_lines</span><span class="op">(</span></span>
-<span>    col <span class="op">=</span> <span class="st">"name"</span>,</span>
-<span>    lwd <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale_categorical</span><span class="op">(</span>values <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span>,</span>
-<span>    col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">world</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_graticules</span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#retrieve bathymetry for the planning regions and surrounding area bounded by the EEZs</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>pacific_bathy <span class="ot">&lt;-</span> <span class="fu">get_bathymetry</span>(<span class="at">spatial_grid =</span> sf<span class="sc">::</span><span class="fu">st_as_sfc</span>(sf<span class="sc">::</span><span class="fu">st_bbox</span>(eezs), <span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(), <span class="at">raw =</span> <span class="cn">TRUE</span>, <span class="at">classify_bathymetry =</span> <span class="cn">FALSE</span>, <span class="at">above_sea_level_isNA =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">classify</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">Inf</span>, <span class="cn">NA</span>), <span class="at">ncol =</span> <span class="dv">3</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="sc">|---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                                          </span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>                                          </span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>                                          </span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>                                          </span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>                                          </span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#retrieve country boundaries using oceandatr</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>world <span class="ot">&lt;-</span> <span class="fu">get_boundary</span>(<span class="at">name =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"country"</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="fu">tm_shape</span>(pacific_bathy <span class="sc">*</span> <span class="sc">-</span><span class="dv">1</span>) <span class="sc">+</span> <span class="co">#multiply bathymetry by -1 to make values positive for nicer legend</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>  <span class="fu">tm_raster</span>(</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    <span class="at">col.scale =</span> <span class="fu">tm_scale_continuous</span>(<span class="at">values =</span> <span class="st">"brewer.yl_gn_bu"</span>),</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>    <span class="at">col.legend =</span> <span class="fu">tm_legend</span>(<span class="at">title =</span> <span class="st">"Depth (m)"</span>, <span class="at">position =</span> <span class="fu">tm_pos_out</span>(<span class="st">"right"</span>))</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>  <span class="fu">tm_shape</span>(eezs <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_cast</span>(<span class="at">to =</span> <span class="st">"MULTILINESTRING"</span>)) <span class="sc">+</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>  <span class="fu">tm_lines</span>(</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"name"</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>    <span class="at">col.scale =</span> <span class="fu">tm_scale_categorical</span>(<span class="at">values =</span> <span class="st">"brewer.dark2"</span>),</span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>    <span class="at">col.legend =</span> <span class="fu">tm_legend</span>(<span class="at">title =</span> <span class="st">"Select EEZs"</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>  <span class="fu">tm_shape</span>(pacific_hs <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_cast</span>(<span class="at">to =</span> <span class="st">"MULTILINESTRING"</span>)) <span class="sc">+</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>  <span class="fu">tm_lines</span>(</span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"name"</span>,</span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>    <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>    <span class="at">col.scale =</span> <span class="fu">tm_scale_categorical</span>(<span class="at">values =</span> <span class="st">"red"</span>),</span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>    <span class="at">col.legend =</span> <span class="fu">tm_legend</span>(<span class="at">title =</span> <span class="st">""</span>)</span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a>  <span class="fu">tm_shape</span>(world) <span class="sc">+</span></span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>  <span class="fu">tm_graticules</span>(<span class="at">lwd =</span> <span class="fl">0.5</span>)</span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a><span class="sc">|---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a>                                          </span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a><span class="er">=========================================</span></span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>                                          </span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figure/pacific_high_sea_maps-1.png" alt="Map of Pacific High Seas planning region in regional context"><p class="caption">
 Map of Pacific High Seas planning region in regional context
@@ -208,21 +237,21 @@ peaks (see <code>?get_seamounts_buffered</code> for more info).</p>
 <span><span class="va">feature_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_features.html">get_features</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/remove_empty_layers.html">remove_empty_layers</a></span><span class="op">(</span><span class="op">)</span>  <span class="co">#use this to remove raster layers that are empty</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">tm_shape</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
 <span>  <span class="va">feature_set</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_"</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">feature_set</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_sentence</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_raster</span><span class="op">(</span></span>
-<span>    col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale_categorical</span><span class="op">(</span></span>
+<span>  <span class="fu">tm_raster</span><span class="op">(</span></span>
+<span>    col.scale <span class="op">=</span> <span class="fu">tm_scale_categorical</span><span class="op">(</span></span>
 <span>      values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"royalblue"</span><span class="op">)</span>,</span>
 <span>      labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Absent"</span>, <span class="st">"Present"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>show <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    col.legend <span class="op">=</span> <span class="fu">tm_legend</span><span class="op">(</span>show <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_facets</span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_layout</span><span class="op">(</span>panel.label.size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">tm_facets</span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_layout</span><span class="op">(</span>panel.label.size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figure/unnamed-chunk-6-1.png" alt="Map of all features in the planning regions"><p class="caption">
 Map of all features in the planning regions
@@ -240,7 +269,7 @@ the opportunity cost for each planning unit.</p>
 <p><a href="https://globalfishingwatch.org/" class="external-link">Global Fishing Watch</a>
 has global fishing effort data, and this can be accessed easily using
 <code><a href="../reference/get_gfw.html">get_gfw()</a></code> function in <code>oceandatr</code> (which is a
-wrapper for the <code><a href="https://globalfishingwatch.github.io/gfwr/reference/get_raster.html" class="external-link">get_raster()</a></code> function from the <a href="https://github.com/GlobalFishingWatch/gfwr" class="external-link"><code>gfwr</code></a>
+wrapper for the <code><a href="https://globalfishingwatch.github.io/gfwr/reference/gfw_renamed.html" class="external-link">get_raster()</a></code> function from the <a href="https://github.com/GlobalFishingWatch/gfwr" class="external-link"><code>gfwr</code></a>
 package). An API key is required, but can be easily generated at no
 cost; see the <code>gfwr</code> website for more details.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -250,9 +279,9 @@ cost; see the <code>gfwr</code> website for more details.</p>
 <span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html" class="external-link">mask</a></span><span class="op">(</span><span class="va">pacific_hs_planning_grid</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="st">"fishing_effort"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">fishing_effort</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_raster</span><span class="op">(</span>col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale</span><span class="op">(</span>values <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span>,</span>
-<span>                  col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>orientation <span class="op">=</span> <span class="st">"landscape"</span>,</span>
+<span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">fishing_effort</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_raster</span><span class="op">(</span>col.scale <span class="op">=</span> <span class="fu">tm_scale</span><span class="op">(</span>values <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span>,</span>
+<span>                  col.legend <span class="op">=</span> <span class="fu">tm_legend</span><span class="op">(</span>orientation <span class="op">=</span> <span class="st">"landscape"</span>,</span>
 <span>                                               title <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figure/fishing-effort-1.png" alt="Map of total apparent fishing effort in 2022 for the Pacific High Seas area. Data from Global Fishing Watch"><p class="caption">
@@ -279,14 +308,14 @@ areas. We will set this at 20%.</p>
 <span></span>
 <span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">sol</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_raster</span><span class="op">(</span></span>
-<span>    col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale_categorical</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"green4"</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">sol</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_raster</span><span class="op">(</span></span>
+<span>    col.scale <span class="op">=</span> <span class="fu">tm_scale_categorical</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"green4"</span><span class="op">)</span>,</span>
 <span>                                           labels <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not selected"</span>, <span class="st">"Selected"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span>,</span>
-<span>                                 position <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_pos_in</span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"top"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>    col.legend <span class="op">=</span> <span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span>,</span>
+<span>                                 position <span class="op">=</span> <span class="fu">tm_pos_in</span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"top"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figure/priortization-result-1.png" alt="Prioritization solution for the Pacific High Seas area."><p class="caption">
 Prioritization solution for the Pacific High Seas area.
@@ -343,17 +372,17 @@ of the total seamount area are included.</p>
 <span><span class="co"># Convert the prioritization into a more digestible format</span></span>
 <span><span class="va">result_rast</span> <span class="op">&lt;-</span> <span class="fu">patchwise</span><span class="fu">::</span><span class="fu">convert_solution</span><span class="op">(</span>solution <span class="op">=</span> <span class="va">solution_rast</span>, patch_df <span class="op">=</span> <span class="va">patches_df_rast</span>, spatial_grid <span class="op">=</span> <span class="va">pacific_hs_planning_grid</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sol</span>, <span class="va">result_rast</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_raster</span><span class="op">(</span></span>
-<span>    col.scale <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_scale_categorical</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"green4"</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="fu">tm_shape</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sol</span>, <span class="va">result_rast</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_raster</span><span class="op">(</span></span>
+<span>    col.scale <span class="op">=</span> <span class="fu">tm_scale_categorical</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey70"</span>, <span class="st">"green4"</span><span class="op">)</span>,</span>
 <span>                                           labels <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not selected"</span>, <span class="st">"Selected"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    col.legend <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span>,</span>
-<span>                                 position <span class="op">=</span> <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_pos_in</span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"top"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">seamounts_rast</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_borders</span><span class="op">(</span>col <span class="op">=</span> <span class="st">"brown"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tmap</span><span class="fu">::</span><span class="fu">tm_layout</span><span class="op">(</span>panel.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Original result"</span>, <span class="st">"Result with patchwise"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    col.legend <span class="op">=</span> <span class="fu">tm_legend</span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span>,</span>
+<span>                                 position <span class="op">=</span> <span class="fu">tm_pos_in</span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"top"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_shape</span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">seamounts_rast</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_borders</span><span class="op">(</span>col <span class="op">=</span> <span class="st">"brown"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_hs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">pacific_hs_projection</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_borders</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tm_layout</span><span class="op">(</span>panel.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Original result"</span>, <span class="st">"Result with patchwise"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figure/prioritization-patches-resul-1.png" alt="Prioritization solution for the Pacific High Seas area, with whole seamounts included. Brown outlines are seamounts."><p class="caption">
 Prioritization solution for the Pacific High Seas area, with whole
@@ -372,7 +401,7 @@ seamounts included. Brown outlines are seamounts.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

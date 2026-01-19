@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Ocean Data Access • oceandatr</title>
+<title>Ocean Data Acquisition and processing • oceandatr</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Ocean Data Access">
-<meta name="description" content="For retrieving and gridding ocean related data.">
-<meta property="og:description" content="For retrieving and gridding ocean related data.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Ocean Data Acquisition and processing">
+<meta name="description" content="For acquiring, processing, and gridding ocean related data.">
+<meta property="og:description" content="For acquiring, processing, and gridding ocean related data.">
 <meta property="og:image" content="https://emlab-ucsb.github.io/oceandatr/logo.png">
 </head>
 <body>
@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="articles/pacific_high_seas_example.html">Pacific High Seas Example</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -60,7 +61,7 @@
 </div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p><code>oceandatr</code> aims to provide simple functions for retrieving ocean data. Using the associated package <code>spatialgridr</code>, it can also easily grid data, which is useful for various purposes including spatial conservation prioritization.</p>
+<p><code>oceandatr</code> provides simple functions for acquiring, processing and gridding ocean data.</p>
 <p>Fish images in logo modified from original by Tracey Saxby, <a href="https://ian.umces.edu/media-library" class="external-link">Integration and Application Network</a></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -88,7 +89,7 @@
 <span></span>
 <span><span class="co">#plot to check we have Bermuda's EEZ</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"lightblue"</span>, main<span class="op">=</span><span class="cn">NULL</span>, axes<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-area_of_interest-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-area_of_interest-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="get-a-grid">Get a grid<a class="anchor" aria-label="anchor" href="#get-a-grid"></a>
@@ -110,45 +111,44 @@
 <span><span class="co">#plot the grid</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_grid</span>, col <span class="op">=</span> <span class="st">"gold3"</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-bermuda-grid-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-bermuda-grid-1.png" alt="" style="display: block; margin: auto;"></p>
 <p>The raster covers Bermuda’s EEZ. The grid cells would be too small to see if we plotted them, but here is a coarser grid (lower resolution) visualized so we can see what the grid cells look like.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bermuda_grid_coarse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, resolution <span class="op">=</span> <span class="fl">20000</span>, crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">bermuda_grid_coarse</span>, dissolve <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-grid_cells-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-grid_cells-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="get-bathymetry">Get bathymetry<a class="anchor" aria-label="anchor" href="#get-bathymetry"></a>
 </h2>
-<p>Now we have a grid, we can get some data. A key piece of data is bathymetry. If the user has bathymetry data for their area of interest already, they can pass the file path to this function and it will grid the data using the supplied spatial grid. If no file path is provided, the function will extract bathymetry data for the area from the <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" class="external-link">ETOPO 2022 Global Relief model</a> using a function borrowed from the <a href="https://cran.r-project.org/web/packages/marmap/index.html" class="external-link"><code>marmap</code></a> package.</p>
+<p>Now we have a grid, we can get some data. A key piece of data is bathymetry. If the user has bathymetry data for their area of interest already, they can pass the file path to this function and it will grid the data using the supplied spatial grid. If no file path is provided, the function will extract bathymetry data for the area from the <a href="https://www.gebco.net" class="external-link">GEBCO 2025 global terrain model</a>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bathymetry</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_bathymetry.html">get_bathymetry</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, classify_bathymetry <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; This may take seconds to minutes, depending on grid size</span></span>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bathymetry</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">255</span>, <span class="st">"Blues"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-bathymetry-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-bathymetry-1.png" alt="" style="display: block; margin: auto;"></p>
 <div class="section level3">
 <h3 id="depth-classification">Depth classification<a class="anchor" aria-label="anchor" href="#depth-classification"></a>
 </h3>
 <p>The ocean can be classified into 5 depth zones:</p>
 <ul>
-<li>0 - 200m: Epipelagic zone</li>
-<li>200 - 1000m: Mesopelagic zone</li>
-<li>1000 - 4000m: Bathypelagic zone</li>
-<li>4000 - 6000m: Abyssopelagic zone</li>
-<li>6000m+: Hadopelagic zone</li>
+<li>Continental Shelf: 0 - 200 m depth</li>
+<li>Upper Bathyal: 200 - 800 m depth</li>
+<li>Lower Bathyal: 800 - 3500 m depth</li>
+<li>Abyssal: 3500 - 6500 m depth</li>
+<li>Hadal: 6500+ m depth</li>
 </ul>
 <p>We can get the depth zones for Bermuda simply by setting the <code>classify_bathymetry</code> argument in <code>get_bathymetry</code> to <code>TRUE</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">depth_zones</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_bathymetry.html">get_bathymetry</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, classify_bathymetry <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; This may take seconds to minutes, depending on grid size</span></span>
+<span><span class="co">#&gt; Bathymetry data already downloaded, using cached version</span></span>
 <span></span>
 <span><span class="co">#value of 1 indicates that depth zone is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">depth_zones</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"navyblue"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-depth_classification-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-depth_classification-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -161,7 +161,7 @@
 <span></span>
 <span><span class="co">#brown colour indicates that geomorphological feature is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geomorphology</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"sienna"</span><span class="op">)</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, legend <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-geomorphology-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-geomorphology-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="get-knolls-data">Get knolls data<a class="anchor" aria-label="anchor" href="#get-knolls-data"></a>
@@ -173,7 +173,7 @@
 <span><span class="co">#value of 1 indicates that knolls are present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">knolls</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"grey20"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-knolls-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-knolls-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="get-seamount-areas">Get seamount areas<a class="anchor" aria-label="anchor" href="#get-seamount-areas"></a>
@@ -186,7 +186,7 @@
 <span><span class="co">#value of 1 indicates that seamount is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">seamounts</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"grey60"</span>, <span class="st">"saddlebrown"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-seamounts-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-seamounts-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="habitat-suitability-models">Habitat suitability models<a class="anchor" aria-label="anchor" href="#habitat-suitability-models"></a>
@@ -207,7 +207,7 @@
 <span></span>
 <span><span class="co">#value of 1 indicates that coral is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">coral_habitat</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"coral"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">seamounts</span>, dissolve <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"orangered4"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-coral_habitat-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-coral_habitat-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="environmental-zones">Environmental Zones<a class="anchor" aria-label="anchor" href="#environmental-zones"></a>
@@ -229,11 +229,11 @@
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#set number of clusters to 3 to reduce runtime and memory usage</span></span>
 <span><span class="va">enviro_zones</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_enviro_zones.html">get_enviro_zones</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, show_plots <span class="op">=</span> <span class="cn">TRUE</span>, num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-environmental_zones-1.png" style="display: block; margin: auto;"><img src="reference/figures/README-environmental_zones-2.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-environmental_zones-1.png" alt="" style="display: block; margin: auto;"><img src="reference/figures/README-environmental_zones-2.png" alt="" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#value of 1 indicates that environmental zone is present</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">enviro_zones</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"forestgreen"</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-enviro_zones_maps-1.png" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-enviro_zones_maps-1.png" alt="" style="display: block; margin: auto;"></p>
 </div>
 </div>
 
@@ -271,7 +271,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
