@@ -7,8 +7,8 @@
 
 <!-- badges: end -->
 
-`oceandatr` aims to provide simple functions for retrieving, processing
-and gridding ocean data.
+`oceandatr` provides simple functions for acquiring, processing and
+gridding ocean data.
 
 Fish images in logo modified from original by Tracey Saxby, [Integration
 and Application Network](https://ian.umces.edu/media-library)
