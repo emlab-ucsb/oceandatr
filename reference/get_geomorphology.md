@@ -114,8 +114,8 @@ List of features:
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpfdQyR9/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-01-19 03:06:53.747671)
+#> Cache is fresh. Reading: /tmp/RtmpdlopUN/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-01-19 06:03:00.701614)
 # Get geomorphology for the EEZ
 bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off

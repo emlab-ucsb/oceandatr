@@ -26,6 +26,9 @@ library(lpsymphony)
 #remotes::install_github("emlab-ucsb/patchwise")
 library(patchwise)
 library(tmap) #for making nice maps
+library(terra) #for raster data handling
+
+terraOptions(progress = 0) #suppress the progress bars during large terra operations
 ```
 
 ## High Seas area of the Pacific Ocean
@@ -89,29 +92,10 @@ are downloaded. We can then plot everything using the `tmap` package,
 which is great for making nice maps.
 
 ``` r
+
 #retrieve bathymetry for the planning regions and surrounding area bounded by the EEZs
-pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(eezs), crs = 4326) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE, above_sea_level_isNA = TRUE) %>%
+pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(eezs), crs = 4326) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE) %>%
   terra::classify(matrix(c(0, Inf, NA), ncol = 3))
-#> 
-|---------|---------|---------|---------|
-=========================================
-                                          
-
-|---------|---------|---------|---------|
-=========================================
-                                          
-
-|---------|---------|---------|---------|
-=========================================
-                                          
-
-|---------|---------|---------|---------|
-=========================================
-                                          
-
-|---------|---------|---------|---------|
-=========================================
-                                          
 
 #retrieve country boundaries using oceandatr
 world <- get_boundary(name = NULL, type = "country")
@@ -138,14 +122,6 @@ tm_shape(pacific_bathy * -1) + #multiply bathymetry by -1 to make values positiv
   tm_shape(world) +
   tm_borders() +
   tm_graticules(lwd = 0.5)
-#> 
-|---------|---------|---------|---------|
-=========================================
-                                          
-
-|---------|---------|---------|---------|
-=========================================
-                                          
 ```
 
 ![Map of Pacific High Seas planning region in regional

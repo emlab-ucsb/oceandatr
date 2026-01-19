@@ -102,8 +102,8 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpfdQyR9/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-01-19 03:06:53.747671)
+#> Cache is fresh. Reading: /tmp/RtmpdlopUN/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-01-19 06:03:00.701614)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
