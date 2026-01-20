@@ -102,50 +102,21 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpdlopUN/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-01-19 06:03:00.701614)
+#> Cache is fresh. Reading: /tmp/RtmpdNEaSn/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-01-20 04:56:54.657319)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
-#> Bathymetry data already downloaded, using cached version
-#> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Warning: st_buffer does not correctly buffer longitude/latitude data
-#> dist is assumed to be in decimal degrees (arc_degrees).
-#> Spherical geometry (s2) switched on
-#> Getting knoll data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
-#> Getting geomorphology data...
-#> Getting coral data...
-#> Getting environmental zones data... This could take several minutes
+#> Error in R_nc4_open: NetCDF: I/O failure
+#> Error in ncdf4::nc_open(url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2025/sub_ice_topography_bathymetry/netcdf/gebco_2025_sub_ice.nc (return_on_error= FALSE )
 # Get feature data in a spatial grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
 #set seed for reproducibility in the get_enviro_zones() function
 set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 #> Getting depth zones...
-#> Bathymetry data already downloaded, using cached version
-#> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
-#> Getting knoll data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
-#> Getting geomorphology data...
-#> Getting coral data...
-#> Getting environmental zones data... This could take several minutes
+#> Error in R_nc4_open: NetCDF: I/O failure
+#> Error in ncdf4::nc_open(url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2025/sub_ice_topography_bathymetry/netcdf/gebco_2025_sub_ice.nc (return_on_error= FALSE )
 terra::plot(features_gridded)
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'features_gridded' not found
 ```

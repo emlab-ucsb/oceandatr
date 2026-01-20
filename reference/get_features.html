@@ -135,53 +135,23 @@ format.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Grab EEZ data first </span></span></span>
 <span class="r-in"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpdlopUN/eez-2205f12f/eez.shp</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-19 06:03:00.701614</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpdNEaSn/eez-2205f12f/eez.shp</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-20 04:56:54.657319</span>)</span>
 <span class="r-in"><span><span class="co"># Get raw data for Bermuda's EEZ</span></span></span>
 <span class="r-in"><span><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu">get_features</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting depth zones...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bathymetry data already downloaded, using cached version</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting seamount data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> although coordinates are longitude/latitude, st_intersection assumes that they</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> are planar</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>attribute variables are assumed to be spatially constant throughout all geometries</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>st_buffer does not correctly buffer longitude/latitude data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> dist is assumed to be in decimal degrees (arc_degrees).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting knoll data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> although coordinates are longitude/latitude, st_intersection assumes that they</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> are planar</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>attribute variables are assumed to be spatially constant throughout all geometries</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting geomorphology data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting coral data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting environmental zones data... This could take several minutes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Error in R_nc4_open: NetCDF: I/O failure</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ncdf4::nc_open(url):</span> Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2025/sub_ice_topography_bathymetry/netcdf/gebco_2025_sub_ice.nc (return_on_error= FALSE )</span>
 <span class="r-in"><span><span class="co"># Get feature data in a spatial grid</span></span></span>
 <span class="r-in"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, crs <span class="op">=</span> <span class="st">'+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'</span>, resolution <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co">#set seed for reproducibility in the get_enviro_zones() function</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">features_gridded</span> <span class="op">&lt;-</span> <span class="fu">get_features</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting depth zones...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bathymetry data already downloaded, using cached version</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting seamount data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> although coordinates are longitude/latitude, st_intersection assumes that they</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> are planar</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>attribute variables are assumed to be spatially constant throughout all geometries</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting knoll data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> although coordinates are longitude/latitude, st_intersection assumes that they</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> are planar</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>attribute variables are assumed to be spatially constant throughout all geometries</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting geomorphology data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting coral data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting environmental zones data... This could take several minutes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Error in R_nc4_open: NetCDF: I/O failure</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ncdf4::nc_open(url):</span> Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2025/sub_ice_topography_bathymetry/netcdf/gebco_2025_sub_ice.nc (return_on_error= FALSE )</span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">features_gridded</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="get_features-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'plot': object 'features_gridded' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

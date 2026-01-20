@@ -114,21 +114,21 @@ List of features:
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpdlopUN/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-01-19 06:03:00.701614)
+#> Cache is fresh. Reading: /tmp/RtmpdNEaSn/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-01-20 04:56:54.657319)
 # Get geomorphology for the EEZ
 bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
 #> Spherical geometry (s2) switched on
-plot(bermuda_geomorph)
-
 # Get geomorphological features in spatial_grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
-geomorph_gridded <- get_geomorphology(spatial_grid = bermuda_grid)
+geomorph_gridded <- get_geomorphology(spatial_grid = bermuda_grid) %>% remove_empty_layers() #helper function to remove data layers that are all zero or NA values
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
 #> Spherical geometry (s2) switched on
+plot(geomorph_gridded)
+#> Error: [`[`] the index SpatRaster can only have one layer
 ```
