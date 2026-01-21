@@ -31,7 +31,7 @@ NbClust() from the NbClust package."><meta property="og:image" content="https://
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getboundary.html">Retrieving boundaries with get_boundary()</a></li>
-    <li><a class="dropdown-item" href="../articles/pacific_high_seas_example.html">Pacific High Seas Example</a></li>
+    <li><a class="dropdown-item" href="../articles/usage_prioritization.html">Usage of oceandatr for spatial planning</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -176,8 +176,8 @@ installations). To find the number of available cores on your systems run
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get EEZ data first </span></span></span>
 <span class="r-in"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpdNEaSn/eez-2205f12f/eez.shp</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-20 04:56:54.657319</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpFboyUF/eez-2205f12f/eez.shp</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-21 06:12:01.995016</span>)</span>
 <span class="r-in"><span><span class="co"># Get raw Bio-Oracle environmental data for Bermuda</span></span></span>
 <span class="r-in"><span><span class="va">enviro_data</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, enviro_zones <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected dataset chl_baseline_2000_2018_depthsurf.</span>

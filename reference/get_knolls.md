@@ -61,8 +61,8 @@ from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpdNEaSn/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-01-20 04:56:54.657319)
+#> Cache is fresh. Reading: /tmp/RtmpFboyUF/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-01-21 06:12:01.995016)
 # Get raw knolls data for Bermuda's EEZ
 knolls <- get_knolls(spatial_grid= bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off
