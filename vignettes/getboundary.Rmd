@@ -35,7 +35,7 @@ aus_eez <- get_boundary(name = "Australia", type = "eez")
 plot(aus_eez["geometry"], axes = TRUE)
 ```
 
-<img src="figure/australia_eez-1.png" style="display: block; margin: auto;" />
+<img src="figure/australia_eez-1.png" alt="" style="display: block; margin: auto;" />
 
 But lets look at what happens if we change the `country_type` from the default `"country"` to `"sovereign"`:
 
@@ -46,7 +46,7 @@ aus_eez_sov <- get_boundary(name = "Australia", type = "eez", country_type = "so
 plot(aus_eez_sov["geometry"], axes = TRUE)
 ```
 
-<img src="figure/australia_eez_sovereign-1.png" style="display: block; margin: auto;" />
+<img src="figure/australia_eez_sovereign-1.png" alt="" style="display: block; margin: auto;" />
 
 We now get not just the main country of Australia, but all the islands it has sovereignty over. For more detail, see the [Marine Regions attribute table](https://marineregions.org/eezattribute.php); using `country_type = "country"` queries using the 'territory1' attribute, and using `country_type = "sovereign"` uses the 'territory1' attribute.
 
@@ -75,7 +75,7 @@ An example, where you might want to use `sovereign` is when you are trying to ge
 ``` r
 get_boundary(name = "Kiribati", type = "eez", country_type = "country")
 ```
-<img src="figs/eez_countries_list.png" style="display: block; margin: auto;" />
+<img src="figs/eez_countries_list.png" alt="" style="display: block; margin: auto;" />
 
 Try again, setting `country_type = "sovereign"`:
 
@@ -146,7 +146,7 @@ plot(sf::st_geometry(france), col = "blue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
-<img src="figure/france_country-1.png" style="display: block; margin: auto;" />
+<img src="figure/france_country-1.png" alt="" style="display: block; margin: auto;" />
 
 This is slightly unexpected perhaps, but the islands of Guadeloupe and Martinique in the Caribbean, Mayotte and Réunion in the Western Indian Ocean, and French Guiana in South America, all have the same status as mainland France.
 
@@ -161,4 +161,4 @@ plot(sf::st_geometry(france_sov), col = "blue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
-<img src="figure/france_country_sovereign-1.png" style="display: block; margin: auto;" />
+<img src="figure/france_country_sovereign-1.png" alt="" style="display: block; margin: auto;" />
