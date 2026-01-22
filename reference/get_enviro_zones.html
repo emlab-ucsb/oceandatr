@@ -176,8 +176,8 @@ installations). To find the number of available cores on your systems run
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get EEZ data first </span></span></span>
 <span class="r-in"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpFboyUF/eez-2205f12f/eez.shp</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-21 06:12:01.995016</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpxryWDx/eez-2205f12f/eez.shp</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-22 04:48:58.369191</span>)</span>
 <span class="r-in"><span><span class="co"># Get raw Bio-Oracle environmental data for Bermuda</span></span></span>
 <span class="r-in"><span><span class="va">enviro_data</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, enviro_zones <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected dataset chl_baseline_2000_2018_depthsurf.</span>

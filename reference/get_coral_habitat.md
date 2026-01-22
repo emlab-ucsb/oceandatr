@@ -96,8 +96,8 @@ models for the following species groups:
 ``` r
 # Get EEZ data first
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpFboyUF/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-01-21 06:12:01.995016)
+#> Cache is fresh. Reading: /tmp/RtmpxryWDx/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-01-22 04:48:58.369191)
 # Get raw coral habitat data
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
 terra::plot(coral_habitat)
