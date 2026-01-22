@@ -116,8 +116,6 @@ a more recent dataset using <code><a href="get_seamounts.html">get_seamounts()</
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Grab EEZ data first </span></span></span>
 <span class="r-in"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpxryWDx/eez-2205f12f/eez.shp</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-01-22 04:48:58.369191</span>)</span>
 <span class="r-in"><span><span class="co"># Get geomorphology for the EEZ</span></span></span>
 <span class="r-in"><span><span class="va">bermuda_geomorph</span> <span class="op">&lt;-</span> <span class="fu">get_geomorphology</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
@@ -131,8 +129,8 @@ a more recent dataset using <code><a href="get_seamounts.html">get_seamounts()</
 <span class="r-msg co"><span class="r-pr">#&gt;</span> although coordinates are longitude/latitude, st_intersection assumes that they</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> are planar</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geomorph_gridded</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [`[`] the index SpatRaster can only have one layer</span>
+<span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geomorph_gridded</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_geomorphology-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
