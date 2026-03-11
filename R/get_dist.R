@@ -141,7 +141,7 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
            ras_min <- as.numeric(terra::global(temp_ras, "min", na.rm = TRUE)[1])
            ras_max <- as.numeric(terra::global(temp_ras, "max", na.rm = TRUE)[1])
            
-           return((ras_max - temp_ras - ras_min))  
+           return((ras_max - temp_ras + ras_min))  
          }else temp_ras
          
        }else{
@@ -162,7 +162,7 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
            ras_min <- as.numeric(terra::global(spatial_grid, "min", na.rm = TRUE)[1])
            ras_max <- as.numeric(terra::global(spatial_grid, "max", na.rm = TRUE)[1])
            
-           return((ras_max - spatial_grid - ras_min))  
+           return((ras_max - spatial_grid + ras_min))  
          }else spatial_grid
          
        }
