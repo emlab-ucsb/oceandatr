@@ -122,8 +122,10 @@ terra::plot(dist_from_shore_rast)
 
 #get distance to ports
 dist_ports <- get_dist(fiji_grid, dist_to = "ports")
+#> Warning: incomplete final line found by readTableHeader on '/tmp/Rtmpi7kMUC/wpi_ports.csv'
+#> Error in `[.data.frame`(utils::read.csv(file.path(tempdir(), "wpi_ports.csv")),     , c("Longitude", "Latitude")): undefined columns selected
 terra::plot(dist_ports)
-
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'dist_ports' not found
 
 #get distance to anchorages, as defined by Global Fishing Watch data
 dist_anchorages <- get_dist(fiji_grid, dist_to = "anchorages_land_masked")

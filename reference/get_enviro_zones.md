@@ -149,8 +149,8 @@ number of available cores on your systems run
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpuLEKHw/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-03-11 05:17:49.211415)
+#> Cache is fresh. Reading: /tmp/Rtmpi7kMUC/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-03-12 02:11:21.380877)
 # Get raw Bio-Oracle environmental data for Bermuda
 enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 #> Selected dataset chl_baseline_2000_2018_depthsurf.

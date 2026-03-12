@@ -149,7 +149,9 @@ mregions2::mrp_list[,c("title", "layer")]
 ## Land boundaries
 
 [`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
-uses the `rnaturalearth::ne_countries()` function from the
+uses the
+[`rnaturalearth::ne_countries()`](https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html)
+function from the
 \[``` rnaturalearth``](https://docs.ropensci.org/rnaturalearth/index.html) package to retrieve land boundaries. ```get_boundary()\`
 is only intended to provide a slightly simpler interface for getting
 some commonly used land boundaries.
