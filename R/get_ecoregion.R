@@ -26,12 +26,17 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get Marine Ecoregions of the World data
 #' ecoregions <- get_ecoregion(spatial_grid = bermuda_eez, raw = TRUE)
+#' 
 #' # Get Longhurst Provinces in a spatial grid
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
+#'   resolution = 20000)
 #' longhurst_gridded <- get_ecoregion(spatial_grid = bermuda_grid, type = "Longhurst")
 get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antimeridian = NULL){
   
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_logical(raw, len = 1)
+  checkmate::assert_choice(type, c("MEOW", "Longhurst", "LME", "meso"))
   
   no_sf_cols <- if(is(spatial_grid, "sf")) ncol(spatial_grid)-1
   
@@ -49,7 +54,7 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
   } else if(type == "meso"){
     marine_ecoregions <- sf::st_read("https://geo.vliz.be/geoserver/wfs?request=getfeature&service=wfs&version=1.1.0&typename=MarineRegions:mesopelagiczones&outputformat=json")
     col_name <- "provname"
-  }else message("type must be one of MEOW, Longhurst, LME or meso.")
+  }
 
   if(is.null(marine_ecoregions))  marine_ecoregions <- mregions2::mrp_get(type)
   
@@ -58,15 +63,15 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
  
  if(!raw){
    if(is(ecoregion_data, "sf")){
-     ecoregion_data <- ecoregion_data %>% 
-       remove_empty_layers() %>% 
-       {if((ncol(.)-no_sf_cols) >1) . else dplyr::mutate(., ecoregion = 0, .after = no_sf_cols)}
+     ecoregion_data <- ecoregion_data |>  
+       remove_empty_layers() |>  
+       (\(x) if((ncol(x)-no_sf_cols) >1) x else dplyr::mutate(x, ecoregion = 0, .after = no_sf_cols))()
    }else{
      if(sum(terra::global(ecoregion_data, "sum", na.rm = TRUE)$sum)>0){
         ecoregion_data <- remove_empty_layers(ecoregion_data)
      }else{
-       ecoregion_data <- spatial_grid %>% 
-         terra::subst(1, 0) %>% 
+       ecoregion_data <- spatial_grid |>  
+         terra::subst(1, 0) |>  
          setNames("ecoregion")
      }
    }

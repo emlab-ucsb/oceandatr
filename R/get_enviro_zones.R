@@ -78,36 +78,49 @@
 #' enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 #' terra::plot(enviro_data)
 #' # Get gridded Bio-Oracle data for Bermuda:
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+#'   resolution = 20000)
 #' 
-#' enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = FALSE)
+#' enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, 
+#'                                         raw = FALSE, 
+#'                                         enviro_zones = FALSE)
 #' terra::plot(enviro_data_gridded)
 #' 
 #' # Get 3 environmental zones for Bermuda
 #' 
 #' #set seed for reproducibility in the sampling to find optimal number of clusters
 #' set.seed(500)
-#' bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = TRUE, num_clusters = 3)
+#' bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, 
+#'                                          raw = FALSE, 
+#'                                          enviro_zones = TRUE, 
+#'                                          num_clusters = 3)
 #' terra::plot(bermuda_enviro_zones)
-#' # Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want the data for
-#' bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = TRUE, num_clusters = 3)
+#' 
+#' # Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and
+#' # enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want
+#' # the data for
+#' bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, 
+#'                                           raw = TRUE, 
+#'                                           enviro_zones = TRUE, 
+#'                                           num_clusters = 3)
 #' terra::plot(bermuda_enviro_zones2)
 
 get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TRUE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1){
   
   rlang::check_installed("biooracler", reason = "to get Bio-Oracle data using `get_enviro_zones()`", action = function(pkg, ...) remotes::install_github("bio-oracle/biooracler"))
   
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_logical(raw, len = 1)
+  checkmate::assert_logical(enviro_zones, len = 1)
+  checkmate::assert_logical(show_plots, len = 1)
+  checkmate::assert_integer(num_clusters, lower = 1, upper = 20, len = 1, null.ok = TRUE)
+  checkmate::assert_integer(max_num_clusters, lower = 1, upper = 20, len = 1)
+  checkmate::assert_integer(sample_size, lower = 1, upper = 50e6)
+  checkmate::assert_integer(num_samples, lower = 1, upper = 100)
+  checkmate::assert_integer(num_cores, lower = 1, upper = 100)
   
   meth <- if(is(spatial_grid, "sf")) 'mean' else 'average'
-  
-  # Add error for cluster numbers
-  if(!is.null(num_clusters)) {
-    if(num_clusters < 1){ stop("num_clusters must be greater than 1 or NULL")}
-    if(!all.equal(num_clusters, round(num_clusters))){ stop("num_clusters must be a whole number")}} 
-  if(max_num_clusters < 1) { 
-    stop("max_num_clusters must be greater than 1")}
-  if(!all.equal(max_num_clusters, round(max_num_clusters))){ stop("max_num_clusters must be a whole number")}
   
   if(num_cores > 1 & !rlang::is_installed("parallel")){
     rlang::check_installed("parallel", reason = "to use multiple cores for clustering.")
@@ -119,20 +132,26 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
     
     if(grid_has_extra_cols) {
       extra_cols <- sf::st_drop_geometry(spatial_grid)
-      spatial_grid <- spatial_grid %>% 
-        sf::st_geometry() %>% 
+      spatial_grid <- spatial_grid |>  
+        sf::st_geometry() |>  
         sf::st_sf()
     }
   }
   
-  enviro_data <- get_enviro_data(spatial_grid = spatial_grid) %>% 
-    get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth)
+  enviro_data <- get_enviro_data(spatial_grid = spatial_grid) |>  
+    get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = raw, meth = meth)
   
  if(!enviro_zones){
    return(enviro_data)
   }else{
     
-    df_for_clustering <- if(is(enviro_data, "sf")) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
+    if(is(enviro_data, "sf")){
+      df_for_clustering <- sf::st_drop_geometry(enviro_data) |>  
+                                as.data.frame() |> 
+                                (\(x) x[stats::complete.cases(x),])()
+    } else{
+      df_for_clustering <- terra::as.data.frame(enviro_data, na.rm = NA)
+    }
     
     if(sample_size > nrow(df_for_clustering)) sample_size <- nrow(df_for_clustering)
     
