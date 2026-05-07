@@ -12,6 +12,7 @@ We use a High Seas area of the Pacific as the planning area for this
 example since it is outside any states’ jurisdiction.
 
 ``` r
+
 #load oceandatr package
 library(oceandatr)
 ```
@@ -22,6 +23,7 @@ solve the prioritization problem, so this needs to be installed and
 loaded via the Bioconductor website
 
 ``` r
+
 library(gfwr)
 library(prioritizr)
 #remotes::install_bioc("lpsymphony")
@@ -42,6 +44,7 @@ then we will crop for the area we are interested in, the planning
 region, highlighted in red on the map.
 
 ``` r
+
 high_seas <- get_boundary(type = "high_seas") %>%
   vect()
 
@@ -68,6 +71,7 @@ Micronesia. We can get the EEZs of these states using `oceandatr`’s
 
 ``` r
 
+
 country_names <- c("Indonesia", "Papua New Guinea", "Palau", "Micronesia")
 
 eezs <- lapply(country_names, FUN = function(x) vect(get_boundary(name = x)[, "territory1"])) %>% 
@@ -79,6 +83,7 @@ create a polygon for this planning region by removing the bordering
 states EEZs.
 
 ``` r
+
 pacific_hs <- crop(high_seas, pacific_hs_area_of_interest) 
 
 pacific_hs$name <- "Planning region"
@@ -96,6 +101,7 @@ are downloaded. We can then plot everything using the `tmap` package,
 which is great for making nice maps.
 
 ``` r
+
 
 #retrieve bathymetry for the planning regions and surrounding area bounded by the EEZs
 pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(eezs[2:5,]), crs = 4326) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE) %>%
@@ -146,6 +152,7 @@ require more time/ computer memory get data for)
 
 ``` r
 
+
 pacific_hs_projection <- "+proj=cea +lon_0=145 +lat_ts=3 +datum=WGS84 +units=m +no_defs"
 
 pacific_hs_planning_grid <- get_grid(boundary = sf::st_as_sf(pacific_hs),
@@ -171,6 +178,7 @@ since biodiversity is known to be higher within this distance of
 seamount peaks (see `?get_seamounts_buffered` for more info).
 
 ``` r
+
 #set seed for reproducibility in the get_enviro_zones() sampling to find optimal cluster number
 set.seed(500)
 
@@ -179,6 +187,7 @@ feature_set <- get_features(spatial_grid = pacific_hs_planning_grid) %>%
 ```
 
 ``` r
+
 #tidy up feature data names for nicer mapping
 names(feature_set) <-  gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence()
 
@@ -225,6 +234,7 @@ cost; see the `gfwr` website for more details.
 
 ``` r
 
+
 fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 2022, end_year = 2022, summarise = "total_annual_effort") %>% 
   subst(NA, 0.01) %>% #set NA values to zero otherwise they will be left out of the prioritization
   mask(pacific_hs_planning_grid) %>% 
@@ -252,6 +262,7 @@ much of each conservation feature must be included in the prioritized
 areas. We will set this at 20%.
 
 ``` r
+
 #use the prioritizr package to create a problem and then solve it
 prob <- problem(x = fishing_effort, features = feature_set) %>% 
   add_min_set_objective() %>% 
@@ -263,6 +274,7 @@ sol <- solve(prob)
 ```
 
 ``` r
+
 tm_shape(sol) +
   tm_raster(
     col.scale = tm_scale_categorical(values = c("grey70", "green4"),
@@ -290,6 +302,7 @@ to that above, but whole seamount patches equal to at least 20% of the
 total seamount area are included.
 
 ``` r
+
 # Separate seamount data - we want to protect entire patches
 seamounts_rast <- feature_set[["Seamounts"]]
 features_rast <- feature_set[[names(feature_set)[names(feature_set) != "Seamounts"]]]
@@ -330,6 +343,7 @@ result_rast <- patchwise::convert_solution(solution = solution_rast, patch_df = 
 ```
 
 ``` r
+
 tm_shape(c(sol, result_rast)) +
   tm_raster(
     col.scale = tm_scale_categorical(values = c("grey70", "green4"),

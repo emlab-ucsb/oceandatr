@@ -11,6 +11,7 @@ and Application Network](https://ian.umces.edu/media-library)
 You can install oceandatr from [GitHub](https://github.com/) with:
 
 ``` r
+
 if (!require(remotes)) install.packages("remotes")
 #might need to increase timeout as it is a large package
 options(timeout = 9999)
@@ -20,6 +21,7 @@ remotes::install_github("emlab-ucsb/oceandatr")
 # Getting gridded ocean data
 
 ``` r
+
 #load oceandatr package
 library(oceandatr)
 ```
@@ -34,6 +36,7 @@ ocean. In this example we will get Bermuda’s Exclusive Economic Zone
 (EEZ)
 
 ``` r
+
 bermuda_eez <- get_boundary(name = "Bermuda")
 
 #plot to check we have Bermuda's EEZ
@@ -66,6 +69,7 @@ preferred](https://inbo.github.io/tutorials/tutorials/spatial_crs_coding/).
 The projection needs to be placed in quotation marks as follows:
 
 ``` r
+
 projection_bermuda <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
 ```
 
@@ -77,6 +81,7 @@ metres. The units will depend on your crs and can be found using
 e.g. `sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal`
 
 ``` r
+
 bermuda_grid <- get_grid(boundary = bermuda_eez, resolution = 5000, crs = projection_bermuda)
 
 #project the eez into same projection as grid for plotting
@@ -96,6 +101,7 @@ see if we plotted them, but here is a coarser grid (lower resolution)
 visualized so we can see what the grid cells look like.
 
 ``` r
+
 bermuda_grid_coarse <- get_grid(boundary = bermuda_eez, resolution = 20000, crs = projection_bermuda)
 
 plot(bermuda_eez_projected, axes = FALSE)
@@ -114,6 +120,7 @@ the function will extract bathymetry data for the area from the [GEBCO
 2025 global terrain model](https://www.gebco.net).
 
 ``` r
+
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
@@ -136,6 +143,7 @@ We can get the depth zones for Bermuda simply by setting the
 `classify_bathymetry` argument in `get_bathymetry` to `TRUE`.
 
 ``` r
+
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
 #> Bathymetry data already downloaded, using cached version
 
@@ -159,6 +167,7 @@ and seamounts (which can be retrieved from a more recent dataset using
 are included in this package.
 
 ``` r
+
 geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>% 
   remove_empty_layers() #can remove any empty layers so we don't have so many layers to plot
 
@@ -178,6 +187,7 @@ area data from [Yesson et
 al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004).
 
 ``` r
+
 knolls <- get_knolls(spatial_grid = bermuda_grid)
 
 #value of 1 indicates that knolls are present
@@ -199,6 +209,7 @@ can be checked using,
 e.g. `sf::st_crs(bermuda_grid, parameters = TRUE)$units_gdal`
 
 ``` r
+
 #spatial grid units are metres, so set buffer to 30000 m = 30 km
 seamounts <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 
@@ -224,6 +235,7 @@ Retrieve habitat suitability data for 3 deep water coral groups:
   al. (2012)](https://doi.org/10.1111/j.1365-2699.2011.02681.x)
 
 ``` r
+
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_grid)
 
 #show the seamounts areas on the plot: coral habitat is often on seamounts which are shallower than surrounding ocean floor
@@ -260,6 +272,7 @@ biophysical data are ocean surface data for the period 2010 - 2020:
 - Silicate concentration (mean, mmol/ m3)
 
 ``` r
+
 #set number of clusters to 3 to reduce runtime and memory usage
 enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, show_plots = TRUE, num_clusters = 3)
 ```
@@ -267,6 +280,7 @@ enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, show_plots = TRUE,
 ![](reference/figures/README-environmental_zones-1.png)![](reference/figures/README-environmental_zones-2.png)
 
 ``` r
+
 #value of 1 indicates that environmental zone is present
 terra::plot(enviro_zones, col = c("grey60", "forestgreen"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
 ```

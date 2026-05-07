@@ -12,3 +12,8 @@ Useful links:
 
 **Maintainer**: Jason Flower <jflower@ucsb.edu>
 ([ORCID](https://orcid.org/0000-0002-6731-8182))
+
+Authors:
+
+- Jason Flower <jflower@ucsb.edu>
+  ([ORCID](https://orcid.org/0000-0002-6731-8182))

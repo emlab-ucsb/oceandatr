@@ -1,6 +1,7 @@
 # Retrieving boundaries with get_boundary()
 
 ``` r
+
 #load oceandatr package
 library(oceandatr)
 ```
@@ -40,6 +41,7 @@ ignored.
 Here is a simple query to get Australia’s EEZ:
 
 ``` r
+
 aus_eez <- get_boundary(name = "Australia", type = "eez")
 
 plot(aus_eez["geometry"], axes = TRUE)
@@ -51,6 +53,7 @@ But lets look at what happens if we change the `country_type` from the
 default `"country"` to `"sovereign"`:
 
 ``` r
+
 aus_eez_sov <- get_boundary(name = "Australia", type = "eez", country_type = "sovereign")
 
 plot(aus_eez_sov["geometry"], axes = TRUE)
@@ -70,6 +73,7 @@ France is retrieved if `country_type = "country"`, but setting
 sovereignty over.
 
 ``` r
+
 fr_eez <- get_boundary(name = "France", type = "eez", country_type = "country")
 
 fr_eez_sov <- get_boundary(name = "France", type = "eez", country_type = "sovereign")
@@ -95,6 +99,7 @@ found, a list of all possible `country_type` options to chose from is
 provided (only part of the output is shown for brevity):
 
 ``` r
+
 get_boundary(name = "Kiribati", type = "eez", country_type = "country")
 ```
 
@@ -103,6 +108,7 @@ get_boundary(name = "Kiribati", type = "eez", country_type = "country")
 Try again, setting `country_type = "sovereign"`:
 
 ``` r
+
 kir_eez <- get_boundary(name = "Kiribati", type = "eez", country_type = "sovereign")
 
 plot(sf::st_geometry(kir_eez), col = "royalblue")
@@ -119,32 +125,33 @@ boundaries, not all of which are included as options for
 [`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html):
 
 ``` r
+
 mregions2::mrp_list[,c("title", "layer")]
 ```
 
-| title                                                                                                                         | layer                        |
-|:------------------------------------------------------------------------------------------------------------------------------|:-----------------------------|
-| Exclusive Economic Zones (200 NM) (v11, world, 2019)                                                                          | eez                          |
-| Maritime Boundaries (v11, world, 2019)                                                                                        | eez_boundaries               |
-| Territorial Seas (12 NM) (v3, world, 2019)                                                                                    | eez_12nm                     |
-| Contiguous Zones (24 NM) (v3, world, 2019)                                                                                    | eez_24nm                     |
-| Internal Waters (v3, world, 2019)                                                                                             | eez_internal_waters          |
-| Archipelagic Waters (v3, world, 2019)                                                                                         | eez_archipelagic_waters      |
-| High Seas (v1, world, 2020)                                                                                                   | high_seas                    |
-| Extended Continental Shelves (v01, world, 2022)                                                                               | ecs                          |
-| Extended Continental Shelves - boundaries (v01, world, 2022)                                                                  | ecs_boundaries               |
-| IHO Sea Areas (v3)                                                                                                            | iho                          |
-| Global Oceans and Seas (v1)                                                                                                   | goas                         |
-| The intersect of the Exclusive Economic Zones and IHO areas (v4)                                                              | eez_iho                      |
-| Marine and land zones: the union of world country boundaries and EEZ’s                                                        | eez_land                     |
-| Global Biogeochemical Provinces (Longhurst)                                                                                   | longhurst                    |
-| Global contourite distribution                                                                                                | cds                          |
-| Emission Control Areas (ECAs) designated under regulation 13 of MARPOL Annex VI (NOx emission control)                        | eca_reg13_nox                |
-| Emission Control Areas (ECAs) designated under regulation 14 of MARPOL Annex VI (SOx and particulate matter emission control) | eca_reg14_sox_pm             |
-| UNESCO World Heritage Marine Sites (v02, 2023)                                                                                | worldheritagemarineprogramme |
-| The 66 Large Marine Ecosystems of the World                                                                                   | lme                          |
-| Marine Ecoregions of the World - Ecoregions                                                                                   | ecoregions                   |
-| SeaVoX - Sea Areas Polygons (v18, 2021)                                                                                       | seavox_v18                   |
+| title | layer |
+|:---|:---|
+| Exclusive Economic Zones (200 NM) (v11, world, 2019) | eez |
+| Maritime Boundaries (v11, world, 2019) | eez_boundaries |
+| Territorial Seas (12 NM) (v3, world, 2019) | eez_12nm |
+| Contiguous Zones (24 NM) (v3, world, 2019) | eez_24nm |
+| Internal Waters (v3, world, 2019) | eez_internal_waters |
+| Archipelagic Waters (v3, world, 2019) | eez_archipelagic_waters |
+| High Seas (v1, world, 2020) | high_seas |
+| Extended Continental Shelves (v01, world, 2022) | ecs |
+| Extended Continental Shelves - boundaries (v01, world, 2022) | ecs_boundaries |
+| IHO Sea Areas (v3) | iho |
+| Global Oceans and Seas (v1) | goas |
+| The intersect of the Exclusive Economic Zones and IHO areas (v4) | eez_iho |
+| Marine and land zones: the union of world country boundaries and EEZ’s | eez_land |
+| Global Biogeochemical Provinces (Longhurst) | longhurst |
+| Global contourite distribution | cds |
+| Emission Control Areas (ECAs) designated under regulation 13 of MARPOL Annex VI (NOx emission control) | eca_reg13_nox |
+| Emission Control Areas (ECAs) designated under regulation 14 of MARPOL Annex VI (SOx and particulate matter emission control) | eca_reg14_sox_pm |
+| UNESCO World Heritage Marine Sites (v02, 2023) | worldheritagemarineprogramme |
+| The 66 Large Marine Ecosystems of the World | lme |
+| Marine Ecoregions of the World - Ecoregions | ecoregions |
+| SeaVoX - Sea Areas Polygons (v18, 2021) | seavox_v18 |
 
 ## Land boundaries
 
@@ -170,6 +177,7 @@ for querying.
 If we query France setting `country_type = "country"` we get:
 
 ``` r
+
 france <- get_boundary(name = "France", type = "country", country_type = "country")
 
 plot(sf::st_geometry(france), col = "blue")
@@ -187,6 +195,7 @@ If we use `country_type = "sovereign"`, we also get France’s overseas
 territories in the Pacific, Atlantic and Antarctic:
 
 ``` r
+
 france_sov <- get_boundary(name = "France", type = "country", country_type = "sovereign")
 
 plot(sf::st_geometry(france_sov), col = "blue")
