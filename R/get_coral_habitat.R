@@ -43,7 +43,7 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
  
   check_grid(spatial_grid)
   
-  is_sf_grid <- check_sf(spatial_grid)
+  is_sf_grid <- is(spatial_grid, "sf")
   
   if(!raw){
     # Add errors if the thresholds are not correctly specified

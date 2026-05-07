@@ -70,7 +70,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
 
   check_grid(spatial_grid)
   
-  meth <- if(check_sf(spatial_grid)) 'mean' else 'average'
+  meth <- if(is(spatial_grid, "sf")) 'mean' else 'average'
   
   area_polygon_for_cropping <- polygon_in_4326(spatial_grid)
   
@@ -98,7 +98,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
     
     reclass_var <- ifelse(above_sea_level_isNA, NA, 0)
     
-    if(check_sf(bathymetry)){
+    if(is(bathymetry, "sf")){
       grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
       
       if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)

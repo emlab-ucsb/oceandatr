@@ -99,7 +99,7 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
   
   check_grid(spatial_grid)
   
-  meth <- if(check_sf(spatial_grid)) 'mean' else 'average'
+  meth <- if(is(spatial_grid, "sf")) 'mean' else 'average'
   
   # Add error for cluster numbers
   if(!is.null(num_clusters)) {
@@ -114,7 +114,7 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
   }
   
   #set extra columns aside - only need this is it a spatial grid, so added nrow() check to remove the need for this step if only raw data is required and using an sf polygon with one row
-  if(check_sf(spatial_grid) & nrow(spatial_grid) > 1){
+  if(is(spatial_grid, "sf") & nrow(spatial_grid) > 1){
     grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
     
     if(grid_has_extra_cols) {
@@ -132,7 +132,7 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
    return(enviro_data)
   }else{
     
-    df_for_clustering <- if(check_sf(enviro_data)) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
+    df_for_clustering <- if(is(enviro_data, "sf")) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
     
     if(sample_size > nrow(df_for_clustering)) sample_size <- nrow(df_for_clustering)
     
@@ -172,7 +172,7 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
       enviro_zones_pca(clust_partition, df_for_clustering)
     }
     
-    if(check_sf(enviro_data)){
+    if(is(enviro_data, "sf")){
       enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) %>% 
         as.data.frame() %>%   
         stats::setNames(paste0("enviro_zone_", 1:ncol(.))) %>% 

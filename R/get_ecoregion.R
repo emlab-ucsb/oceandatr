@@ -31,11 +31,9 @@
 #' longhurst_gridded <- get_ecoregion(spatial_grid = bermuda_grid, type = "Longhurst")
 get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antimeridian = NULL){
   
-  rlang::check_installed("mregions2", reason = "to get Ecoregions data using `get_ecoregion()`", action = function(pkg, ...) remotes::install_github("lifewatch/mregions2"))
-  
   check_grid(spatial_grid)
   
-  no_sf_cols <- if(check_sf(spatial_grid)) ncol(spatial_grid)-1
+  no_sf_cols <- if(is(spatial_grid, "sf")) ncol(spatial_grid)-1
   
   marine_ecoregions <- NULL
   
@@ -59,7 +57,7 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
  ecoregion_data <- get_data_in_grid(spatial_grid = spatial_grid, dat = marine_ecoregions, raw = raw, antimeridian = antimeridian, feature_names = col_name)
  
  if(!raw){
-   if(check_sf(ecoregion_data)){
+   if(is(ecoregion_data, "sf")){
      ecoregion_data <- ecoregion_data %>% 
        remove_empty_layers() %>% 
        {if((ncol(.)-no_sf_cols) >1) . else dplyr::mutate(., ecoregion = 0, .after = no_sf_cols)}

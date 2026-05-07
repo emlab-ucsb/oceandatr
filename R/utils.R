@@ -2,7 +2,7 @@
 
 #' Check a spatial grid is supplied and in raster or sf format
 #'
-#' @param spatial_grid
+#' @param spatial_grid `sf` or raster
 #'
 #' @noRd
 check_grid <- function(spatial_grid) {
@@ -26,7 +26,7 @@ check_matching_crs <- function(sp1, sp2){
 
 #' Check if sf object spans the antimeridian
 #'
-#' @param sf_object
+#' @param sf_object to check
 #'
 #' @return `logical` TRUE if it does span the antimeridian, FALSE if it doesn't
 #' @noRd
@@ -46,44 +46,16 @@ check_antimeridian <- function(sf_object, dat){
   } else FALSE
 }
 
-#' Check if object is a raster
-#'
-#' @param sp
-#'
-#' @return `logical` TRUE if raster, else FALSE
-#' @noRd
-check_raster <- function(sp){
-  if(class(sp)[1] %in% c("RasterLayer", "SpatRaster")){
-    return(TRUE)
-  }else{
-    return(FALSE)
-  }
-}
-
-#' Check if object is sf
-#'
-#' @param sp
-#'
-#' @return TRUE if sf, else FALSE
-#' @noRd
-check_sf <- function(sp){
-  if(class(sp)[1] == "sf"){
-    return(TRUE)
-  }else{
-    return(FALSE)
-  }
-}
-
 #' If input is character, read in from file pointed to, assuming it is a common
 #' vector or raster file format
 #'
-#' @param dat
+#' @param dat for reading
 #'
 #' @return `sf` or `terra::rast` format data
 #' @noRd
 data_from_filepath <- function(dat){
   ## First deal with whether the input is a file or a dataset
-  if (class(dat)[1] == "character") { # If a file, we need to load the data
+  if (is(dat, "character")) { # If a file, we need to load the data
     
     ext <- tools::file_ext(dat)
     nm <- basename(dat)
@@ -110,7 +82,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
   
   if(is.null(dat_breaks)) stop("Please supply data breaks")
   
-  if(check_raster(dat)){
+  if(is(dat, "SpatRaster")){
     #create a classification matrix
     class_matrix <- dat_breaks %>%
       .[2:(length(.) - 1)] %>%
@@ -137,7 +109,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
 }
 #' Get an sf polygon in lonlat (EPSG 4326) from terra or sf input object
 #' 
-#' @param spatial_grid 
+#' @param spatial_grid `sf` or raster
 #'
 #' @return `sf` polygons
 #'
@@ -145,7 +117,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
 polygon_in_4326 <-
   function(spatial_grid) {
     crs_is_4326 <- check_matching_crs(spatial_grid, 4326)
-      if (check_raster(spatial_grid)) {
+      if (is(spatial_grid, "SpatRaster")) {
         spatial_grid %>%
           terra::as.polygons() %>%
           {
@@ -180,7 +152,7 @@ polygon_in_4326 <-
 #'
 #' @export
 remove_empty_layers <- function(dat){
-  if(check_sf(dat)){
+  if(is(dat, "sf")){
     column_sums <- colSums(sf::st_drop_geometry(dat), na.rm = TRUE)
     
     if(sum(column_sums) == 0){

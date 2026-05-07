@@ -54,9 +54,9 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
     return(raw_seamounts)
   } else{
     
-    meth <- if(check_raster(spatial_grid)) "near" else "mode"
+    meth <- if(is(spatial_grid, "SpatRaster")) "near" else "mode"
     
-    cropping_polygon <- if(check_raster(spatial_grid)){
+    cropping_polygon <- if(is(spatial_grid, "SpatRaster")){
       terra::as.polygons(spatial_grid) %>%
         sf::st_as_sf()
       }else{

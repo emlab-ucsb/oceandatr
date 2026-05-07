@@ -51,7 +51,7 @@ get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathyme
   #set extra columns aside - only need this is it a spatial grid, so added
   #nrow() check to remove the need for this step if only raw data is required
   #and using an sf polygon with one row
-  if(check_sf(spatial_grid) & nrow(spatial_grid) > 1){
+  if(is(spatial_grid, "sf") & nrow(spatial_grid) > 1){
     grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
     
     if(grid_has_extra_cols) {
@@ -100,7 +100,7 @@ get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathyme
   
   if(raw){
     mget(features)
-  } else if(check_raster(spatial_grid)) { 
+  } else if(is(spatial_grid, "SpatRaster")) { 
     ras_names <- sapply(mget(features), names) %>% 
       unlist(use.names = FALSE)
     

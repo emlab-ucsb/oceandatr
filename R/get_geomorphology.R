@@ -68,7 +68,7 @@ get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = N
   
   check_grid(spatial_grid)
   
-  meth <- if(check_raster(spatial_grid)) 'near' else 'mode'
+  meth <- if(is(spatial_grid, "SpatRaster")) 'near' else 'mode'
   
   sf::sf_use_s2(FALSE)
   suppressWarnings(

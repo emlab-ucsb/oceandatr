@@ -145,6 +145,6 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
         # terra::subst(NA, 0.01) %>% #too many zero cost value cells leads to prioritization of too much area because they are 'free'
           get_data_in_grid(spatial_grid = spatial_grid,
                            dat = ., 
-                           meth = if(check_sf(spatial_grid)) "mean" else "average")
+                           meth = if(is(spatial_grid, "sf")) "mean" else "average")
 
 }

@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Jason Flower \email{jflower@ucsb.edu} (\href{https://orcid.org/0000-0002-6731-8182}{ORCID})
 
+Authors:
+\itemize{
+  \item Jason Flower \email{jflower@ucsb.edu} (\href{https://orcid.org/0000-0002-6731-8182}{ORCID})
+}
+
 }
 \keyword{internal}
