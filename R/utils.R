@@ -1,17 +1,5 @@
 # A file of little functions that we use across the board. 
 
-#' Check a spatial grid is supplied and in raster or sf format
-#'
-#' @param spatial_grid `sf` or raster
-#'
-#' @noRd
-check_grid <- function(spatial_grid) {
-  if (is.null(spatial_grid)) {
-    stop("a spatial grid must be supplied")
-  } else if (!(class(spatial_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) {
-    stop("spatial_grid must be a raster or sf object")
-  }
-}
 
 #' Check if spatial objects have same crs
 #'
@@ -32,7 +20,7 @@ check_matching_crs <- function(sp1, sp2){
 #' @noRd
 check_antimeridian <- function(sf_object, dat){
   if(sf::st_crs(sf_object) != sf::st_crs(4326)){
-    b_box <- sf::st_transform(sf_object, 4326) %>%
+    b_box <- sf::st_transform(sf_object, 4326) |>
       sf::st_bbox()
   } else{
     b_box <- sf::st_bbox(sf_object)
@@ -93,7 +81,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
       cbind(c(1:nrow(.)))
     
     dat %>%
-      terra::classify(class_matrix, include.lowest = TRUE) %>%
+      terra::classify(class_matrix, include.lowest = TRUE) |>
       terra::segregate() %>%
       {if(!is.null(classification_names)) stats::setNames(., classification_names[as.numeric(names(.))]) else .} 
     
@@ -126,9 +114,9 @@ polygon_in_4326 <-
             else
               terra::project(., "epsg:4326")
           } %>%
-          sf::st_as_sf() %>% 
-          sf::st_union() %>%
-          sf::st_sf() %>% 
+          sf::st_as_sf() |> 
+          sf::st_union() |>
+          sf::st_sf() |> 
           sf::st_wrap_dateline() %>% 
           {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
       } else{

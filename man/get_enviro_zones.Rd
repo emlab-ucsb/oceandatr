@@ -110,18 +110,31 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 terra::plot(enviro_data)
 # Get gridded Bio-Oracle data for Bermuda:
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+  resolution = 20000)
 
-enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = FALSE)
+enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, 
+                                        raw = FALSE, 
+                                        enviro_zones = FALSE)
 terra::plot(enviro_data_gridded)
 
 # Get 3 environmental zones for Bermuda
 
 #set seed for reproducibility in the sampling to find optimal number of clusters
 set.seed(500)
-bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = TRUE, num_clusters = 3)
+bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, 
+                                         raw = FALSE, 
+                                         enviro_zones = TRUE, 
+                                         num_clusters = 3)
 terra::plot(bermuda_enviro_zones)
-# Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want the data for
-bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = TRUE, num_clusters = 3)
+
+# Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and
+# enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want
+# the data for
+bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, 
+                                          raw = TRUE, 
+                                          enviro_zones = TRUE, 
+                                          num_clusters = 3)
 terra::plot(bermuda_enviro_zones2)
 }

@@ -114,11 +114,11 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
   checkmate::assert_logical(raw, len = 1)
   checkmate::assert_logical(enviro_zones, len = 1)
   checkmate::assert_logical(show_plots, len = 1)
-  checkmate::assert_integer(num_clusters, lower = 1, upper = 20, len = 1, null.ok = TRUE)
-  checkmate::assert_integer(max_num_clusters, lower = 1, upper = 20, len = 1)
-  checkmate::assert_integer(sample_size, lower = 1, upper = 50e6)
-  checkmate::assert_integer(num_samples, lower = 1, upper = 100)
-  checkmate::assert_integer(num_cores, lower = 1, upper = 100)
+  checkmate::assert_integerish(num_clusters, lower = 1, upper = 20, len = 1, null.ok = TRUE)
+  checkmate::assert_integerish(max_num_clusters, lower = 1, upper = 20, len = 1)
+  checkmate::assert_integerish(sample_size, lower = 1, upper = 50e6)
+  checkmate::assert_integerish(num_samples, lower = 1, upper = 100)
+  checkmate::assert_integerish(num_cores, lower = 1, upper = 100)
   
   meth <- if(is(spatial_grid, "sf")) 'mean' else 'average'
   
@@ -162,20 +162,27 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
      n_df_rows <- nrow(df_for_clustering)
      
      df_sample <- lapply(rep(sample_size, num_samples), function(x) df_for_clustering[sample.int(n_df_rows, x),])
+     return(df_sample)
      
      if(num_cores > 1 & rlang::is_installed("parallel")){
        
        if(Sys.info()["sysname"]=="Windows"){
          cluster <- parallel::makePSOCKcluster(num_cores)
-         best_no_clusts <- parallel::parLapply(cluster, df_sample, function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan") %>% .[[2]] %>% .["Number_clusters"]) %>% 
+         
+         best_no_clusts <- parallel::parLapply(cluster, 
+                                               df_sample, 
+                                               function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")[["Best.nc"]][["Number_clusters"]]) |>  
            unlist()
          
        }else{
-         best_no_clusts <- parallel::mclapply(df_sample, function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan") %>% .[[2]] %>% .["Number_clusters"], mc.cores = num_cores) %>% 
+         best_no_clusts <- parallel::mclapply(df_sample, 
+                                              function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")[["Best.nc"]][["Number_clusters"]],
+                                              mc.cores = num_cores) |>  
            unlist()
        }
      }else{
-       best_no_clusts <- sapply(df_sample, function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan") %>% .[[2]] %>% .["Number_clusters"])
+       best_no_clusts <- sapply(df_sample, 
+                                function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")[["Best.nc"]][["Number_clusters"]])
      }
      uniq_values_clusters <- unique(best_no_clusts)
      
@@ -192,17 +199,17 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
     }
     
     if(is(enviro_data, "sf")){
-      enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) %>% 
-        as.data.frame() %>%   
-        stats::setNames(paste0("enviro_zone_", 1:ncol(.))) %>% 
+      enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) |>  
+        as.data.frame() |>    
+        (\(x) stats::setNames(x, paste0("enviro_zone_", 1:ncol(x))))() |>  
         dplyr::mutate(row_id = as.numeric(names(clust_partition)))
       
-      sf::st_geometry(enviro_data) %>% 
-        sf::st_sf() %>% 
-        dplyr::mutate(row_id = 1:nrow(.)) %>% 
-        dplyr::left_join(enviro_zone_cols, by = dplyr::join_by(row_id)) %>% 
-        dplyr::select(-row_id) %>% 
-        {if(grid_has_extra_cols) cbind(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+      sf::st_geometry(enviro_data) |>  
+        sf::st_sf() |>  
+        (\(x) dplyr::mutate(x, row_id = 1:nrow(x)))() |>  
+        dplyr::left_join(enviro_zone_cols, by = dplyr::join_by(row_id)) |>  
+        dplyr::select(-row_id) |>  
+        (\(x) if(grid_has_extra_cols) cbind(x, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1) else x)()
       
     }else{
       #create environmental zones raster, filled with NAs to start with
@@ -211,9 +218,9 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
       #set cluster ids in raster - subset for only raster values that are non-NA
       enviro_zones[as.numeric(names(clust_partition))] <- clust_partition
       
-      enviro_zones %>% 
-        terra::segregate() %>% 
-        stats::setNames(paste0("enviro_zone_", names(.)))
+      enviro_zones |>  
+        terra::segregate() |> 
+        (\(x) stats::setNames(x, paste0("enviro_zone_", names(x))))()
     }
   }
 }
@@ -276,7 +283,7 @@ get_enviro_data <- function(spatial_grid = NULL){
     biooracle_data[[i]] <- biooracler::download_layers(dataset_id = biooracle_datasets_info$dataset_id[i], variables = biooracle_datasets_info$variables[i], constraints = constraints)
   }
   
-  biooracle_data <- terra::rast(biooracle_data) %>%
+  biooracle_data <- terra::rast(biooracle_data) |> 
     stats::setNames(c("Chlorophyll", "Dissolved_oxygen", "Nitrate", "Minimum_temp", "Mean_temp", "Max_temp", "pH", "Phosphate", "Salinity", "Silicate", "Phytoplankton"))
   
   terra::crs(biooracle_data) <- "epsg:4326"
@@ -295,8 +302,7 @@ enviro_zones_boxplot <- function(enviro_zone, enviro_data){
 }
 
 enviro_zones_pca <- function(enviro_zone, enviro_data){
-  pca_df <- stats::prcomp(enviro_data, scale. = TRUE, center = TRUE) %>% 
-    .[["x"]] %>% 
+  pca_df <- stats::prcomp(enviro_data, scale. = TRUE, center = TRUE)[["x"]] |>  
     as.data.frame()
 
   pca_df$enviro_zone <- enviro_zone

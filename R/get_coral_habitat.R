@@ -51,7 +51,7 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
   
   if(!raw){
     checkmate::assert_double(antipatharia_threshold, lower = 0, upper = 100, len = 1, null.ok = FALSE)
-    checkmate::assert_integer(octocoral_threshold, lower = 1, upper = 7, len = 1, null.ok = FALSE)
+    checkmate::assert_integerish(octocoral_threshold, lower = 1, upper = 7, len = 1, null.ok = FALSE)
   }
 
   if(is_sf_grid){

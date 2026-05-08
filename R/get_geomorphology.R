@@ -60,24 +60,27 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get geomorphology for the EEZ
 #' bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
+#' 
 #' # Get geomorphological features in spatial_grid
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
-#' geomorph_gridded <- get_geomorphology(spatial_grid = bermuda_grid) %>% remove_empty_layers() #helper function to remove data layers that are all zero or NA values
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+#'   resolution = 20000)
+#' geomorph_gridded <- get_geomorphology(spatial_grid = bermuda_grid) |>  
+#'   remove_empty_layers() #helper function to remove data layers that are all zero or NA values
 #' terra::plot(geomorph_gridded)
 get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = NULL){
   
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
   
   meth <- if(is(spatial_grid, "SpatRaster")) 'near' else 'mode'
   
   sf::sf_use_s2(FALSE)
   suppressWarnings(
-    geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") %>% 
-      list.files() %>% 
-      system.file("extdata/geomorphology", ., package = "oceandatr") %>% 
-      lapply(readRDS) %>% 
-      do.call(rbind, .) %>%
-      get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
+    geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") |>  
+      list.files(full.names = TRUE) |>  
+      lapply(readRDS) |>  
+      do.call(rbind, args = _) |> 
+      get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
   )
   
   sf::sf_use_s2(TRUE)

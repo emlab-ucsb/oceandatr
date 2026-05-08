@@ -184,11 +184,10 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          
        }
      } else{
-         grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
-         
-         if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)
          
        temp_pts <- spatial_grid |> 
+         sf::st_geometry() |> 
+         sf::st_as_sf() |> 
          sf::st_centroid() |>
          (\(x) if(matching_crs) x else sf::st_transform(x, 4326))()
        
@@ -202,6 +201,6 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          (\(x) if(matching_crs) x else sf::st_transform(x, sf::st_crs(spatial_grid)))() |>
          sf::st_drop_geometry() |> 
          (\(x) cbind(spatial_grid, x))() |> 
-         (\(x) if(inverse) dplyr::mutate(x, {{layer_name}} := max(x[[1]], na.rm = TRUE) - x[[1]] - min(x[[1]], na.rm = TRUE)) else x)()
+         (\(x) if(inverse) dplyr::mutate(x, {{layer_name}} := max(x[[1]], na.rm = TRUE) - x[[1]] - min(x[[1]], na.rm = TRUE)) else x)()  
      }
 }

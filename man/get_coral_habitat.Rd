@@ -24,8 +24,8 @@ the raw data in that polygon(s) will be returned}
 value for habitat suitability for antipatharia corals to be considered
 present (default is 22, as defined in Yesson et al., 2017)}
 
-\item{octocoral_threshold}{\code{numeric} between 0 and 7; the threshold value for
-how many species (of 7) should be predicted present in an area for
+\item{octocoral_threshold}{\code{integer} between 0 and 7; the threshold value for
+how many species (out of 7) should be predicted present in an area for
 octocorals to be considered present (default is 2)}
 
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
@@ -60,10 +60,13 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 # Get raw coral habitat data
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
 terra::plot(coral_habitat)
+
 # Get gridded coral habitat data
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea
-+lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
-resolution = 10000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
+  resolution = 10000)
+  
 bermuda_coral_gridded <- get_coral_habitat(spatial_grid = bermuda_grid)
+
 terra::plot(bermuda_coral_gridded)
 }

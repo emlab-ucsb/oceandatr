@@ -8,8 +8,8 @@ get_gfw(
   spatial_grid = NULL,
   raw = FALSE,
   resolution = "LOW",
-  start_year = 2018,
-  end_year = 2023,
+  start_year = 2022,
+  end_year = 2025,
   group_by = "location",
   summarise = "mean_total_annual_effort",
   key = gfwr::gfw_auth()
@@ -70,7 +70,7 @@ see the package website for instructions on how to get and save one (free).
 \dontshow{if (nchar(Sys.getenv("GFW_TOKEN"))>0) withAutoprint(\{ # examplesIf}
 #get mean total annual fishing effort for Bermuda for the years 2022-2023
 #first get a grid for Bermuda
-bermuda_grid <- get_boundary(name = "Bermuda") \%>\% get_grid(resolution = 0.1, crs = 4326)
+bermuda_grid <- get_boundary(name = "Bermuda") |> get_grid(resolution = 0.1, crs = 4326)
 
 bermuda_gfw_effort <- get_gfw(spatial_grid = bermuda_grid, start_year = 2022)
 
@@ -78,9 +78,16 @@ bermuda_gfw_effort <- get_gfw(spatial_grid = bermuda_grid, start_year = 2022)
 terra::plot(bermuda_gfw_effort)
 
 #get total fishing effort for each gear type in Fiji's EEZ for 2022
-fiji_grid <- get_boundary(name = "Fiji") \%>\% get_grid(resolution = 1e4, crs = "+proj=tcea +lon_0=178 +datum=WGS84 +units=m +no_defs", output = "sf_square")
+fiji_grid <- get_boundary(name = "Fiji") |> 
+              get_grid(resolution = 1e4, 
+                       crs = "+proj=tcea +lon_0=178 +datum=WGS84 +units=m +no_defs", 
+                       output = "sf_square")
 
-fiji_gfw_effort <- get_gfw(spatial_grid = fiji_grid, start_year = 2022, end_year = 2022, group_by = "geartype", summarise = "total_annual_effort")
+fiji_gfw_effort <- get_gfw(spatial_grid = fiji_grid, 
+                           start_year = 2022, 
+                           end_year = 2022, 
+                           group_by = "geartype", 
+                           summarise = "total_annual_effort")
 
 plot(fiji_gfw_effort, border = FALSE)
 

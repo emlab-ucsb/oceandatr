@@ -39,14 +39,20 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw data for Bermuda's EEZ
 #' raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
+#' 
+#' bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
 #' # Get feature data in a spatial grid
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = bermuda_crs, resolution = 20000)
+#' 
 #' #set seed for reproducibility in the get_enviro_zones() function
 #' set.seed(500)
 #' features_gridded <- get_features(spatial_grid = bermuda_grid)
 #' terra::plot(features_gridded)
 
 get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_zones"), seamount_buffer = 30000, antipatharia_threshold = 22, octocoral_threshold = 2, enviro_clusters = NULL, max_enviro_clusters = 6, antimeridian = NULL){
+  
+  features_options <- c("bathymetry", "seamounts", "knolls", "geomorphology", "corals", "enviro_zones")
+  checkmate::assert_subset(features, features_options)
   
   #set extra columns aside - only need this is it a spatial grid, so added
   #nrow() check to remove the need for this step if only raw data is required
@@ -56,8 +62,8 @@ get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathyme
     
     if(grid_has_extra_cols) {
       extra_cols <- sf::st_drop_geometry(spatial_grid)
-      spatial_grid <- spatial_grid %>% 
-        sf::st_geometry() %>% 
+      spatial_grid <- spatial_grid |> 
+        sf::st_geometry() |>  
         sf::st_sf()
     }
   }
@@ -101,19 +107,19 @@ get_features <- function(spatial_grid = NULL, raw = FALSE, features = c("bathyme
   if(raw){
     mget(features)
   } else if(is(spatial_grid, "SpatRaster")) { 
-    ras_names <- sapply(mget(features), names) %>% 
+    ras_names <- sapply(mget(features), names) |>  
       unlist(use.names = FALSE)
     
-    mget(features) %>% 
-      terra::rast() %>% 
+    mget(features) |>  
+      terra::rast() |>  
       stats::setNames(ras_names)
   } else{ 
     sf_features <- mget(features)
     
-    lapply(sf_features[1:(length(sf_features)-1)], function(x) sf::st_drop_geometry(x)) %>% 
-      do.call(dplyr::bind_cols, .) %>% 
-      cbind(sf_features[[length(sf_features)]]) %>% 
-      sf::st_sf() %>% 
-      {if(grid_has_extra_cols) dplyr::bind_cols(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+    lapply(sf_features[1:(length(sf_features)-1)], function(x) sf::st_drop_geometry(x)) |>  
+      do.call(dplyr::bind_cols, args = _) |>  
+      cbind(sf_features[[length(sf_features)]]) |>  
+      sf::st_sf() |>  
+      (\(x) if(grid_has_extra_cols) dplyr::bind_cols(x, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1) else x)()
   }
 } 

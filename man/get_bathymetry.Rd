@@ -84,18 +84,24 @@ bathymetry <- get_bathymetry(spatial_grid = bermuda_eez,
                              classify_bathymetry = FALSE)
 terra::plot(bathymetry)
 # Get depth zones in spatial_grid
+
+#equal area projection for Bermuda
+bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
+
 bermuda_grid <- get_grid(boundary = bermuda_eez, 
-  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-  resolution = 20000)
+                         crs = bermuda_crs, 
+                         resolution = 20000)
+                         
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 terra::plot(depth_zones)
+
 #It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE
 # and classify_bathymetry = FALSE
 
 bermuda_grid_sf <- get_grid(boundary = bermuda_eez, 
-  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
-  resolution = 20000, 
-  output = "sf_hex")
+                            crs = bermuda_crs, 
+                            resolution = 20000, 
+                            output = "sf_hex")
   
 gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, 
                                      classify_bathymetry = FALSE)

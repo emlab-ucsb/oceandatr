@@ -52,7 +52,10 @@ All data are downloaded via the \href{https://marineregions.org/sources.php}{Mar
 bermuda_eez <- get_boundary(name = "Bermuda")
 # Get Marine Ecoregions of the World data
 ecoregions <- get_ecoregion(spatial_grid = bermuda_eez, raw = TRUE)
+
 # Get Longhurst Provinces in a spatial grid
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
+  resolution = 20000)
 longhurst_gridded <- get_ecoregion(spatial_grid = bermuda_grid, type = "Longhurst")
 }

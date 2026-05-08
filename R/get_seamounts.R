@@ -34,22 +34,30 @@
 #' # Get raw seamounts data
 #' seamount_peaks <- get_seamounts(spatial_grid = bermuda_eez, raw = TRUE)
 #' plot(seamount_peaks["Depth"])
+#' 
 #' # Get gridded seamount data
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+#'   resolution = 10000)
 #' #buffer seamounts to a distance of 30 km (30,000 m)
 #' seamounts_gridded <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 #' terra::plot(seamounts_gridded)
 get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name = "seamounts", antimeridian = NULL){
   
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_logical(raw, len = 1)
+  checkmate::assert_numeric(buffer, lower = 0, null.ok = TRUE)
+  checkmate::assert_character(name, len = 1, null.ok = TRUE)
   
-  seamounts <- system.file("extdata", "seamounts.rds", package = "oceandatr", mustWork = TRUE) %>%
+  seamounts <- system.file("extdata", "seamounts.rds", package = "oceandatr", mustWork = TRUE) |>
     readRDS()
   
   if(raw){
     sf::sf_use_s2(FALSE)
-    raw_seamounts <- get_data_in_grid(spatial_grid = spatial_grid, dat = seamounts, raw = TRUE, antimeridian = antimeridian) %>% 
-      {if(is.null(buffer)) . else sf::st_buffer(., buffer)}
+    raw_seamounts <- get_data_in_grid(spatial_grid = spatial_grid, dat = seamounts, raw = TRUE, antimeridian = antimeridian) 
+    
+    if(!is.null(buffer)) raw_seamounts <- sf::st_buffer(raw_seamounts, buffer)
+    
     sf::sf_use_s2(TRUE)
     return(raw_seamounts)
   } else{
@@ -57,19 +65,19 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
     meth <- if(is(spatial_grid, "SpatRaster")) "near" else "mode"
     
     cropping_polygon <- if(is(spatial_grid, "SpatRaster")){
-      terra::as.polygons(spatial_grid) %>%
+      terra::as.polygons(spatial_grid) |> 
         sf::st_as_sf()
       }else{
         spatial_grid
     } 
     sf::sf_use_s2(FALSE)
-    gridded_buffered_seamounts <- get_data_in_grid(spatial_grid = cropping_polygon, dat = seamounts, raw = TRUE, antimeridian = antimeridian) %>% 
-      sf::st_geometry() %>% 
-      sf::st_sf() %>% 
-      sf::st_buffer(buffer) %>% 
-      sf::st_union() %>% 
-      sf::st_sf() %>% 
-      get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = FALSE, meth = meth, name = "seamounts", antimeridian = antimeridian)
+    gridded_buffered_seamounts <- get_data_in_grid(spatial_grid = cropping_polygon, dat = seamounts, raw = TRUE, antimeridian = antimeridian) |> 
+      sf::st_geometry() |> 
+      sf::st_sf() |> 
+      sf::st_buffer(buffer) |> 
+      sf::st_union() |> 
+      sf::st_sf() |> 
+      get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = FALSE, meth = meth, name = "seamounts", antimeridian = antimeridian)
     
     sf::sf_use_s2(TRUE)
     
