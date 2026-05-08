@@ -128,7 +128,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
       if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)
 
       bathymetry |> 
-        dplyr::select(name) |> 
+        dplyr::select(dplyr::all_of(name)) |> 
         dplyr::mutate(bathymetry = dplyr::case_when(bathymetry >=0 ~ reclass_var,
                                                     .default = as.numeric(bathymetry))) |>
         classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) |> 
