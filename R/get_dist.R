@@ -118,9 +118,7 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
       dat <- dat[,c("x", "y")] |>  
         sf::st_as_sf(coords = c("x", "y"), crs = 4326)
     }else{
-      dat <- dat |> 
-        subset(on_land == FALSE) |> 
-        (\(x) x[,c("x", "y")])() |>  
+      dat <- dat[!dat$on_land, c("x", "y")] |> 
         sf::st_as_sf(coords = c("x", "y"), crs = 4326)
     }
     }

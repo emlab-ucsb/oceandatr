@@ -8,7 +8,7 @@
 #'   website](https://globalfishingwatch.org/dataset-and-code-fishing-effort/)
 #'   for detailed information). This function is primarily a wrapper for the
 #'   [`gfwr` package](https://github.com/GlobalFishingWatch/gfwr) function
-#'   `get_raster()`, but allows the user to return multiple years of data in a
+#'   `gfw_ais_fishing_hours()`, but allows the user to return multiple years of data in a
 #'   summarized and gridded format. An API key is required to retrieve GFW data;
 #'   see the package website for instructions on how to get and save one (free).
 #'
@@ -39,7 +39,7 @@
 #' @return For gridded data, a `terra::rast()` or `sf` object, depending on the
 #'   `spatial_grid` format. If `raw = TRUE`, non-summarised data in `tibble`
 #'   format is returned for the polygon area direct from the GFW query
-#'   `gfwr::get_raster()`.
+#'   `gfwr::gfw_ais_fishing_hours()`.
 #' @export
 #'
 #' @examplesIf nchar(Sys.getenv("GFW_TOKEN"))>0
@@ -101,7 +101,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     fishing_effort <- readRDS(file.path(tempdir(), file_name))
   } else{
     fishing_effort <- lapply(start_year:end_year, function(yr){
-      gfwr::get_raster(spatial_resolution = resolution,
+      gfwr::gfw_ais_fishing_hours(spatial_resolution = resolution,
                        temporal_resolution = 'YEARLY',
                        group_by = gfw_group,
                        start_date = paste0(yr, "-01-01"),
@@ -123,10 +123,8 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     
     if(group_by != "location") grouping_vars <- c(grouping_vars, tolower(group_by))
     
-    annual_effort <- fishing_effort |>  
-      dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) |>  
-      (\(x) dplyr::summarise(x, total_annual_effort = sum(x[["Apparent Fishing Hours"]], na.rm = TRUE)))() |> 
-      dplyr::ungroup()  
+    annual_effort <- fishing_effort |> 
+      dplyr::summarise(total_annual_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE), .by = dplyr::all_of(grouping_vars)) 
 
     if(summarise == "total_annual_effort"){
       if(group_by == "location"){
@@ -140,11 +138,11 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
                              values_from = "total_annual_effort") 
       }
     } else{
-      mean_total_effort <- annual_effort |>  
-        dplyr::group_by(dplyr::across(-c("Time Range", total_annual_effort))) |> 
-        #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
-        (\(x) dplyr::summarise(x, mean_total_annual_effort = sum(x[["total_annual_effort"]], na.rm = TRUE)/number_years))() |> 
-        dplyr::ungroup()
+      #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
+      mean_total_effort <- annual_effort |> 
+        dplyr::summarise(mean_total_annual_effort = sum(`total_annual_effort`, na.rm = TRUE)/number_years, 
+                         .by = -dplyr::any_of(c("Time Range", "total_annual_effort"))) 
+
       
       if(group_by == "location"){
         final_effort <- mean_total_effort

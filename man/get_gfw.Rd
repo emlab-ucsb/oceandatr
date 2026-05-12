@@ -52,7 +52,7 @@ for details on how to request a token.}
 For gridded data, a \code{terra::rast()} or \code{sf} object, depending on the
 \code{spatial_grid} format. If \code{raw = TRUE}, non-summarised data in \code{tibble}
 format is returned for the polygon area direct from the GFW query
-\code{gfwr::get_raster()}.
+\code{gfwr::gfw_ais_fishing_hours()}.
 }
 \description{
 Global Fishing Watch (GFW) provides data on apparent fishing
@@ -62,7 +62,7 @@ for larger vessel (> 24m in length); less than 1\% of vessels <12 m length
 are represented in the data (see \href{https://globalfishingwatch.org/dataset-and-code-fishing-effort/}{GFW website}
 for detailed information). This function is primarily a wrapper for the
 \href{https://github.com/GlobalFishingWatch/gfwr}{\code{gfwr} package} function
-\code{get_raster()}, but allows the user to return multiple years of data in a
+\code{gfw_ais_fishing_hours()}, but allows the user to return multiple years of data in a
 summarized and gridded format. An API key is required to retrieve GFW data;
 see the package website for instructions on how to get and save one (free).
 }

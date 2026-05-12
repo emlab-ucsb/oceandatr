@@ -85,13 +85,13 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
       (\(x) if(!is.null(classification_names)) stats::setNames(x, classification_names[as.numeric(names(x))]) else x)() 
     
   } else{
-    dat |> 
-      (\(x) dplyr::mutate(x, classification = cut(x[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE),
-                    classification = droplevels(x$classification),
-                    value = 1,
-                    .after = 1))() |> 
-      tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = 0) |> 
-      (\(x) dplyr::select(x, 3:ncol(x), 2))() #put classification before geometry and drop original values
+    
+    dat$classification <- cut(dat[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE) |> droplevels()
+    dat$value <- 1
+    
+    dat_wide <- tidyr::pivot_wider(dat, names_from = "classification", values_from = "value", values_fill = 0) 
+    
+    return(dplyr::select(dat_wide, 3:ncol(dat_wide), 2)) #put classification before geometry and drop original values
   }
 }
 #' Get an sf polygon in lonlat (EPSG 4326) from terra or sf input object

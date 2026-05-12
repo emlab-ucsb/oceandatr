@@ -77,8 +77,8 @@ We can now create a grid for Bermuda's EEZ using `get_grid()`. Along with the pr
 bermuda_grid <- get_grid(boundary = bermuda_eez, resolution = 5000, crs = projection_bermuda)
 
 #project the eez into same projection as grid for plotting
-bermuda_eez_projected <- bermuda_eez %>% 
-  sf::st_transform(crs = projection_bermuda) %>% 
+bermuda_eez_projected <- bermuda_eez |> 
+  sf::st_transform(crs = projection_bermuda) |> 
   sf::st_geometry()
 
 #plot the grid
@@ -130,7 +130,7 @@ terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = func
 The seafloor has its own valleys, plains and other geomorphological features just as on land. These data come from [Harris et al. 2014, Geomorphology of the Oceans](https://doi.org/10.1016/j.margeo.2014.01.011) and are available for download from https://www.bluehabitats.org, but all but depth classifications (which can be created using `get_bathymetry()`) and seamounts (which can be retrieved from a more recent dataset using `get_seamounts()`) are included in this package. 
 
 ```{r geomorphology, warning=FALSE, message=FALSE}
-geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>% 
+geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) |> 
   remove_empty_layers() #can remove any empty layers so we don't have so many layers to plot
 
 #brown colour indicates that geomorphological feature is present

@@ -162,7 +162,6 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
      n_df_rows <- nrow(df_for_clustering)
      
      df_sample <- lapply(rep(sample_size, num_samples), function(x) df_for_clustering[sample.int(n_df_rows, x),])
-     return(df_sample)
      
      if(num_cores > 1 & rlang::is_installed("parallel")){
        
@@ -200,13 +199,17 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
     
     if(is(enviro_data, "sf")){
       enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) |>  
-        as.data.frame() |>    
-        (\(x) stats::setNames(x, paste0("enviro_zone_", 1:ncol(x))))() |>  
-        dplyr::mutate(row_id = as.numeric(names(clust_partition)))
+        as.data.frame() 
+        (\(x) stats::setNames(x, paste0("enviro_zone_", 1:ncol(x))))() 
       
-      sf::st_geometry(enviro_data) |>  
-        sf::st_sf() |>  
-        (\(x) dplyr::mutate(x, row_id = 1:nrow(x)))() |>  
+      enviro_zone_cols$row_id <- as.numeric(names(clust_partition))
+      
+      enviro_data_sf <- sf::st_geometry(enviro_data) |>  
+        sf::st_sf()
+      
+      enviro_data_sf$row_id <- 1:nrow(enviro_data)
+        
+      enviro_data_sf |> 
         dplyr::left_join(enviro_zone_cols, by = dplyr::join_by(row_id)) |>  
         dplyr::select(-row_id) |>  
         (\(x) if(grid_has_extra_cols) cbind(x, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1) else x)()
