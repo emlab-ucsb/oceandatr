@@ -8,7 +8,7 @@
 #'   website](https://globalfishingwatch.org/dataset-and-code-fishing-effort/)
 #'   for detailed information). This function is primarily a wrapper for the
 #'   [`gfwr` package](https://github.com/GlobalFishingWatch/gfwr) function
-#'   `get_raster()`, but allows the user to return multiple years of data in a
+#'   `gfw_ais_fishing_hours()`, but allows the user to return multiple years of data in a
 #'   summarized and gridded format. An API key is required to retrieve GFW data;
 #'   see the package website for instructions on how to get and save one (free).
 #'
@@ -39,13 +39,13 @@
 #' @return For gridded data, a `terra::rast()` or `sf` object, depending on the
 #'   `spatial_grid` format. If `raw = TRUE`, non-summarised data in `tibble`
 #'   format is returned for the polygon area direct from the GFW query
-#'   `gfwr::get_raster()`.
+#'   `gfwr::gfw_ais_fishing_hours()`.
 #' @export
 #'
 #' @examplesIf nchar(Sys.getenv("GFW_TOKEN"))>0
 #' #get mean total annual fishing effort for Bermuda for the years 2022-2023
 #' #first get a grid for Bermuda
-#' bermuda_grid <- get_boundary(name = "Bermuda") %>% get_grid(resolution = 0.1, crs = 4326)
+#' bermuda_grid <- get_boundary(name = "Bermuda") |> get_grid(resolution = 0.1, crs = 4326)
 #' 
 #' bermuda_gfw_effort <- get_gfw(spatial_grid = bermuda_grid, start_year = 2022)
 #' 
@@ -53,29 +53,42 @@
 #' terra::plot(bermuda_gfw_effort)
 #' 
 #' #get total fishing effort for each gear type in Fiji's EEZ for 2022
-#' fiji_grid <- get_boundary(name = "Fiji") %>% get_grid(resolution = 1e4, crs = "+proj=tcea +lon_0=178 +datum=WGS84 +units=m +no_defs", output = "sf_square")
+#' fiji_grid <- get_boundary(name = "Fiji") |> 
+#'               get_grid(resolution = 1e4, 
+#'                        crs = "+proj=tcea +lon_0=178 +datum=WGS84 +units=m +no_defs", 
+#'                        output = "sf_square")
 #' 
-#' fiji_gfw_effort <- get_gfw(spatial_grid = fiji_grid, start_year = 2022, end_year = 2022, group_by = "geartype", summarise = "total_annual_effort")
+#' fiji_gfw_effort <- get_gfw(spatial_grid = fiji_grid, 
+#'                            start_year = 2022, 
+#'                            end_year = 2022, 
+#'                            group_by = "geartype", 
+#'                            summarise = "total_annual_effort")
 #' 
 #' plot(fiji_gfw_effort, border = FALSE)
 #' 
 #' #quantile is better for viewing the fishing effort distribution due to the long tail of values
 #' plot(fiji_gfw_effort[1], border= FALSE, breaks = "quantile")
-get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_year = 2018, end_year = 2023, group_by = "location", summarise = "mean_total_annual_effort", key = gfwr::gfw_auth()){
+get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_year = 2022, end_year = 2025, group_by = "location", summarise = "mean_total_annual_effort", key = gfwr::gfw_auth()){
   
   current_year <- as.numeric(format(Sys.Date(), "%Y"))
   
-  if(end_year > current_year) stop('"end_year" must be ', current_year, " or before.")
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_choice(resolution, c("LOW", "HIGH"))
+  checkmate::assert_integerish(start_year, lower = 2012, upper = current_year)
+  checkmate::assert_integerish(end_year, lower = 2013, upper = current_year)
+  checkmate::assert_choice(group_by, c("geartype", "flag", "location"))
+  checkmate::assert_choice(summarise, c("mean_total_annual_effort", "total_annual_effort"))
+  checkmate::assert_character(key, len = 1)
   
-  if(start_year < 2012) stop("The first available year of Global Fishing Watch data is 2012")
+  if(end_year < start_year) stop("end_year must be after start_year")
   
   number_years <- end_year - start_year + 1
   
   if(group_by == "location") gfw_group <- "GEARTYPE" else gfw_group <- toupper(group_by)
   
-  gfw_shape <- spatial_grid %>%
-    polygon_in_4326() %>%
-    sf::st_buffer(dist = 0.5) %>% 
+  gfw_shape <- spatial_grid |> 
+    polygon_in_4326() |> 
+    sf::st_buffer(dist = 0.5) |>  
     sf::st_wrap_dateline()
   
   #create unique filename for caching - assumes that bounding box can be used to distinguish different spatial queries
@@ -88,7 +101,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     fishing_effort <- readRDS(file.path(tempdir(), file_name))
   } else{
     fishing_effort <- lapply(start_year:end_year, function(yr){
-      gfwr::get_raster(spatial_resolution = resolution,
+      gfwr::gfw_ais_fishing_hours(spatial_resolution = resolution,
                        temporal_resolution = 'YEARLY',
                        group_by = gfw_group,
                        start_date = paste0(yr, "-01-01"),
@@ -105,46 +118,48 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
   if(raw){
     return(fishing_effort)
   } 
-    grouping_vars <- c("Lon", "Lat", "Time Range") %>% 
-      {if(group_by == "location") . else c(., tolower(group_by))} 
+
+    grouping_vars <- c("Lon", "Lat", "Time Range") 
     
-    annual_effort <- fishing_effort %>% 
-      dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>% 
-      dplyr::summarise(total_annual_effort = sum(.data[["Apparent Fishing Hours"]], na.rm = TRUE)) %>% 
-      dplyr::ungroup()  
+    if(group_by != "location") grouping_vars <- c(grouping_vars, tolower(group_by))
+    
+    annual_effort <- fishing_effort |> 
+      dplyr::summarise(total_annual_effort = sum(.data$`Apparent Fishing Hours`, na.rm = TRUE), .by = dplyr::all_of(grouping_vars)) 
+
 
     if(summarise == "total_annual_effort"){
       if(group_by == "location"){
-        final_effort <- annual_effort %>% 
+        final_effort <- annual_effort |>  
           tidyr::pivot_wider(names_from = "Time Range",
                              values_from = "total_annual_effort") 
         
       }else{
-        final_effort <- annual_effort %>% 
+        final_effort <- annual_effort |>  
           tidyr::pivot_wider(names_from = dplyr::all_of(c(group_by, "Time Range")),
                              values_from = "total_annual_effort") 
       }
     } else{
-      mean_total_effort <- annual_effort %>% 
-        dplyr::group_by(., dplyr::across(-c("Time Range", total_annual_effort))) %>%
-        dplyr::summarise(mean_total_annual_effort = sum(.data[["total_annual_effort"]], na.rm = TRUE)/number_years) %>% #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
-        dplyr::ungroup()
+      #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
+      mean_total_effort <- annual_effort |> 
+        dplyr::summarise(mean_total_annual_effort = sum(.data$`total_annual_effort`, na.rm = TRUE)/number_years, 
+                         .by = -dplyr::any_of(c("Time Range", "total_annual_effort"))) 
+
       
       if(group_by == "location"){
         final_effort <- mean_total_effort
         
       }else{
-        final_effort <- mean_total_effort %>% 
+        final_effort <- mean_total_effort |>  
           tidyr::pivot_wider(names_from = dplyr::all_of(group_by),
                              values_from = "mean_total_annual_effort")
       }
     }
 
-    final_effort %>% 
-      terra::rast(type = "xyz", crs = "epsg:4326") %>% 
-        # terra::subst(NA, 0.01) %>% #too many zero cost value cells leads to prioritization of too much area because they are 'free'
+    final_effort |>  
+      terra::rast(type = "xyz", crs = "epsg:4326") |>  
+        # terra::subst(NA, 0.01) |> #too many zero cost value cells leads to prioritization of too much area because they are 'free'
           get_data_in_grid(spatial_grid = spatial_grid,
-                           dat = ., 
+                           dat = _, 
                            meth = if(is(spatial_grid, "sf")) "mean" else "average")
 
 }

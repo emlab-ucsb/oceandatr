@@ -16,8 +16,8 @@
 #' @param antipatharia_threshold `numeric` between 0 and 100; the threshold
 #'   value for habitat suitability for antipatharia corals to be considered
 #'   present (default is 22, as defined in Yesson et al., 2017)
-#' @param octocoral_threshold `numeric` between 0 and 7; the threshold value for
-#'   how many species (of 7) should be predicted present in an area for
+#' @param octocoral_threshold `integer` between 0 and 7; the threshold value for
+#'   how many species (out of 7) should be predicted present in an area for
 #'   octocorals to be considered present (default is 2)
 #'
 #' @return If an `area_polygon` is supplied, a raster stack of coral habitat
@@ -33,26 +33,25 @@
 #' # Get raw coral habitat data
 #' coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
 #' terra::plot(coral_habitat)
+#' 
 #' # Get gridded coral habitat data
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea
-#' +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
-#' resolution = 10000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
+#'   resolution = 10000)
+#'   
 #' bermuda_coral_gridded <- get_coral_habitat(spatial_grid = bermuda_grid)
+#' 
 #' terra::plot(bermuda_coral_gridded)
 get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_threshold = 22, octocoral_threshold = 2, antimeridian = NULL){
  
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_logical(raw, len = 1)
   
   is_sf_grid <- is(spatial_grid, "sf")
   
   if(!raw){
-    # Add errors if the thresholds are not correctly specified
-    if(antipatharia_threshold < 0 | antipatharia_threshold > 100) { 
-      stop("antipatharia_threshold must be between 0 and 100, as it represents the percent threshold of habitat suitability antipatharia to be considered present")
-    }
-    if(octocoral_threshold < 1 | octocoral_threshold > 7) { 
-      stop("octocoral_threshold must be between 1 and 7, as it represents the number of octocoral species (out of 7) must be present in an area for octocorals as a whole to be considered present")
-    }  
+    checkmate::assert_double(antipatharia_threshold, lower = 0, upper = 100, len = 1, null.ok = FALSE)
+    checkmate::assert_integerish(octocoral_threshold, lower = 1, upper = 7, len = 1, null.ok = FALSE)
   }
 
   if(is_sf_grid){
@@ -61,14 +60,14 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
     if(grid_has_extra_cols) {
       extra_cols <- sf::st_drop_geometry(spatial_grid)
       
-      spatial_grid <- spatial_grid %>%
-        sf::st_geometry() %>%
+      spatial_grid <- spatial_grid |>
+        sf::st_geometry() |>
         sf::st_sf()
     }
   }
   
-  antipatharia_global <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "oceandatr", mustWork = TRUE) %>%
-    terra::rast() %>%
+  antipatharia_global <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "oceandatr", mustWork = TRUE) |>
+    terra::rast() |>
     stats::setNames("antipatharia")
 
   meth <- if(is_sf_grid) "mean" else "average"
@@ -79,15 +78,15 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
   #same method for cold water corals and octocorals since these are integer values
   meth <- if(is_sf_grid) "mode" else "near"
 
-  cold_corals_global <- system.file("extdata", "binary_grid_figure7.tif", package = "oceandatr", mustWork = TRUE) %>%
-    terra::rast() %>%
+  cold_corals_global <- system.file("extdata", "binary_grid_figure7.tif", package = "oceandatr", mustWork = TRUE) |>
+    terra::rast() |>
     stats::setNames("cold_corals")
 
   cold_corals <- get_data_in_grid(spatial_grid = spatial_grid, dat = cold_corals_global, raw = raw, name = "cold_corals", meth = meth, antimeridian = antimeridian)
   rm(cold_corals_global)
 
-  octocorals_global <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "oceandatr", mustWork = TRUE) %>%
-    terra::rast() %>%
+  octocorals_global <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "oceandatr", mustWork = TRUE) |>
+    terra::rast() |>
     stats::setNames("octocorals")
 
   octocorals <- get_data_in_grid(spatial_grid = spatial_grid, dat = octocorals_global, raw = raw, name = "octocorals", meth = meth, antimeridian = antimeridian)
@@ -97,7 +96,7 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
     c(antipatharia, cold_corals, octocorals)
   }else{
    if(is_sf_grid){
-     dplyr::bind_cols(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) %>%
+     dplyr::bind_cols(antipatharia, sf::st_drop_geometry(cold_corals), sf::st_drop_geometry(octocorals)) |>
        dplyr::mutate(antipatharia = dplyr::case_when(antipatharia < antipatharia_threshold ~ 0,
                                                   antipatharia >= antipatharia_threshold ~ 1,
                                                   is.na(antipatharia) ~ 0),
@@ -105,24 +104,24 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
                                                    octocorals >= octocoral_threshold ~1,
                                                    is.na(octocorals) ~ 0),
                      cold_corals = dplyr::case_when(is.na(cold_corals) ~0,
-                                                    .default = as.numeric(cold_corals))) %>% 
-       {if(grid_has_extra_cols) dplyr::bind_cols(extra_cols, .) %>% sf::st_set_geometry("geometry") else .} 
+                                                    .default = as.numeric(cold_corals))) |> 
+       (\(x) if(grid_has_extra_cols) dplyr::bind_cols(extra_cols, x) |> sf::st_set_geometry("geometry") else x)()
      
    } else{
-     antipatharia <- antipatharia %>% 
+     antipatharia <- antipatharia |>  
        terra::classify(matrix(c(0, antipatharia_threshold, 0,
                                 antipatharia_threshold, 101, 1),
                               ncol = 3, byrow = TRUE), 
                        right = FALSE)
      
-     octocorals <- octocorals %>% 
+     octocorals <- octocorals |> 
        terra::classify(matrix(c(0, octocoral_threshold, 0,
                                 octocoral_threshold, 9, 1),
                               ncol = 3, byrow = TRUE),
                        right = FALSE)
      
-     c(antipatharia, cold_corals, octocorals) %>%
-       terra::subst(NA, 0) %>%
+     c(antipatharia, cold_corals, octocorals) |>
+       terra::subst(NA, 0) |>
        terra::mask(spatial_grid)
    }
   }

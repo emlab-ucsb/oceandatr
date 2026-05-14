@@ -56,35 +56,59 @@
 #' # Get EEZ data first
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw bathymetry data, not classified into depth zones
-#' bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, raw = TRUE, classify_bathymetry = FALSE)
+#' bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, 
+#'                              raw = TRUE, 
+#'                              classify_bathymetry = FALSE)
 #' terra::plot(bathymetry)
 #' # Get depth zones in spatial_grid
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' 
+#' #equal area projection for Bermuda
+#' bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
+#' 
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'                          crs = bermuda_crs, 
+#'                          resolution = 20000)
+#'                          
 #' depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 #' terra::plot(depth_zones)
-#' #It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE and classify_bathymetry = FALSE
-#' bermuda_grid_sf <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000, output = "sf_hex")
-#' gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, classify_bathymetry = FALSE)
+#' 
+#' #It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE
+#' # and classify_bathymetry = FALSE
+#' 
+#' bermuda_grid_sf <- get_grid(boundary = bermuda_eez, 
+#'                             crs = bermuda_crs, 
+#'                             resolution = 20000, 
+#'                             output = "sf_hex")
+#'   
+#' gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, 
+#'                                      classify_bathymetry = FALSE)
+#'                                      
 #' plot(gridded_bathymetry)
 get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry = TRUE, above_sea_level_isNA = FALSE, name = "bathymetry", bathymetry_data_filepath = NULL, path = NULL, antimeridian = NULL){
 
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_logical(classify_bathymetry, null.ok = FALSE)
+  checkmate::assert_logical(above_sea_level_isNA, null.ok = FALSE)
+  checkmate::assert_character(name, len = 1, null.ok = TRUE)
+  checkmate::assert_character(bathymetry_data_filepath, len = 1, null.ok = TRUE)
+  checkmate::assert_character(path, len = 1, null.ok = TRUE)
+  checkmate::assert_logical(antimeridian, null.ok = TRUE)
   
   meth <- if(is(spatial_grid, "sf")) 'mean' else 'average'
   
   area_polygon_for_cropping <- polygon_in_4326(spatial_grid)
   
   if(is.null(antimeridian)){
-    antimeridian <- area_polygon_for_cropping %>%
-      terra::vect() %>% 
-      terra::densify(interval = 1e4) %>% 
-      sf::st_as_sf() %>% 
+    antimeridian <- area_polygon_for_cropping |> 
+      terra::vect() |> 
+      terra::densify(interval = 1e4) |> 
+      sf::st_as_sf() |> 
       check_antimeridian(sf::st_crs(4326))
   }
   
   if(is.null(bathymetry_data_filepath)){
-    bathymetry <- get_gebco_bathymetry(area_polygon_for_cropping, path = path, antimeridian = antimeridian) %>% 
-      get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth, name = name, antimeridian = antimeridian)
+    bathymetry <- get_gebco_bathymetry(area_polygon_for_cropping, path = path, antimeridian = antimeridian) |>  
+      get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = raw, meth = meth, name = name, antimeridian = antimeridian)
   } else{
     bathymetry <- get_data_in_grid(spatial_grid = spatial_grid, dat = bathymetry_data_filepath, raw = raw, meth = meth, name = name, antimeridian = antimeridian) 
     }
@@ -103,19 +127,19 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
       
       if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)
 
-      bathymetry %>% 
-        dplyr::select(name) %>% 
+      bathymetry |> 
+        dplyr::select(dplyr::all_of(name)) |> 
         dplyr::mutate(bathymetry = dplyr::case_when(bathymetry >=0 ~ reclass_var,
-                                                    .default = as.numeric(bathymetry))) %>%
-        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) %>%
-        dplyr::select((ncol(.)-1):1) %>% #reorder shallowest to deepest depth zones
-        {if(grid_has_extra_cols) cbind(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+                                                    .default = as.numeric(bathymetry))) |>
+        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) |> 
+        (\(x) dplyr::select(x, (ncol(x)-1):1))() |> #reorder shallowest to deepest depth zones
+        (\(x) if(grid_has_extra_cols) cbind(x, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1) else x)()
 
     }else{
-      bathymetry %>%
-        terra::classify(matrix(c(0, 1e4, reclass_var), ncol = 3), include.lowest = TRUE) %>%
-        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) %>% 
-        terra::subset(terra::nlyr(.):1) #reorder shallowest to deepest depth zones
+      bathymetry |> 
+        terra::classify(matrix(c(0, 1e4, reclass_var), ncol = 3), include.lowest = TRUE) |>
+        classify_layers(dat_breaks = bathymetry_cuts, classification_names = depth_zones) |> 
+        (\(x) terra::subset(x, terra::nlyr(x):1))() #reorder shallowest to deepest depth zones
     }
     
   }else{

@@ -1,17 +1,5 @@
 # A file of little functions that we use across the board. 
 
-#' Check a spatial grid is supplied and in raster or sf format
-#'
-#' @param spatial_grid `sf` or raster
-#'
-#' @noRd
-check_grid <- function(spatial_grid) {
-  if (is.null(spatial_grid)) {
-    stop("a spatial grid must be supplied")
-  } else if (!(class(spatial_grid)[1] %in% c("RasterLayer", "SpatRaster", "sf"))) {
-    stop("spatial_grid must be a raster or sf object")
-  }
-}
 
 #' Check if spatial objects have same crs
 #'
@@ -32,7 +20,7 @@ check_matching_crs <- function(sp1, sp2){
 #' @noRd
 check_antimeridian <- function(sf_object, dat){
   if(sf::st_crs(sf_object) != sf::st_crs(4326)){
-    b_box <- sf::st_transform(sf_object, 4326) %>%
+    b_box <- sf::st_transform(sf_object, 4326) |>
       sf::st_bbox()
   } else{
     b_box <- sf::st_bbox(sf_object)
@@ -84,27 +72,26 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
   
   if(is(dat, "SpatRaster")){
     #create a classification matrix
-    class_matrix <- dat_breaks %>%
-      .[2:(length(.) - 1)] %>%
-      rep(times = rep(2, times = length(.))) %>%
-      append(dat_breaks[length(dat_breaks)]) %>%
-      append(dat_breaks[1], after = 0) %>%
-      matrix(ncol = 2, byrow = TRUE) %>%
-      cbind(c(1:nrow(.)))
+    class_matrix <- dat_breaks[2:(length(dat_breaks) - 1)] |> 
+      (\(x) rep(x, times = rep(2, times = length(x))))() |> 
+      append(dat_breaks[length(dat_breaks)]) |> 
+      append(dat_breaks[1], after = 0) |> 
+      matrix(ncol = 2, byrow = TRUE) |> 
+      (\(x) cbind(x, c(1:nrow(x))))()
     
-    dat %>%
-      terra::classify(class_matrix, include.lowest = TRUE) %>%
-      terra::segregate() %>%
-      {if(!is.null(classification_names)) stats::setNames(., classification_names[as.numeric(names(.))]) else .} 
+    dat |> 
+      terra::classify(class_matrix, include.lowest = TRUE) |>
+      terra::segregate() |> 
+      (\(x) if(!is.null(classification_names)) stats::setNames(x, classification_names[as.numeric(names(x))]) else x)() 
     
   } else{
-    dat %>%
-      dplyr::mutate(classification = cut(.[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE),
-                    classification = droplevels(.data$classification),
-                    value = 1,
-                    .after = 1) %>%
-      tidyr::pivot_wider(names_from = "classification", values_from = "value", values_fill = 0) %>%
-      dplyr::select(3:ncol(.), 2) #put classification before geometry and drop original values
+    
+    dat$classification <- cut(dat[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE) |> droplevels()
+    dat$value <- 1
+    
+    dat_wide <- tidyr::pivot_wider(dat, names_from = "classification", values_from = "value", values_fill = 0) 
+    
+    return(dplyr::select(dat_wide, 3:ncol(dat_wide), 2)) #put classification before geometry and drop original values
   }
 }
 #' Get an sf polygon in lonlat (EPSG 4326) from terra or sf input object
@@ -118,26 +105,21 @@ polygon_in_4326 <-
   function(spatial_grid) {
     crs_is_4326 <- check_matching_crs(spatial_grid, 4326)
       if (is(spatial_grid, "SpatRaster")) {
-        spatial_grid %>%
-          terra::as.polygons() %>%
-          {
-            if (crs_is_4326)
-              .
-            else
-              terra::project(., "epsg:4326")
-          } %>%
-          sf::st_as_sf() %>% 
-          sf::st_union() %>%
-          sf::st_sf() %>% 
-          sf::st_wrap_dateline() %>% 
-          {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
+        spatial_grid |> 
+          terra::as.polygons() |> 
+          (\(x) if(crs_is_4326) x else terra::project(x, "epsg:4326"))() |> 
+          sf::st_as_sf() |> 
+          sf::st_union() |>
+          sf::st_sf() |> 
+          sf::st_wrap_dateline() |>  
+          (\(x) if(sf::st_is_valid(x)) x else sf::st_make_valid(x))()
       } else{
-        spatial_grid %>%
-          {if (crs_is_4326) . else sf::st_transform(., 4326)} %>% 
-          sf::st_union() %>% 
-          sf::st_sf() %>% 
-          sf::st_wrap_dateline() %>% 
-          {if(sf::st_is_valid(.)) . else sf::st_make_valid(.)}
+        spatial_grid |> 
+          (\(x) if(crs_is_4326) x else sf::st_transform(x, 4326))() |>  
+          sf::st_union() |> 
+          sf::st_sf() |> 
+          sf::st_wrap_dateline() |> 
+          (\(x) if(sf::st_is_valid(x)) x else sf::st_make_valid(x))()
       }
   }
 

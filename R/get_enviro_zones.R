@@ -78,36 +78,49 @@
 #' enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 #' terra::plot(enviro_data)
 #' # Get gridded Bio-Oracle data for Bermuda:
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+#'   resolution = 20000)
 #' 
-#' enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = FALSE)
+#' enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, 
+#'                                         raw = FALSE, 
+#'                                         enviro_zones = FALSE)
 #' terra::plot(enviro_data_gridded)
 #' 
 #' # Get 3 environmental zones for Bermuda
 #' 
 #' #set seed for reproducibility in the sampling to find optimal number of clusters
 #' set.seed(500)
-#' bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = TRUE, num_clusters = 3)
+#' bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, 
+#'                                          raw = FALSE, 
+#'                                          enviro_zones = TRUE, 
+#'                                          num_clusters = 3)
 #' terra::plot(bermuda_enviro_zones)
-#' # Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want the data for
-#' bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = TRUE, num_clusters = 3)
+#' 
+#' # Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and
+#' # enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want
+#' # the data for
+#' bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, 
+#'                                           raw = TRUE, 
+#'                                           enviro_zones = TRUE, 
+#'                                           num_clusters = 3)
 #' terra::plot(bermuda_enviro_zones2)
 
 get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TRUE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1){
   
   rlang::check_installed("biooracler", reason = "to get Bio-Oracle data using `get_enviro_zones()`", action = function(pkg, ...) remotes::install_github("bio-oracle/biooracler"))
   
-  check_grid(spatial_grid)
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_logical(raw, len = 1)
+  checkmate::assert_logical(enviro_zones, len = 1)
+  checkmate::assert_logical(show_plots, len = 1)
+  checkmate::assert_integerish(num_clusters, lower = 1, upper = 20, len = 1, null.ok = TRUE)
+  checkmate::assert_integerish(max_num_clusters, lower = 1, upper = 20, len = 1)
+  checkmate::assert_integerish(sample_size, lower = 1, upper = 50e6)
+  checkmate::assert_integerish(num_samples, lower = 1, upper = 100)
+  checkmate::assert_integerish(num_cores, lower = 1, upper = 100)
   
   meth <- if(is(spatial_grid, "sf")) 'mean' else 'average'
-  
-  # Add error for cluster numbers
-  if(!is.null(num_clusters)) {
-    if(num_clusters < 1){ stop("num_clusters must be greater than 1 or NULL")}
-    if(!all.equal(num_clusters, round(num_clusters))){ stop("num_clusters must be a whole number")}} 
-  if(max_num_clusters < 1) { 
-    stop("max_num_clusters must be greater than 1")}
-  if(!all.equal(max_num_clusters, round(max_num_clusters))){ stop("max_num_clusters must be a whole number")}
   
   if(num_cores > 1 & !rlang::is_installed("parallel")){
     rlang::check_installed("parallel", reason = "to use multiple cores for clustering.")
@@ -119,20 +132,26 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
     
     if(grid_has_extra_cols) {
       extra_cols <- sf::st_drop_geometry(spatial_grid)
-      spatial_grid <- spatial_grid %>% 
-        sf::st_geometry() %>% 
+      spatial_grid <- spatial_grid |>  
+        sf::st_geometry() |>  
         sf::st_sf()
     }
   }
   
-  enviro_data <- get_enviro_data(spatial_grid = spatial_grid) %>% 
-    get_data_in_grid(spatial_grid = spatial_grid, dat = ., raw = raw, meth = meth)
+  enviro_data <- get_enviro_data(spatial_grid = spatial_grid) |>  
+    get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = raw, meth = meth)
   
  if(!enviro_zones){
    return(enviro_data)
   }else{
     
-    df_for_clustering <- if(is(enviro_data, "sf")) sf::st_drop_geometry(enviro_data) %>% as.data.frame() %>% .[stats::complete.cases(.),] else terra::as.data.frame(enviro_data, na.rm = NA)
+    if(is(enviro_data, "sf")){
+      df_for_clustering <- sf::st_drop_geometry(enviro_data) |>  
+                                as.data.frame() |> 
+                                (\(x) x[stats::complete.cases(x),])()
+    } else{
+      df_for_clustering <- terra::as.data.frame(enviro_data, na.rm = NA)
+    }
     
     if(sample_size > nrow(df_for_clustering)) sample_size <- nrow(df_for_clustering)
     
@@ -148,15 +167,21 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
        
        if(Sys.info()["sysname"]=="Windows"){
          cluster <- parallel::makePSOCKcluster(num_cores)
-         best_no_clusts <- parallel::parLapply(cluster, df_sample, function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan") %>% .[[2]] %>% .["Number_clusters"]) %>% 
+         
+         best_no_clusts <- parallel::parLapply(cluster, 
+                                               df_sample, 
+                                               function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")[["Best.nc"]][["Number_clusters"]]) |>  
            unlist()
          
        }else{
-         best_no_clusts <- parallel::mclapply(df_sample, function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan") %>% .[[2]] %>% .["Number_clusters"], mc.cores = num_cores) %>% 
+         best_no_clusts <- parallel::mclapply(df_sample, 
+                                              function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")[["Best.nc"]][["Number_clusters"]],
+                                              mc.cores = num_cores) |>  
            unlist()
        }
      }else{
-       best_no_clusts <- sapply(df_sample, function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan") %>% .[[2]] %>% .["Number_clusters"])
+       best_no_clusts <- sapply(df_sample, 
+                                function(x) NbClust::NbClust(data = x, method = "kmeans", max.nc = max_num_clusters,  index = "hartigan")[["Best.nc"]][["Number_clusters"]])
      }
      uniq_values_clusters <- unique(best_no_clusts)
      
@@ -173,17 +198,24 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
     }
     
     if(is(enviro_data, "sf")){
-      enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) %>% 
-        as.data.frame() %>%   
-        stats::setNames(paste0("enviro_zone_", 1:ncol(.))) %>% 
-        dplyr::mutate(row_id = as.numeric(names(clust_partition)))
+      enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) |>  
+        as.data.frame() |>
+        (\(x) stats::setNames(x, paste0("enviro_zone_", 1:ncol(x))))() 
       
-      sf::st_geometry(enviro_data) %>% 
-        sf::st_sf() %>% 
-        dplyr::mutate(row_id = 1:nrow(.)) %>% 
-        dplyr::left_join(enviro_zone_cols, by = dplyr::join_by(row_id)) %>% 
-        dplyr::select(-row_id) %>% 
-        {if(grid_has_extra_cols) cbind(., extra_cols) %>% dplyr::relocate(colnames(extra_cols), .before = 1) else .}
+      enviro_zone_cols$row_id <- as.numeric(names(clust_partition))
+      
+      grid_sf <- sf::st_geometry(enviro_data) |>  
+        sf::st_sf()
+      
+      grid_sf$row_id <- 1:nrow(enviro_data)
+        
+      gridded_zones <- dplyr::left_join(grid_sf, enviro_zone_cols, by = "row_id") 
+
+      gridded_zones$row_id <- NULL 
+
+      if(grid_has_extra_cols) gridded_zones <- cbind(gridded_zones, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1)
+      
+      return(gridded_zones) 
       
     }else{
       #create environmental zones raster, filled with NAs to start with
@@ -192,9 +224,9 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
       #set cluster ids in raster - subset for only raster values that are non-NA
       enviro_zones[as.numeric(names(clust_partition))] <- clust_partition
       
-      enviro_zones %>% 
-        terra::segregate() %>% 
-        stats::setNames(paste0("enviro_zone_", names(.)))
+      enviro_zones |>  
+        terra::segregate() |> 
+        (\(x) stats::setNames(x, paste0("enviro_zone_", names(x))))()
     }
   }
 }
@@ -257,7 +289,7 @@ get_enviro_data <- function(spatial_grid = NULL){
     biooracle_data[[i]] <- biooracler::download_layers(dataset_id = biooracle_datasets_info$dataset_id[i], variables = biooracle_datasets_info$variables[i], constraints = constraints)
   }
   
-  biooracle_data <- terra::rast(biooracle_data) %>%
+  biooracle_data <- terra::rast(biooracle_data) |> 
     stats::setNames(c("Chlorophyll", "Dissolved_oxygen", "Nitrate", "Minimum_temp", "Mean_temp", "Max_temp", "pH", "Phosphate", "Salinity", "Silicate", "Phytoplankton"))
   
   terra::crs(biooracle_data) <- "epsg:4326"
@@ -276,8 +308,7 @@ enviro_zones_boxplot <- function(enviro_zone, enviro_data){
 }
 
 enviro_zones_pca <- function(enviro_zone, enviro_data){
-  pca_df <- stats::prcomp(enviro_data, scale. = TRUE, center = TRUE) %>% 
-    .[["x"]] %>% 
+  pca_df <- stats::prcomp(enviro_data, scale. = TRUE, center = TRUE)[["x"]] |>  
     as.data.frame()
 
   pca_df$enviro_zone <- enviro_zone

@@ -19,14 +19,15 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get raw knolls data for Bermuda's EEZ
 #' knolls <- get_knolls(spatial_grid= bermuda_eez, raw = TRUE)
+#' 
 #' # Get gridded knolls data: first create a grid
-#' bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+#' bermuda_grid <- get_grid(boundary = bermuda_eez, 
+#'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+#'   resolution = 10000)
 #' knolls_gridded <- get_knolls(spatial_grid = bermuda_grid)
 get_knolls <- function(spatial_grid = NULL, raw = FALSE, name = "knolls", antimeridian = NULL){
   
-  check_grid(spatial_grid)
-  
-      knolls <- system.file("extdata", "knolls.rds", package = "oceandatr", mustWork = TRUE) %>%
+      knolls <- system.file("extdata", "knolls.rds", package = "oceandatr", mustWork = TRUE) |> 
         readRDS() 
       
       sf::sf_use_s2(FALSE)

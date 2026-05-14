@@ -77,7 +77,13 @@
 #' terra::plot(dist_anchorages)
 get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FALSE, name = NULL, antimeridian = NULL){
 
-  check_grid(spatial_grid)
+  dist_to_choices <- c("shore", "ports", "anchorages_land_masked", "anchorages_grouped", "anchorages_all")
+  
+  checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
+  checkmate::assert_choice(dist_to, dist_to_choices)
+  checkmate::assert_logical(raw, len = 1)
+  checkmate::assert_logical(inverse, len = 1)
+  checkmate::assert_character(name, len = 1, null.ok = TRUE)
   
   matching_crs <- check_matching_crs(spatial_grid, 4326)
   
@@ -90,41 +96,49 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
       utils::unzip(file.path(tempdir(), ne_data_filename), exdir = tempdir())
     }
     
-    dat <- sf::read_sf(file.path(tempdir(), "ne_10m_land.shp")) %>% 
-      sf::st_geometry() %>% 
+    dat <- sf::read_sf(file.path(tempdir(), "ne_10m_land.shp")) |>  
+      sf::st_geometry() |>  
       sf::st_sf()
     
   }else if(dist_to == "ports"){
     if(!file.exists(file.path(tempdir(), "wpi_ports.csv"))){
       utils::download.file(url = "https://msi.nga.mil/api/publications/download?type=view&key=16920959/SFH00000/UpdatedPub150.csv", destfile = file.path(tempdir(), "wpi_ports.csv"), method = "curl", quiet = TRUE) 
     }
-    dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv"))[,c("Longitude", "Latitude")]  %>% 
+    dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv"))[,c("Longitude", "Latitude")]  |>  
       sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
 
   }else if(dist_to == "anchorages_all"){
     message("Attempting to calculate distances using the original GFW anchorages dataset will take a long time and may cause your system to hang.")
-    dat <- readRDS(system.file("extdata", "anchorages_all.rds", package = "oceandatr", mustWork = TRUE)) %>% 
+    dat <- readRDS(system.file("extdata", "anchorages_all.rds", package = "oceandatr", mustWork = TRUE)) |>   
       sf::st_as_sf(coords = c("x", "y"), crs = 4326)
     
   }else if(dist_to == "anchorages_grouped" | dist_to == "anchorages_land_masked"){
     dat <- readRDS(system.file("extdata", "anchorages_grouped.rds", package = "oceandatr", mustWork = TRUE))
     if(dist_to == "anchorages_grouped"){
-      dat <- dat[,c("x", "y")] %>% 
+      dat <- dat[,c("x", "y")] |>  
         sf::st_as_sf(coords = c("x", "y"), crs = 4326)
     }else{
-      dat <- dat %>% 
-        subset(on_land == FALSE) %>% 
-        {.[,c("x", "y")]} %>% 
+      dat <- dat[!dat$on_land, c("x", "y")] |> 
         sf::st_as_sf(coords = c("x", "y"), crs = 4326)
     }
-    } else{
-      stop('Data for calculating distance from must be one of: "shore", "ports", "anchorages_all", "anchorages_grouped", "anchorages_land_masked"')
     }
 
   layer_name <- if(is.null(name)) paste0("dist_", dist_to) else name
   
   if(raw == TRUE){
-    cropping_poly <- if(is(spatial_grid, "SpatRaster")) terra::ext(spatial_grid) %>% terra::vect(terra::crs(spatial_grid)) %>% terra::densify(1e4) %>% sf::st_as_sf() else sf::st_bbox(spatial_grid) %>% sf::st_as_sfc(crs = sf::st_crs(spatial_grid)) %>% sf::st_sf() %>% terra::vect() %>% terra::densify(1e4) %>% sf::st_as_sf()
+    cropping_poly <- if(is(spatial_grid, "SpatRaster")) {
+      terra::ext(spatial_grid) |> 
+        terra::vect(terra::crs(spatial_grid)) |> 
+        terra::densify(1e4) |> 
+        sf::st_as_sf()
+      } else { 
+        sf::st_bbox(spatial_grid) |> 
+          sf::st_as_sfc(crs = sf::st_crs(spatial_grid)) |> 
+          sf::st_sf() |> 
+          terra::vect() |> 
+          terra::densify(1e4) |> 
+          sf::st_as_sf()
+      }
     
     return(get_data_in_grid(spatial_grid = cropping_poly, dat = dat, raw = TRUE, name = dist_to, antimeridian = antimeridian))
   } 
@@ -132,9 +146,9 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
      if(is(spatial_grid, "SpatRaster")){
        
        if(matching_crs){
-         temp_ras <- spatial_grid %>% 
-           terra::distance(terra::vect(dat)) %>% 
-           terra::mask(spatial_grid) %>% 
+         temp_ras <- spatial_grid |> 
+           terra::distance(terra::vect(dat)) |> 
+           terra::mask(spatial_grid) |> 
            setNames(layer_name)
          
          if(inverse){
@@ -145,14 +159,15 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          }else temp_ras
          
        }else{
-         dist_vect <- spatial_grid %>% 
-           terra::as.data.frame(xy = TRUE, cell = TRUE) %>% 
-           sf::st_as_sf(coords = c("x", "y"), crs = sf::st_crs(spatial_grid)) %>%
-           sf::st_geometry() %>% 
-           sf::st_sf() %>% 
-           sf::st_transform(4326) %>% 
-           sf::st_distance(dat) %>% 
-           {do.call(pmin, as.data.frame(.))} 
+         dist_vect <- spatial_grid |> 
+           terra::as.data.frame(xy = TRUE, cell = TRUE) |> 
+           sf::st_as_sf(coords = c("x", "y"), crs = sf::st_crs(spatial_grid)) |>
+           sf::st_geometry() |> 
+           sf::st_sf() |> 
+           sf::st_transform(4326) |> 
+           sf::st_distance(dat) |>
+           as.data.frame() |> 
+           do.call(pmin, args = _) 
          
          spatial_grid[!is.na(spatial_grid)] <- dist_vect
          
@@ -167,23 +182,23 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          
        }
      } else{
-         grid_has_extra_cols <- if(ncol(spatial_grid)>1) TRUE else FALSE
          
-         if(grid_has_extra_cols) extra_cols <- sf::st_drop_geometry(spatial_grid)
-         
-       temp_pts <- spatial_grid %>% 
-         sf::st_centroid() %>%
-         {if(matching_crs) . else sf::st_transform(., 4326)}
+       temp_pts <- spatial_grid |> 
+         sf::st_geometry() |> 
+         sf::st_as_sf() |> 
+         sf::st_centroid() |>
+         (\(x) if(matching_crs) x else sf::st_transform(x, 4326))()
        
-       temp_pts %>% 
-         sf::st_distance(dat) %>% 
-         {do.call(pmin, as.data.frame(.))} %>% 
-         as.numeric() %>% 
-         cbind(temp_pts) %>% 
-         dplyr::rename({{layer_name}} := 1) %>% 
-         {if(matching_crs) . else sf::st_transform(., sf::st_crs(spatial_grid))} %>%
-         sf::st_drop_geometry() %>% 
-         cbind(spatial_grid, .) %>% 
-         {if(inverse) dplyr::mutate(., dist_shore = max(.data[[1]], na.rm = TRUE) - .data[["dist_shore"]] - min(.data[[1]], na.rm = TRUE)) else .}
+       temp_pts |> 
+         sf::st_distance(dat) |> 
+         as.data.frame() |> 
+         do.call(pmin, args = _) |> 
+         as.numeric() |> 
+         cbind(temp_pts) |> 
+         dplyr::rename({{layer_name}} := 1) |> 
+         (\(x) if(matching_crs) x else sf::st_transform(x, sf::st_crs(spatial_grid)))() |>
+         sf::st_drop_geometry() |> 
+         (\(x) cbind(spatial_grid, x))() |> 
+         (\(x) if(inverse) dplyr::mutate(x, {{layer_name}} := max(x[[1]], na.rm = TRUE) - x[[1]] - min(x[[1]], na.rm = TRUE)) else x)()  
      }
 }
