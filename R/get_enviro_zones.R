@@ -107,9 +107,7 @@
 #' terra::plot(bermuda_enviro_zones2)
 
 get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TRUE, show_plots = FALSE, num_clusters = NULL, max_num_clusters = 6, antimeridian = NULL, sample_size = 5000, num_samples = 5, num_cores = 1){
-  
-  rlang::check_installed("biooracler", reason = "to get Bio-Oracle data using `get_enviro_zones()`", action = function(pkg, ...) remotes::install_github("bio-oracle/biooracler"))
-  
+
   checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))
   checkmate::assert_logical(raw, len = 1)
   checkmate::assert_logical(enviro_zones, len = 1)
@@ -233,8 +231,10 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
 
 get_enviro_data <- function(spatial_grid = NULL){
   
+  biooracle_erddap_url <- "https://erddap.bio-oracle.org/erddap/"
+  
   #for details of how I got the dataset info see "data-raw/biooracle_download_setup.R"
-  biooracle_datasets_info <- structure(
+  biooracle_datasets_info <-
     list(
       dataset_id = c(
         "chl_baseline_2000_2018_depthsurf",
@@ -262,10 +262,7 @@ get_enviro_data <- function(spatial_grid = NULL){
         "si_mean",
         "phyc_mean"
       )
-    ),
-    class = "data.frame",
-    row.names = c(NA, -11L)
-  )
+    )
   
   polygon4326 <- polygon_in_4326(spatial_grid)
   
@@ -283,17 +280,28 @@ get_enviro_data <- function(spatial_grid = NULL){
                       latitude = c(y_min, y_max),
                       longitude = c(x_min, x_max))
   
-  biooracle_data <- list()
+  biooracle_data <- vector("list", length(biooracle_datasets_info$dataset_id))
   
-  for(i in 1:nrow(biooracle_datasets_info)){
-    biooracle_data[[i]] <- biooracler::download_layers(dataset_id = biooracle_datasets_info$dataset_id[i], variables = biooracle_datasets_info$variables[i], constraints = constraints)
+  message("Downloading environmental data from https://erddap.bio-oracle.org/erddap/")
+  
+  for(i in seq_along(biooracle_datasets_info$dataset_id)){
+    biooracle_data[[i]] <- rerddap::griddap(biooracle_datasets_info$dataset_id[i], 
+                                            time = constraints[[1]], 
+                                            latitude = constraints[[2]],
+                                            longitude = constraints[[3]],
+                                            fields = biooracle_datasets_info$variables[i],
+                                            url = biooracle_erddap_url,
+                                            fmt = "nc")
   }
+  message("Data download complete")
   
-  biooracle_data <- terra::rast(biooracle_data) |> 
+  biooracle_rast_list <- lapply(biooracle_data, function(x) terra::rast(x$summary$filename))
+  
+  biooracle_rast <- terra::rast(biooracle_rast_list) |> 
     stats::setNames(c("Chlorophyll", "Dissolved_oxygen", "Nitrate", "Minimum_temp", "Mean_temp", "Max_temp", "pH", "Phosphate", "Salinity", "Silicate", "Phytoplankton"))
   
-  terra::crs(biooracle_data) <- "epsg:4326"
-  return(biooracle_data)
+  terra::crs(biooracle_rast) <- "epsg:4326"
+  return(biooracle_rast)
 }
 
 enviro_zones_boxplot <- function(enviro_zone, enviro_data){
