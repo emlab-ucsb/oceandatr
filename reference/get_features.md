@@ -102,8 +102,6 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp9beWZc/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-07 05:24:31.697276)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
@@ -125,8 +123,11 @@ raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting geomorphology data...
 #> Getting coral data...
 #> Getting environmental zones data... This could take several minutes
+
+bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
 # Get feature data in a spatial grid
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, crs = bermuda_crs, resolution = 20000)
+
 #set seed for reproducibility in the get_enviro_zones() function
 set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)

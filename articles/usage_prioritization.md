@@ -2,11 +2,7 @@
 
 This example demonstrates the usage of `oceandatr` to acquire and
 process data ready for using in a spatial prioritization using the
-[`prioritizr`](https://prioritizr.net/) R package. To extend
-prioritizr’s capabilities, another package,
-[`patchwise`](https://github.com/emlab-ucsb/patchwise), is used to
-ensure that entire seamounts are included in the prioritization
-solutions.
+[`prioritizr`](https://prioritizr.net/) R package.
 
 We use a High Seas area of the Pacific as the planning area for this
 example since it is outside any states’ jurisdiction.
@@ -28,8 +24,6 @@ library(gfwr)
 library(prioritizr)
 #remotes::install_bioc("lpsymphony")
 library(lpsymphony)
-#remotes::install_github("emlab-ucsb/patchwise")
-library(patchwise)
 library(tmap) #for making nice maps
 library(terra) #for raster data handling
 
@@ -45,7 +39,7 @@ region, highlighted in red on the map.
 
 ``` r
 
-high_seas <- get_boundary(type = "high_seas") %>%
+high_seas <- get_boundary(type = "high_seas") |> 
   vect()
 
 pacific_hs_area_of_interest <- vect(ext(c(xmin = 135, xmax = 155, ymin = 0, ymax = 6)), crs = "epsg:4326")
@@ -74,8 +68,8 @@ Micronesia. We can get the EEZs of these states using `oceandatr`’s
 
 country_names <- c("Indonesia", "Papua New Guinea", "Palau", "Micronesia")
 
-eezs <- lapply(country_names, FUN = function(x) vect(get_boundary(name = x)[, "territory1"])) %>% 
-  do.call(rbind, .)
+eezs <- lapply(country_names, FUN = function(x) vect(get_boundary(name = x)[, "territory1"])) |>  
+  do.call(rbind, args = _)
 ```
 
 We only want the high seas portion of the area outlined above. We can
@@ -104,7 +98,7 @@ which is great for making nice maps.
 
 
 #retrieve bathymetry for the planning regions and surrounding area bounded by the EEZs
-pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(eezs[2:5,]), crs = 4326) %>% sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE) %>%
+pacific_bathy <- get_bathymetry(spatial_grid = sf::st_as_sfc(sf::st_bbox(eezs[2:5,]), crs = 4326) |>  sf::st_as_sf(), raw = TRUE, classify_bathymetry = FALSE) |> 
   classify(matrix(c(0, Inf, NA), ncol = 3))
 
 #retrieve country boundaries using oceandatr
@@ -182,14 +176,14 @@ seamount peaks (see `?get_seamounts_buffered` for more info).
 #set seed for reproducibility in the get_enviro_zones() sampling to find optimal cluster number
 set.seed(500)
 
-feature_set <- get_features(spatial_grid = pacific_hs_planning_grid) %>% 
+feature_set <- get_features(spatial_grid = pacific_hs_planning_grid) |> 
   remove_empty_layers()  #use this to remove raster layers that are empty
 ```
 
 ``` r
 
 #tidy up feature data names for nicer mapping
-names(feature_set) <-  gsub("_", " ", names(feature_set)) %>% stringr::str_to_sentence()
+names(feature_set) <-  gsub("_", " ", names(feature_set)) |> stringr::str_to_sentence()
 
 tm_shape(feature_set) +
   tm_raster(
@@ -235,9 +229,9 @@ cost; see the `gfwr` website for more details.
 ``` r
 
 
-fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 2022, end_year = 2022, summarise = "total_annual_effort") %>% 
-  subst(NA, 0.01) %>% #set NA values to zero otherwise they will be left out of the prioritization
-  mask(pacific_hs_planning_grid) %>% 
+fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 2022, end_year = 2022, summarise = "total_annual_effort") |> 
+  subst(NA, 0.01) |> #set NA values to zero otherwise they will be left out of the prioritization
+  mask(pacific_hs_planning_grid) |> 
   setNames("fishing_effort")
 
 tm_shape(fishing_effort) +
@@ -264,10 +258,10 @@ areas. We will set this at 20%.
 ``` r
 
 #use the prioritizr package to create a problem and then solve it
-prob <- problem(x = fishing_effort, features = feature_set) %>% 
-  add_min_set_objective() %>% 
-  add_relative_targets(0.2) %>% 
-  add_binary_decisions() %>% 
+prob <- problem(x = fishing_effort, features = feature_set) |> 
+  add_min_set_objective() |> 
+  add_relative_targets(0.2) |> 
+  add_binary_decisions() |> 
   add_lpsymphony_solver(verbose = FALSE)
 
 sol <- solve(prob)
@@ -291,33 +285,22 @@ tm_shape(sol) +
 
 Prioritization solution
 
-## Prioritization with patches
-
-Seamounts are known to be hotspots of biodiversity, so we might want to
-include only whole seamounts in the prioritization result, rather than
-parts of several seamounts. To ensure that whole seamount areas area
-included, we need to use the `patchwise` package to do some
-pre-processing of the data we use. The prioritization result is similar
-to that above, but whole seamount patches equal to at least 20% of the
-total seamount area are included.
-
 ``` r
+
+
+# Prioritization with patches
+
+# Seamounts are known to be hotspots of biodiversity, so we might want to include only whole seamounts in the prioritization result, rather than parts of several seamounts. To ensure that whole seamount areas area included, we need to use the `patchwise` package to do some pre-processing of the data we use. The prioritization result is similar to that above, but whole seamount patches equal to at least 20% of the total seamount area are included.
 
 # Separate seamount data - we want to protect entire patches
 seamounts_rast <- feature_set[["Seamounts"]]
 features_rast <- feature_set[[names(feature_set)[names(feature_set) != "Seamounts"]]]
 
 # Create seamount patches - seamount areas that touch are considered the same patch
-patches_rast <- patchwise::create_patches(seamounts_rast %>% terra::subst(0, NA)) #patchwise currently expects all non-patches to be NA, some subsituting non-seamounts, which are currently zeroes, with NAs
+patches_rast <- patchwise::create_patches(seamounts_rast |> terra::subst(0, NA)) #patchwise currently expects all non-patches to be NA, some subsituting non-seamounts, which are currently zeroes, with NAs
 
 # Create patches dataframe - this creates several constraints so that entire seamount units are protected together
 patches_df_rast <- patchwise::create_patch_df(spatial_grid = pacific_hs_planning_grid, features = features_rast, patches = patches_rast, costs = fishing_effort)
-#> [1] "Processing patch 1 of 6"
-#> [1] "Processing patch 2 of 6"
-#> [1] "Processing patch 3 of 6"
-#> [1] "Processing patch 4 of 6"
-#> [1] "Processing patch 5 of 6"
-#> [1] "Processing patch 6 of 6"
 
 # Create boundary matrix for prioritizr
 boundary_matrix_rast <- patchwise::create_boundary_matrix(spatial_grid = pacific_hs_planning_grid, patches = patches_rast, patch_df = patches_df_rast)
@@ -329,10 +312,10 @@ targets_rast <- patchwise::features_targets(targets = rep(0.2, (terra::nlyr(feat
 constraints_rast <- patchwise::constraints_targets(feature_targets = targets_rast, patch_df = patches_df_rast)
 
 # Run the prioritization
-problem_rast <- prioritizr::problem(x = patches_df_rast, features = constraints_rast$feature, cost_column = "fishing_effort") %>%
-  prioritizr::add_min_set_objective() %>%
-  prioritizr::add_manual_targets(constraints_rast) %>%
-  prioritizr::add_binary_decisions() %>%
+problem_rast <- prioritizr::problem(x = patches_df_rast, features = constraints_rast$feature, cost_column = "fishing_effort") |>
+  prioritizr::add_min_set_objective() |>
+  prioritizr::add_manual_targets(constraints_rast) |>
+  prioritizr::add_binary_decisions() |>
   prioritizr::add_lpsymphony_solver()
 
 # Solve the prioritization
@@ -358,10 +341,3 @@ tm_shape(c(sol, result_rast)) +
   tm_borders() +
   tm_layout(panel.labels = c("Original result", "Result with patchwise"))
 ```
-
-![Prioritization solution for the Pacific High Seas area, with whole
-seamounts included. Brown outlines are
-seamounts.](figure/prioritization_patches_sol-1.png)
-
-Prioritization solution for the Pacific High Seas area, with whole
-seamounts included. Brown outlines are seamounts.

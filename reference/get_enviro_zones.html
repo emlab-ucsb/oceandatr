@@ -176,8 +176,8 @@ installations). To find the number of available cores on your systems run
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get EEZ data first </span></span></span>
 <span class="r-in"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/Rtmp9beWZc/eez-2205f12f/eez.shp</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-05-07 05:24:31.697276</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Cache is fresh. Reading: <span style="color: #0000BB;">/tmp/RtmpiYa1vY/eez-2205f12f/eez.shp</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Last Modified: <span style="font-style: italic;">2026-05-14 04:40:56.480606</span>)</span>
 <span class="r-in"><span><span class="co"># Get raw Bio-Oracle environmental data for Bermuda</span></span></span>
 <span class="r-in"><span><span class="va">enviro_data</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, enviro_zones <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected dataset chl_baseline_2000_2018_depthsurf.</span>
@@ -216,9 +216,13 @@ installations). To find the number of available cores on your systems run
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">enviro_data</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="get_enviro_zones-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Get gridded Bio-Oracle data for Bermuda:</span></span></span>
-<span class="r-in"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, crs <span class="op">=</span> <span class="st">'+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'</span>, resolution <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, </span></span>
+<span class="r-in"><span>  crs <span class="op">=</span> <span class="st">'+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'</span>, </span></span>
+<span class="r-in"><span>  resolution <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">enviro_data_gridded</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, raw <span class="op">=</span> <span class="cn">FALSE</span>, enviro_zones <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">enviro_data_gridded</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, </span></span>
+<span class="r-in"><span>                                        raw <span class="op">=</span> <span class="cn">FALSE</span>, </span></span>
+<span class="r-in"><span>                                        enviro_zones <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected dataset chl_baseline_2000_2018_depthsurf.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 1 variables: chl_mean</span>
@@ -259,7 +263,10 @@ installations). To find the number of available cores on your systems run
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#set seed for reproducibility in the sampling to find optimal number of clusters</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">500</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bermuda_enviro_zones</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, raw <span class="op">=</span> <span class="cn">FALSE</span>, enviro_zones <span class="op">=</span> <span class="cn">TRUE</span>, num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bermuda_enviro_zones</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, </span></span>
+<span class="r-in"><span>                                         raw <span class="op">=</span> <span class="cn">FALSE</span>, </span></span>
+<span class="r-in"><span>                                         enviro_zones <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
+<span class="r-in"><span>                                         num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected dataset chl_baseline_2000_2018_depthsurf.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 1 variables: chl_mean</span>
@@ -295,8 +302,14 @@ installations). To find the number of available cores on your systems run
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 1 variables: phyc_mean</span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_enviro_zones</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="get_enviro_zones-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want the data for</span></span></span>
-<span class="r-in"><span><span class="va">bermuda_enviro_zones2</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, enviro_zones <span class="op">=</span> <span class="cn">TRUE</span>, num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and</span></span></span>
+<span class="r-in"><span><span class="co"># enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want</span></span></span>
+<span class="r-in"><span><span class="co"># the data for</span></span></span>
+<span class="r-in"><span><span class="va">bermuda_enviro_zones2</span> <span class="op">&lt;-</span> <span class="fu">get_enviro_zones</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, </span></span>
+<span class="r-in"><span>                                          raw <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
+<span class="r-in"><span>                                          enviro_zones <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
+<span class="r-in"><span>                                          num_clusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected dataset chl_baseline_2000_2018_depthsurf.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 1 variables: chl_mean</span>

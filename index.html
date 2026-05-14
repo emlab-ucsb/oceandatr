@@ -104,8 +104,8 @@
 <code class="sourceCode R"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, resolution <span class="op">=</span> <span class="fl">5000</span>, crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#project the eez into same projection as grid for plotting</span></span>
-<span><span class="va">bermuda_eez_projected</span> <span class="op">&lt;-</span> <span class="va">bermuda_eez</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">bermuda_eez_projected</span> <span class="op">&lt;-</span> <span class="va">bermuda_eez</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#plot the grid</span></span>
@@ -156,7 +156,7 @@
 </h2>
 <p>The seafloor has its own valleys, plains and other geomorphological features just as on land. These data come from <a href="https://doi.org/10.1016/j.margeo.2014.01.011" class="external-link">Harris et al. 2014, Geomorphology of the Oceans</a> and are available for download from <a href="https://www.bluehabitats.org" class="external-link uri">https://www.bluehabitats.org</a>, but all but depth classifications (which can be created using <code><a href="reference/get_bathymetry.html">get_bathymetry()</a></code>) and seamounts (which can be retrieved from a more recent dataset using <code><a href="reference/get_seamounts.html">get_seamounts()</a></code>) are included in this package.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">geomorphology</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_geomorphology.html">get_geomorphology</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="va">geomorphology</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_geomorphology.html">get_geomorphology</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu"><a href="reference/remove_empty_layers.html">remove_empty_layers</a></span><span class="op">(</span><span class="op">)</span> <span class="co">#can remove any empty layers so we don't have so many layers to plot</span></span>
 <span></span>
 <span><span class="co">#brown colour indicates that geomorphological feature is present</span></span>

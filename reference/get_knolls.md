@@ -61,8 +61,8 @@ from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp9beWZc/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-07 05:24:31.697276)
+#> Cache is fresh. Reading: /tmp/RtmpiYa1vY/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-05-14 04:42:19.211769)
 # Get raw knolls data for Bermuda's EEZ
 knolls <- get_knolls(spatial_grid= bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off
@@ -70,8 +70,11 @@ knolls <- get_knolls(spatial_grid= bermuda_eez, raw = TRUE)
 #> are planar
 #> Warning: attribute variables are assumed to be spatially constant throughout all geometries
 #> Spherical geometry (s2) switched on
+
 # Get gridded knolls data: first create a grid
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+  resolution = 10000)
 knolls_gridded <- get_knolls(spatial_grid = bermuda_grid)
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they

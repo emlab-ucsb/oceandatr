@@ -6,7 +6,7 @@ for larger vessel (&amp;gt; 24m in length); less than 1% of vessels &amp;lt;12 m
 are represented in the data (see GFW website
 for detailed information). This function is primarily a wrapper for the
 gfwr package function
-get_raster(), but allows the user to return multiple years of data in a
+gfw_ais_fishing_hours(), but allows the user to return multiple years of data in a
 summarized and gridded format. An API key is required to retrieve GFW data;
 see the package website for instructions on how to get and save one (free)."><meta property="og:description" content="Global Fishing Watch (GFW) provides data on apparent fishing
 effort (hours) at 0.01 degree spatial resolution, based on automatic
@@ -15,7 +15,7 @@ for larger vessel (&amp;gt; 24m in length); less than 1% of vessels &amp;lt;12 m
 are represented in the data (see GFW website
 for detailed information). This function is primarily a wrapper for the
 gfwr package function
-get_raster(), but allows the user to return multiple years of data in a
+gfw_ais_fishing_hours(), but allows the user to return multiple years of data in a
 summarized and gridded format. An API key is required to retrieve GFW data;
 see the package website for instructions on how to get and save one (free)."><meta property="og:image" content="https://emlab-ucsb.github.io/oceandatr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -62,7 +62,7 @@ for larger vessel (&gt; 24m in length); less than 1% of vessels &lt;12 m length
 are represented in the data (see <a href="https://globalfishingwatch.org/dataset-and-code-fishing-effort/" class="external-link">GFW website</a>
 for detailed information). This function is primarily a wrapper for the
 <a href="https://github.com/GlobalFishingWatch/gfwr" class="external-link"><code>gfwr</code> package</a> function
-<code>get_raster()</code>, but allows the user to return multiple years of data in a
+<code>gfw_ais_fishing_hours()</code>, but allows the user to return multiple years of data in a
 summarized and gridded format. An API key is required to retrieve GFW data;
 see the package website for instructions on how to get and save one (free).</p>
     </div>
@@ -73,8 +73,8 @@ see the package website for instructions on how to get and save one (free).</p>
 <span>  spatial_grid <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  raw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"LOW"</span>,</span>
-<span>  start_year <span class="op">=</span> <span class="fl">2018</span>,</span>
-<span>  end_year <span class="op">=</span> <span class="fl">2023</span>,</span>
+<span>  start_year <span class="op">=</span> <span class="fl">2022</span>,</span>
+<span>  end_year <span class="op">=</span> <span class="fl">2025</span>,</span>
 <span>  group_by <span class="op">=</span> <span class="st">"location"</span>,</span>
 <span>  summarise <span class="op">=</span> <span class="st">"mean_total_annual_effort"</span>,</span>
 <span>  key <span class="op">=</span> <span class="fu">gfwr</span><span class="fu">::</span><span class="fu"><a href="https://globalfishingwatch.github.io/gfwr/reference/gfw_auth.html" class="external-link">gfw_auth</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -138,7 +138,7 @@ for details on how to request a token.</p></dd>
     <p>For gridded data, a <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> or <code>sf</code> object, depending on the
 <code>spatial_grid</code> format. If <code>raw = TRUE</code>, non-summarised data in <code>tibble</code>
 format is returned for the polygon area direct from the GFW query
-<code><a href="https://globalfishingwatch.github.io/gfwr/reference/gfw_renamed.html" class="external-link">gfwr::get_raster()</a></code>.</p>
+<code><a href="https://globalfishingwatch.github.io/gfwr/reference/gfw_ais_fishing_hours.html" class="external-link">gfwr::gfw_ais_fishing_hours()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -146,7 +146,7 @@ format is returned for the polygon area direct from the GFW query
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># nchar(Sys.getenv("GFW_TOKEN")) &gt; 0</span></span></span>
 <span class="r-in"><span><span class="co">#get mean total annual fishing effort for Bermuda for the years 2022-2023</span></span></span>
 <span class="r-in"><span><span class="co">#first get a grid for Bermuda</span></span></span>
-<span class="r-in"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>resolution <span class="op">=</span> <span class="fl">0.1</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>resolution <span class="op">=</span> <span class="fl">0.1</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">bermuda_gfw_effort</span> <span class="op">&lt;-</span> <span class="fu">get_gfw</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, start_year <span class="op">=</span> <span class="fl">2022</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -154,9 +154,16 @@ format is returned for the polygon area direct from the GFW query
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_gfw_effort</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#get total fishing effort for each gear type in Fiji's EEZ for 2022</span></span></span>
-<span class="r-in"><span><span class="va">fiji_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Fiji"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>resolution <span class="op">=</span> <span class="fl">1e4</span>, crs <span class="op">=</span> <span class="st">"+proj=tcea +lon_0=178 +datum=WGS84 +units=m +no_defs"</span>, output <span class="op">=</span> <span class="st">"sf_square"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fiji_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Fiji"</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span>              <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>resolution <span class="op">=</span> <span class="fl">1e4</span>, </span></span>
+<span class="r-in"><span>                       crs <span class="op">=</span> <span class="st">"+proj=tcea +lon_0=178 +datum=WGS84 +units=m +no_defs"</span>, </span></span>
+<span class="r-in"><span>                       output <span class="op">=</span> <span class="st">"sf_square"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">fiji_gfw_effort</span> <span class="op">&lt;-</span> <span class="fu">get_gfw</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">fiji_grid</span>, start_year <span class="op">=</span> <span class="fl">2022</span>, end_year <span class="op">=</span> <span class="fl">2022</span>, group_by <span class="op">=</span> <span class="st">"geartype"</span>, summarise <span class="op">=</span> <span class="st">"total_annual_effort"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fiji_gfw_effort</span> <span class="op">&lt;-</span> <span class="fu">get_gfw</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">fiji_grid</span>, </span></span>
+<span class="r-in"><span>                           start_year <span class="op">=</span> <span class="fl">2022</span>, </span></span>
+<span class="r-in"><span>                           end_year <span class="op">=</span> <span class="fl">2022</span>, </span></span>
+<span class="r-in"><span>                           group_by <span class="op">=</span> <span class="st">"geartype"</span>, </span></span>
+<span class="r-in"><span>                           summarise <span class="op">=</span> <span class="st">"total_annual_effort"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fiji_gfw_effort</span>, border <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

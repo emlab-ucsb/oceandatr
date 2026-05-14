@@ -149,8 +149,8 @@ number of available cores on your systems run
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp9beWZc/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-07 05:24:31.697276)
+#> Cache is fresh. Reading: /tmp/RtmpiYa1vY/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-05-14 04:40:56.480606)
 # Get raw Bio-Oracle environmental data for Bermuda
 enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 #> Selected dataset chl_baseline_2000_2018_depthsurf.
@@ -189,9 +189,13 @@ enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_z
 terra::plot(enviro_data)
 
 # Get gridded Bio-Oracle data for Bermuda:
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 20000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+  resolution = 20000)
 
-enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = FALSE)
+enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, 
+                                        raw = FALSE, 
+                                        enviro_zones = FALSE)
 #> Selected dataset chl_baseline_2000_2018_depthsurf.
 #> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
 #> Selected 1 variables: chl_mean
@@ -232,7 +236,10 @@ terra::plot(enviro_data_gridded)
 
 #set seed for reproducibility in the sampling to find optimal number of clusters
 set.seed(500)
-bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALSE, enviro_zones = TRUE, num_clusters = 3)
+bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, 
+                                         raw = FALSE, 
+                                         enviro_zones = TRUE, 
+                                         num_clusters = 3)
 #> Selected dataset chl_baseline_2000_2018_depthsurf.
 #> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
 #> Selected 1 variables: chl_mean
@@ -268,8 +275,14 @@ bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid, raw = FALS
 #> Selected 1 variables: phyc_mean
 terra::plot(bermuda_enviro_zones)
 
-# Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want the data for
-bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = TRUE, num_clusters = 3)
+
+# Can also create environmental zones from the raw Bio-Oracle data using setting raw = TRUE and
+# enviro_zones = TRUE. In this case, the `spatial_grid` should be a polygon of the area you want
+# the data for
+bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez, 
+                                          raw = TRUE, 
+                                          enviro_zones = TRUE, 
+                                          num_clusters = 3)
 #> Selected dataset chl_baseline_2000_2018_depthsurf.
 #> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
 #> Selected 1 variables: chl_mean

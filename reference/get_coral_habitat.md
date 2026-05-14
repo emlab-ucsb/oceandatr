@@ -42,8 +42,8 @@ get_coral_habitat(
 
 - octocoral_threshold:
 
-  `numeric` between 0 and 7; the threshold value for how many species
-  (of 7) should be predicted present in an area for octocorals to be
+  `integer` between 0 and 7; the threshold value for how many species
+  (out of 7) should be predicted present in an area for octocorals to be
   considered present (default is 2)
 
 - antimeridian:
@@ -100,10 +100,13 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
 terra::plot(coral_habitat)
 
+
 # Get gridded coral habitat data
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea
-+lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
-resolution = 10000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
+  resolution = 10000)
+  
 bermuda_coral_gridded <- get_coral_habitat(spatial_grid = bermuda_grid)
+
 terra::plot(bermuda_coral_gridded)
 ```

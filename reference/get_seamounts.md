@@ -80,8 +80,6 @@ is buffered to the radius specified
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp9beWZc/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-07 05:24:31.697276)
 # Get raw seamounts data
 seamount_peaks <- get_seamounts(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off
@@ -91,8 +89,11 @@ seamount_peaks <- get_seamounts(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched on
 plot(seamount_peaks["Depth"])
 
+
 # Get gridded seamount data
-bermuda_grid <- get_grid(boundary = bermuda_eez, crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', resolution = 10000)
+bermuda_grid <- get_grid(boundary = bermuda_eez, 
+  crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
+  resolution = 10000)
 #buffer seamounts to a distance of 30 km (30,000 m)
 seamounts_gridded <- get_seamounts(spatial_grid = bermuda_grid, buffer = 30000)
 #> Spherical geometry (s2) switched off
