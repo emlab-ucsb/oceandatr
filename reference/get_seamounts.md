@@ -80,6 +80,8 @@ is buffered to the radius specified
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
+#> Cache is fresh. Reading: /tmp/RtmpeOedyo/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-05-14 05:14:14.790542)
 # Get raw seamounts data
 seamount_peaks <- get_seamounts(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off
