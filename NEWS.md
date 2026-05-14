@@ -1,6 +1,6 @@
 # oceandatr (development version)
 
-#oceandatr 0.2.3
+# oceandatr 0.2.3
 
 * Robust function argument checks implemented with package `checkmate`
 * Removal of `magrittr` pipe and replacement with base R pipe, removal of dot operators
