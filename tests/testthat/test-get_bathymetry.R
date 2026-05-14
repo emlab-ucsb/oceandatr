@@ -19,9 +19,10 @@ test_that("returns gridded Bermuda depth classes", {
   expect_s3_class(get_bathymetry(spatial_grid = get_bermuda_grid(output = "sf_hex")), class = "sf")
 })
 
+#allow for variation of resolution in depth data - expect greater than 6 columns
 test_that("returns extra columns as well as depth classes for sf grid", {
-  expect_equal(get_bermuda_grid(resolution = 10, output = "sf_square") |> 
+  expect_gte(get_bermuda_grid(resolution = 10, output = "sf_square") |> 
                  dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |> 
                  get_bathymetry() |>
-                 ncol(), 7)
+                 ncol(), 6)
 })

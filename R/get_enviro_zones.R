@@ -199,20 +199,23 @@ get_enviro_zones <- function(spatial_grid = NULL, raw = FALSE, enviro_zones = TR
     
     if(is(enviro_data, "sf")){
       enviro_zone_cols <- stats::model.matrix(~ as.factor(clust_partition) - 1) |>  
-        as.data.frame() 
+        as.data.frame() |>
         (\(x) stats::setNames(x, paste0("enviro_zone_", 1:ncol(x))))() 
       
       enviro_zone_cols$row_id <- as.numeric(names(clust_partition))
       
-      enviro_data_sf <- sf::st_geometry(enviro_data) |>  
+      grid_sf <- sf::st_geometry(enviro_data) |>  
         sf::st_sf()
       
-      enviro_data_sf$row_id <- 1:nrow(enviro_data)
+      grid_sf$row_id <- 1:nrow(enviro_data)
         
-      enviro_data_sf |> 
-        dplyr::left_join(enviro_zone_cols, by = dplyr::join_by(row_id)) |>  
-        dplyr::select(-row_id) |>  
-        (\(x) if(grid_has_extra_cols) cbind(x, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1) else x)()
+      gridded_zones <- dplyr::left_join(grid_sf, enviro_zone_cols, by = "row_id") 
+
+      gridded_zones$row_id <- NULL 
+
+      if(grid_has_extra_cols) gridded_zones <- cbind(gridded_zones, extra_cols) |> dplyr::relocate(colnames(extra_cols), .before = 1)
+      
+      return(gridded_zones) 
       
     }else{
       #create environmental zones raster, filled with NAs to start with

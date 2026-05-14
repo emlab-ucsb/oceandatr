@@ -124,7 +124,8 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     if(group_by != "location") grouping_vars <- c(grouping_vars, tolower(group_by))
     
     annual_effort <- fishing_effort |> 
-      dplyr::summarise(total_annual_effort = sum(`Apparent Fishing Hours`, na.rm = TRUE), .by = dplyr::all_of(grouping_vars)) 
+      dplyr::summarise(total_annual_effort = sum(.data$`Apparent Fishing Hours`, na.rm = TRUE), .by = dplyr::all_of(grouping_vars)) 
+
 
     if(summarise == "total_annual_effort"){
       if(group_by == "location"){
@@ -140,7 +141,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     } else{
       #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
       mean_total_effort <- annual_effort |> 
-        dplyr::summarise(mean_total_annual_effort = sum(`total_annual_effort`, na.rm = TRUE)/number_years, 
+        dplyr::summarise(mean_total_annual_effort = sum(.data$`total_annual_effort`, na.rm = TRUE)/number_years, 
                          .by = -dplyr::any_of(c("Time Range", "total_annual_effort"))) 
 
       
