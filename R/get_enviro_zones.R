@@ -282,7 +282,7 @@ get_enviro_data <- function(spatial_grid = NULL){
   
   biooracle_data <- vector("list", length(biooracle_datasets_info$dataset_id))
   
-  message("Downloading environmental data from https://erddap.bio-oracle.org/erddap/")
+  message("Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.")
   
   for(i in seq_along(biooracle_datasets_info$dataset_id)){
     biooracle_data[[i]] <- rerddap::griddap(biooracle_datasets_info$dataset_id[i], 
@@ -291,9 +291,10 @@ get_enviro_data <- function(spatial_grid = NULL){
                                             longitude = constraints[[3]],
                                             fields = biooracle_datasets_info$variables[i],
                                             url = biooracle_erddap_url,
+                                            read = FALSE,
                                             fmt = "nc")
   }
-  message("Data download complete")
+  message("Data retrieval complete")
   
   biooracle_rast_list <- lapply(biooracle_data, function(x) terra::rast(x$summary$filename))
   
