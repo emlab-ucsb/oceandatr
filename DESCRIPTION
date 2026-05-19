@@ -1,7 +1,7 @@
 Package: oceandatr
 Type: Package
 Title: Ocean Data Acquisition and processing
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
 Description: For acquiring, processing, and gridding ocean related data.
 License: GPL (>= 3) + file LICENSE
@@ -20,10 +20,10 @@ Imports:
     rlang,
     ncdf4,
     mregions2,
-    checkmate
+    checkmate,
+    rerddap
 Remotes: 
     github::emlab-ucsb/spatialgridr,
-    github::bio-oracle/biooracler,
     github::GlobalFishingWatch/gfwr
 Depends: 
     R (>= 4.2)
@@ -34,7 +34,6 @@ Suggests:
     testthat (>= 3.0.0),
     parallel,
     remotes,
-    biooracler (>= 0.0.0.9000),
     gfwr (>= 2.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -1,5 +1,10 @@
 # oceandatr (development version)
 
+# oceandatr 0.2.4
+* Switch to `rerddap` package for downloading Bio-Oracle data
+* Remove `biooracler` dependency
+* Add `min_num_clusters` argument to `get_enviro_zones()`, and ensure min and max num cluster arguments meet `NbClust` requirements, #70 by @jaseeverett
+
 # oceandatr 0.2.3
 
 * Robust function argument checks implemented with package `checkmate`
