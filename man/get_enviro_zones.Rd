@@ -10,6 +10,7 @@ get_enviro_zones(
   enviro_zones = TRUE,
   show_plots = FALSE,
   num_clusters = NULL,
+  min_num_clusters = 2,
   max_num_clusters = 6,
   antimeridian = NULL,
   sample_size = 5000,
@@ -37,8 +38,12 @@ variable in each environmental zone (default is FALSE)}
 the data into - to be used when a clustering algorithm is not necessary
 (default is NULL)}
 
-\item{max_num_clusters}{\code{numeric}; the maximum number of environmental
-zones to try when using the clustering algorithm (default is 6)}
+\item{min_num_clusters}{\code{numeric}; the minimum number of environmental
+zones to try when using the clustering algorithm (default is 2)}
+
+\item{max_num_clusters}{\code{numeric}; the maximum number of environmental zones
+to try when using the clustering algorithm (default is 6, minimum must be
+4). Must be at least 2 larger than \code{min_num_clusters}}
 
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
 should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
