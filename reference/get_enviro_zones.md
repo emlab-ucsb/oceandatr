@@ -17,6 +17,7 @@ get_enviro_zones(
   enviro_zones = TRUE,
   show_plots = FALSE,
   num_clusters = NULL,
+  min_num_clusters = 2,
   max_num_clusters = 6,
   antimeridian = NULL,
   sample_size = 5000,
@@ -61,10 +62,16 @@ get_enviro_zones(
   into - to be used when a clustering algorithm is not necessary
   (default is NULL)
 
+- min_num_clusters:
+
+  `numeric`; the minimum number of environmental zones to try when using
+  the clustering algorithm (default is 2)
+
 - max_num_clusters:
 
   `numeric`; the maximum number of environmental zones to try when using
-  the clustering algorithm (default is 6)
+  the clustering algorithm (default is 6, minimum must be 4). Must be at
+  least 2 larger than `min_num_clusters`
 
 - antimeridian:
 
@@ -149,43 +156,12 @@ number of available cores on your systems run
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp5wemrx/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-14 07:06:37.097806)
+#> Cache is fresh. Reading: /tmp/RtmpOrg3LK/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-05-19 08:39:47.622631)
 # Get raw Bio-Oracle environmental data for Bermuda
 enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
-#> Selected dataset chl_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: chl_mean
-#> Selected dataset o2_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/o2_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: o2_mean
-#> Selected dataset no3_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/no3_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: no3_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_min
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_max
-#> Selected dataset ph_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/ph_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: ph_mean
-#> Selected dataset po4_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/po4_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: po4_mean
-#> Selected dataset so_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/so_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: so_mean
-#> Selected dataset si_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/si_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: si_mean
-#> Selected dataset phyc_baseline_2000_2020_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/phyc_baseline_2000_2020_depthsurf.html
-#> Selected 1 variables: phyc_mean
+#> Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.
+#> Data retrieval complete
 terra::plot(enviro_data)
 
 # Get gridded Bio-Oracle data for Bermuda:
@@ -196,39 +172,8 @@ bermuda_grid <- get_grid(boundary = bermuda_eez,
 enviro_data_gridded <- get_enviro_zones(spatial_grid = bermuda_grid, 
                                         raw = FALSE, 
                                         enviro_zones = FALSE)
-#> Selected dataset chl_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: chl_mean
-#> Selected dataset o2_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/o2_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: o2_mean
-#> Selected dataset no3_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/no3_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: no3_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_min
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_max
-#> Selected dataset ph_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/ph_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: ph_mean
-#> Selected dataset po4_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/po4_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: po4_mean
-#> Selected dataset so_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/so_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: so_mean
-#> Selected dataset si_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/si_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: si_mean
-#> Selected dataset phyc_baseline_2000_2020_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/phyc_baseline_2000_2020_depthsurf.html
-#> Selected 1 variables: phyc_mean
+#> Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.
+#> Data retrieval complete
 terra::plot(enviro_data_gridded)
 
 
@@ -240,39 +185,8 @@ bermuda_enviro_zones <- get_enviro_zones(spatial_grid = bermuda_grid,
                                          raw = FALSE, 
                                          enviro_zones = TRUE, 
                                          num_clusters = 3)
-#> Selected dataset chl_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: chl_mean
-#> Selected dataset o2_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/o2_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: o2_mean
-#> Selected dataset no3_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/no3_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: no3_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_min
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_max
-#> Selected dataset ph_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/ph_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: ph_mean
-#> Selected dataset po4_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/po4_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: po4_mean
-#> Selected dataset so_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/so_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: so_mean
-#> Selected dataset si_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/si_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: si_mean
-#> Selected dataset phyc_baseline_2000_2020_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/phyc_baseline_2000_2020_depthsurf.html
-#> Selected 1 variables: phyc_mean
+#> Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.
+#> Data retrieval complete
 terra::plot(bermuda_enviro_zones)
 
 
@@ -283,38 +197,7 @@ bermuda_enviro_zones2 <- get_enviro_zones(spatial_grid = bermuda_eez,
                                           raw = TRUE, 
                                           enviro_zones = TRUE, 
                                           num_clusters = 3)
-#> Selected dataset chl_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/chl_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: chl_mean
-#> Selected dataset o2_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/o2_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: o2_mean
-#> Selected dataset no3_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/no3_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: no3_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_min
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_mean
-#> Selected dataset thetao_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/thetao_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: thetao_max
-#> Selected dataset ph_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/ph_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: ph_mean
-#> Selected dataset po4_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/po4_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: po4_mean
-#> Selected dataset so_baseline_2000_2019_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/so_baseline_2000_2019_depthsurf.html
-#> Selected 1 variables: so_mean
-#> Selected dataset si_baseline_2000_2018_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/si_baseline_2000_2018_depthsurf.html
-#> Selected 1 variables: si_mean
-#> Selected dataset phyc_baseline_2000_2020_depthsurf.
-#> Dataset info available at: http://erddap.bio-oracle.org/erddap/griddap/phyc_baseline_2000_2020_depthsurf.html
-#> Selected 1 variables: phyc_mean
+#> Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.
+#> Data retrieval complete
 terra::plot(bermuda_enviro_zones2)
 ```
