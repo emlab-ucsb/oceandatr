@@ -66,8 +66,8 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
     }
   }
   
-  antipatharia_global <- system.file("extdata", "YessonEtAl_2016_Antipatharia.tif", package = "oceandatr", mustWork = TRUE) |>
-    terra::rast() |>
+  antipatharia_global <- system.file("extdata", "antipatharia.tif", package = "oceandatrsets", mustWork = TRUE) |>
+    terra::rast() |> 
     stats::setNames("antipatharia")
 
   meth <- if(is_sf_grid) "mean" else "average"
@@ -78,14 +78,14 @@ get_coral_habitat <- function(spatial_grid = NULL, raw = FALSE, antipatharia_thr
   #same method for cold water corals and octocorals since these are integer values
   meth <- if(is_sf_grid) "mode" else "near"
 
-  cold_corals_global <- system.file("extdata", "binary_grid_figure7.tif", package = "oceandatr", mustWork = TRUE) |>
+  cold_corals_global <- system.file("extdata", "cold_coral.tif", package = "oceandatrsets", mustWork = TRUE) |>
     terra::rast() |>
     stats::setNames("cold_corals")
 
   cold_corals <- get_data_in_grid(spatial_grid = spatial_grid, dat = cold_corals_global, raw = raw, name = "cold_corals", meth = meth, antimeridian = antimeridian)
   rm(cold_corals_global)
 
-  octocorals_global <- system.file("extdata", "YessonEtAl_Consensus.tif", package = "oceandatr", mustWork = TRUE) |>
+  octocorals_global <- system.file("extdata", "octocoral.tif", package = "oceandatrsets", mustWork = TRUE) |>
     terra::rast() |>
     stats::setNames("octocorals")
 

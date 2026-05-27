@@ -76,7 +76,7 @@ get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = N
   
   sf::sf_use_s2(FALSE)
   suppressWarnings(
-    geomorph_data <- system.file("extdata/geomorphology", package = "oceandatr") |>  
+    geomorph_data <- system.file("extdata", "geomorphology", package = "oceandatrsets", mustWork = TRUE) |>  
       list.files(full.names = TRUE) |>  
       lapply(readRDS) |>  
       do.call(rbind, args = _) |> 
