@@ -14,5 +14,6 @@
 #' @importFrom stats kmeans
 #' @importFrom stats model.matrix
 #' @importFrom stats setNames
+#' @importFrom utils install.packages
 ## usethis namespace: end
 NULL

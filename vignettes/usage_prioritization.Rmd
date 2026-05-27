@@ -29,7 +29,7 @@ Along with `oceandatr` we will need to load `prioritizr` for the spatial priorit
 ``` r
 library(gfwr)
 library(prioritizr)
-#remotes::install_bioc("lpsymphony")
+#pak::pkg_install("lpsymphony")
 library(lpsymphony)
 library(tmap) #for making nice maps
 library(terra) #for raster data handling

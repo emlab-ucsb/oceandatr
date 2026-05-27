@@ -49,7 +49,7 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
   checkmate::assert_numeric(buffer, lower = 0, null.ok = TRUE)
   checkmate::assert_character(name, len = 1, null.ok = TRUE)
   
-  seamounts <- system.file("extdata", "seamounts.rds", package = "oceandatr", mustWork = TRUE) |>
+  seamounts <- system.file("extdata", "seamounts.rds", package = "oceandatrsets", mustWork = TRUE) |>
     readRDS()
   
   if(raw){

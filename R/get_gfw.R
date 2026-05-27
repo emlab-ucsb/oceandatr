@@ -70,6 +70,8 @@
 #' plot(fiji_gfw_effort[1], border= FALSE, breaks = "quantile")
 get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_year = 2022, end_year = 2025, group_by = "location", summarise = "mean_total_annual_effort", key = gfwr::gfw_auth()){
   
+  rlang::check_installed("gfwr", action = function(...) utils::install.packages('gfwr', repos = 'https://ropensci.r-universe.dev'))
+  
   current_year <- as.numeric(format(Sys.Date(), "%Y"))
   
   checkmate::assert_multi_class(spatial_grid, c("SpatRaster", "sf"))

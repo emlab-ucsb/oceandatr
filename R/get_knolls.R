@@ -27,7 +27,7 @@
 #' knolls_gridded <- get_knolls(spatial_grid = bermuda_grid)
 get_knolls <- function(spatial_grid = NULL, raw = FALSE, name = "knolls", antimeridian = NULL){
   
-      knolls <- system.file("extdata", "knolls.rds", package = "oceandatr", mustWork = TRUE) |> 
+      knolls <- system.file("extdata", "knolls.rds", package = "oceandatrsets", mustWork = TRUE) |> 
         readRDS() 
       
       sf::sf_use_s2(FALSE)

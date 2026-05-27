@@ -109,11 +109,11 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
 
   }else if(dist_to == "anchorages_all"){
     message("Attempting to calculate distances using the original GFW anchorages dataset will take a long time and may cause your system to hang.")
-    dat <- readRDS(system.file("extdata", "anchorages_all.rds", package = "oceandatr", mustWork = TRUE)) |>   
+    dat <- oceandatrsets::anchorages_all |>   
       sf::st_as_sf(coords = c("x", "y"), crs = 4326)
     
   }else if(dist_to == "anchorages_grouped" | dist_to == "anchorages_land_masked"){
-    dat <- readRDS(system.file("extdata", "anchorages_grouped.rds", package = "oceandatr", mustWork = TRUE))
+    dat <- oceandatrsets::anchorages_grouped
     if(dist_to == "anchorages_grouped"){
       dat <- dat[,c("x", "y")] |>  
         sf::st_as_sf(coords = c("x", "y"), crs = 4326)
