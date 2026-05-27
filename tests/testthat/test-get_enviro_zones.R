@@ -28,7 +28,7 @@ test_that("returns gridded Bermuda envirozones data with extra input columns - s
   set.seed(500)
   expect_equal(get_bermuda_grid(output = "sf_square") |>  
                     dplyr::mutate(extracol1 = 1, extracol2 = 2, .before = 1) |> 
-                    get_enviro_zones(raw = FALSE, enviro_zones = TRUE, show_plots = TRUE) |> 
+                    get_enviro_zones(raw = FALSE, enviro_zones = TRUE, show_plots = FALSE) |> 
                  ncol(), 6)
 })
 
