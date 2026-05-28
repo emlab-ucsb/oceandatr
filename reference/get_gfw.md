@@ -24,7 +24,7 @@ get_gfw(
   end_year = 2025,
   group_by = "location",
   summarise = "mean_total_annual_effort",
-  key = gfwr::gfw_auth()
+  key = NULL
 )
 ```
 
@@ -80,8 +80,9 @@ get_gfw(
 
 - key:
 
-  `string` Authorization token. Can be obtained with gfw_auth()
-  function. See `gfwr`
+  `string` Authorization token. If `NULL` a token is attempted to be
+  retrieved from the R environment using `Sys.getenv("GFW_TOKEN")`. See
+  `gfwr`
   [website](https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization)
   for details on how to request a token.
 
