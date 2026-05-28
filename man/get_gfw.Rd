@@ -12,7 +12,7 @@ get_gfw(
   end_year = 2025,
   group_by = "location",
   summarise = "mean_total_annual_effort",
-  key = gfwr::gfw_auth()
+  key = NULL
 )
 }
 \arguments{
@@ -43,8 +43,9 @@ location is returned, grouped by \code{group_by}; or
 \code{"mean_total_annual_effort"}; the mean of the annual sums of fishing effort
 for all years at each location is returned, grouped by \code{group_by}.}
 
-\item{key}{\code{string} Authorization token. Can be obtained with gfw_auth()
-function. See \code{gfwr}
+\item{key}{\code{string} Authorization token. If \code{NULL} a token is attempted to be
+retrieved from the R environment using \code{Sys.getenv("GFW_TOKEN")}. See
+\code{gfwr}
 \href{https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization}{website}
 for details on how to request a token.}
 }
@@ -62,9 +63,10 @@ for larger vessel (> 24m in length); less than 1\% of vessels <12 m length
 are represented in the data (see \href{https://globalfishingwatch.org/dataset-and-code-fishing-effort/}{GFW website}
 for detailed information). This function is primarily a wrapper for the
 \href{https://github.com/GlobalFishingWatch/gfwr}{\code{gfwr} package} function
-\code{gfw_ais_fishing_hours()}, but allows the user to return multiple years of data in a
-summarized and gridded format. An API key is required to retrieve GFW data;
-see the package website for instructions on how to get and save one (free).
+\code{gfw_ais_fishing_hours()}, but allows the user to return multiple years of
+data in a summarized and gridded format. An API key is required to retrieve
+GFW data; see the package website for instructions on how to get and save
+one (free).
 }
 \examples{
 \dontshow{if (nchar(Sys.getenv("GFW_TOKEN"))>0) withAutoprint(\{ # examplesIf}

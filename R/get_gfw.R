@@ -217,6 +217,6 @@ gfw_ais <- function(spatial_resolution, group_by, start_date, end_date, region, 
   
   # unzip zip file and extract .csv
   unz(temp, names[grepl(".csv$", names)]) |> 
-    read.csv()
+    utils::read.csv()
 
 }
