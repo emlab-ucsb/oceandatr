@@ -74,8 +74,6 @@ The Following ecoregions can be obtained:
 ``` r
 #' # Get EEZ data first
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp9dxtiG/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-28 10:27:05.232057)
 # Get Marine Ecoregions of the World data
 ecoregions <- get_ecoregion(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off

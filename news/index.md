@@ -2,6 +2,13 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.2.6
+
+- Remove `gfwr` package dependency
+- Add `gfw_ais()` internal function for GFW API call. This is a
+  simplified version of `gfwr` package functions.
+- Add `geojsonsf` and `httr2` imports
+
 ## oceandatr 0.2.5
 
 - Remove all data - this is now in the separate `oceandatrsets` package
