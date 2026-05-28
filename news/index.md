@@ -2,6 +2,17 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.2.5
+
+- Remove all data - this is now in the separate `oceandatrsets` package
+- Update data references to use `oceandatrsets`
+- Add `oceandatrsets` dependency
+- Use `pak` instead of `remotes` for Github install (`remotes` is
+  superseded)
+- Use R-Universe for `gfwr` install
+- Remove some get_features() tests that take a long time and are
+  repeating individual function tests
+
 ## oceandatr 0.2.4
 
 - Switch to `rerddap` package for downloading Bio-Oracle data

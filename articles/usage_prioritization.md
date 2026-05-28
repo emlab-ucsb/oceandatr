@@ -22,7 +22,7 @@ loaded via the Bioconductor website
 
 library(gfwr)
 library(prioritizr)
-#remotes::install_bioc("lpsymphony")
+#pak::pkg_install("lpsymphony")
 library(lpsymphony)
 library(tmap) #for making nice maps
 library(terra) #for raster data handling

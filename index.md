@@ -12,10 +12,9 @@ You can install oceandatr from [GitHub](https://github.com/) with:
 
 ``` r
 
-if (!require(remotes)) install.packages("remotes")
-#might need to increase timeout as it is a large package
-options(timeout = 9999)
-remotes::install_github("emlab-ucsb/oceandatr")
+if (!require(pak)) install.packages("pak")
+
+pak::pkg_install("emlab-ucsb/oceandatr")
 ```
 
 # Getting gridded ocean data
