@@ -8,9 +8,10 @@
 #'   website](https://globalfishingwatch.org/dataset-and-code-fishing-effort/)
 #'   for detailed information). This function is primarily a wrapper for the
 #'   [`gfwr` package](https://github.com/GlobalFishingWatch/gfwr) function
-#'   `gfw_ais_fishing_hours()`, but allows the user to return multiple years of data in a
-#'   summarized and gridded format. An API key is required to retrieve GFW data;
-#'   see the package website for instructions on how to get and save one (free).
+#'   `gfw_ais_fishing_hours()`, but allows the user to return multiple years of
+#'   data in a summarized and gridded format. An API key is required to retrieve
+#'   GFW data; see the package website for instructions on how to get and save
+#'   one (free).
 #'
 #' @inheritParams get_bathymetry
 #' @param raw `logical` if TRUE, `spatial_grid` can be an `sf` polygon, and the
@@ -31,8 +32,9 @@
 #'   location is returned, grouped by `group_by`; or
 #'   `"mean_total_annual_effort"`; the mean of the annual sums of fishing effort
 #'   for all years at each location is returned, grouped by `group_by`.
-#' @param key `string` Authorization token. Can be obtained with gfw_auth()
-#'   function. See `gfwr`
+#' @param key `string` Authorization token. If `NULL` a token is attempted to be
+#'   retrieved from the R environment using `Sys.getenv("GFW_TOKEN")`. See
+#'   `gfwr`
 #'   [website](https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization)
 #'   for details on how to request a token.
 #'
@@ -68,9 +70,7 @@
 #' 
 #' #quantile is better for viewing the fishing effort distribution due to the long tail of values
 #' plot(fiji_gfw_effort[1], border= FALSE, breaks = "quantile")
-get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_year = 2022, end_year = 2025, group_by = "location", summarise = "mean_total_annual_effort", key = gfwr::gfw_auth()){
-  
-  rlang::check_installed("gfwr", action = function(...) utils::install.packages('gfwr', repos = c('https://globalfishingwatch.r-universe.dev', 'https://cloud.r-project.org')))
+get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_year = 2022, end_year = 2025, group_by = "location", summarise = "mean_total_annual_effort", key = NULL){
   
   current_year <- as.numeric(format(Sys.Date(), "%Y"))
   
@@ -80,7 +80,7 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
   checkmate::assert_integerish(end_year, lower = 2013, upper = current_year)
   checkmate::assert_choice(group_by, c("geartype", "flag", "location"))
   checkmate::assert_choice(summarise, c("mean_total_annual_effort", "total_annual_effort"))
-  checkmate::assert_character(key, len = 1)
+  checkmate::assert_character(key, len = 1, null.ok = TRUE, min.chars = 2)
   
   if(end_year < start_year) stop("end_year must be after start_year")
   
@@ -91,7 +91,10 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
   gfw_shape <- spatial_grid |> 
     polygon_in_4326() |> 
     sf::st_buffer(dist = 0.5) |>  
-    sf::st_wrap_dateline()
+    sf::st_wrap_dateline() |> 
+    geojsonsf::sf_geojson() 
+  
+  gfw_shape_tagged <- paste0('{"geojson":', gfw_shape,'}')
   
   #create unique filename for caching - assumes that bounding box can be used to distinguish different spatial queries
   bounding_box <- sf::st_bbox(spatial_grid)
@@ -103,14 +106,12 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     fishing_effort <- readRDS(file.path(tempdir(), file_name))
   } else{
     fishing_effort <- lapply(start_year:end_year, function(yr){
-      gfwr::gfw_ais_fishing_hours(spatial_resolution = resolution,
-                       temporal_resolution = 'YEARLY',
-                       group_by = gfw_group,
-                       start_date = paste0(yr, "-01-01"),
-                       end_date = paste0(yr, "-12-31"),
-                       region = gfw_shape,
-                       region_source = 'USER_SHAPEFILE',
-                       key = key)
+      gfw_ais(spatial_resolution = resolution,
+              group_by = gfw_group,
+              start_date = paste0(yr, "-01-01"),
+              end_date = paste0(yr, "-12-31"),
+              region = gfw_shape_tagged,
+              key = key)
     }) 
     fishing_effort <- do.call(dplyr::bind_rows, fishing_effort)
     
@@ -121,30 +122,30 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
     return(fishing_effort)
   } 
 
-    grouping_vars <- c("Lon", "Lat", "Time Range") 
+    grouping_vars <- c("Lon", "Lat", "Time.Range") 
     
     if(group_by != "location") grouping_vars <- c(grouping_vars, tolower(group_by))
     
     annual_effort <- fishing_effort |> 
-      dplyr::summarise(total_annual_effort = sum(.data$`Apparent Fishing Hours`, na.rm = TRUE), .by = dplyr::all_of(grouping_vars)) 
+      dplyr::summarise(total_annual_effort = sum(.data$Apparent.Fishing.Hours, na.rm = TRUE), .by = dplyr::all_of(grouping_vars)) 
 
 
     if(summarise == "total_annual_effort"){
       if(group_by == "location"){
         final_effort <- annual_effort |>  
-          tidyr::pivot_wider(names_from = "Time Range",
+          tidyr::pivot_wider(names_from = "Time.Range",
                              values_from = "total_annual_effort") 
         
       }else{
         final_effort <- annual_effort |>  
-          tidyr::pivot_wider(names_from = dplyr::all_of(c(group_by, "Time Range")),
+          tidyr::pivot_wider(names_from = dplyr::all_of(c(group_by, "Time.Range")),
                              values_from = "total_annual_effort") 
       }
     } else{
       #calculate mean manually to ensure that years that have NA catch in a cell are still included in the denominator
       mean_total_effort <- annual_effort |> 
         dplyr::summarise(mean_total_annual_effort = sum(.data$`total_annual_effort`, na.rm = TRUE)/number_years, 
-                         .by = -dplyr::any_of(c("Time Range", "total_annual_effort"))) 
+                         .by = -dplyr::any_of(c("Time.Range", "total_annual_effort"))) 
 
       
       if(group_by == "location"){
@@ -163,5 +164,59 @@ get_gfw <- function(spatial_grid = NULL, raw = FALSE, resolution = "LOW", start_
           get_data_in_grid(spatial_grid = spatial_grid,
                            dat = _, 
                            meth = if(is(spatial_grid, "sf")) "mean" else "average")
+
+}
+
+# gfw_ais function is modified copy of gfwr::gfw_4wings() https://github.com/GlobalFishingWatch/gfwr/blob/main/R/gfw_4wings.R
+# avoids need to import gfwr package, and simplifies code for use only for fishing hours download
+gfw_ais <- function(spatial_resolution, group_by, start_date, end_date, region, key){
+  
+  if(is.null(key)){
+    key <- Sys.getenv("GFW_TOKEN")
+    if(key == "") stop("No Global Fishing Watch token found, request one at: https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization")
+  } 
+  
+  date_range <- paste(start_date, end_date, sep = ",")
+  
+  temporal_resolution <- 'YEARLY'
+  
+  region_source <- 'USER_SHAPEFILE'
+  
+
+  args <- list(
+    `spatial-resolution` = spatial_resolution,
+    `temporal-resolution` = temporal_resolution,
+    `filters[0]` = NULL,
+    `group-by` = group_by,
+    `date-range` = date_range,
+    format = "CSV"
+  )
+  
+  base <- httr2::request("https://gateway.api.globalfishingwatch.org/v3/")
+  
+  args <- c(`datasets[0]` = "public-global-fishing-effort:latest", args)
+  endpoint <- base |> 
+    httr2::req_url_path_append('4wings/report') |> 
+    httr2::req_url_query(!!!args)
+  
+  request <- endpoint |> 
+    httr2::req_headers(Authorization = paste("Bearer",
+                                             key,
+                                             sep = " "),
+                       `Content-Type` = "application/json") |> 
+    httr2::req_body_raw(body = region)
+  
+  response <- request |> 
+    httr2::req_perform() |> 
+    httr2::resp_body_raw()
+  
+  # save zip and get .csv file name
+  temp <- tempfile()
+  writeBin(response, temp)
+  names <- utils::unzip(temp, list = TRUE)$Name
+  
+  # unzip zip file and extract .csv
+  unz(temp, names[grepl(".csv$", names)]) |> 
+    utils::read.csv()
 
 }

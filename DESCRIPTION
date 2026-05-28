@@ -23,7 +23,9 @@ Imports:
     checkmate,
     rerddap,
     oceandatrsets (>= 0.1),
-    utils
+    utils,
+    geojsonsf,
+    httr2
 Remotes: 
     emlab-ucsb/spatialgridr,
     emlab-ucsb/oceandatrsets
@@ -35,12 +37,10 @@ Suggests:
     codetools,
     testthat (>= 3.0.0),
     parallel,
-    pak,
-    gfwr (>= 3.0)
+    pak
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/
-Additional_repositories: https://globalfishingwatch.r-universe.dev
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
 RoxygenNote: 8.0.0
