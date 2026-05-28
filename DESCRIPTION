@@ -40,7 +40,7 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/
-Additional_repositories: https://ropensci.r-universe.dev
+Additional_repositories: https://globalfishingwatch.r-universe.dev
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
 RoxygenNote: 8.0.0
