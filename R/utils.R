@@ -89,7 +89,7 @@ classify_layers <- function(dat, dat_breaks = NULL, classification_names = NULL)
     dat$classification <- cut(dat[[1]], dat_breaks, labels = classification_names, include.lowest = TRUE) |> droplevels()
     dat$value <- 1
     
-    dat_wide <- tidyr::pivot_wider(dat, names_from = "classification", values_from = "value", values_fill = 0) 
+    dat_wide <- tidyr::pivot_wider(dat, names_from = "classification", values_from = "value", values_fill = 0, names_sort = TRUE) 
     
     return(dplyr::select(dat_wide, 3:ncol(dat_wide), 2)) #put classification before geometry and drop original values
   }

@@ -115,7 +115,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
 
   if(classify_bathymetry){
     
-    depth_zones <- c("hadal", "abyssal", "lower bathyal", "upper bathyal", "continental shelf" )
+    depth_zones <- c("hadal", "abyssal", "lower_bathyal", "upper_bathyal", "continental_shelf" )
     
     bathymetry_cuts <- c(-12000, -6500, -3500, -800, -200, 10)
   
