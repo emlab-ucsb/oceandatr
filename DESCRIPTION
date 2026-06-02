@@ -16,7 +16,6 @@ Imports:
     NbClust,
     graphics,
     stats,
-    spatialgridr (>= 0.0.2.3),
     rlang,
     ncdf4,
     mregions2,
@@ -25,10 +24,13 @@ Imports:
     oceandatrsets (>= 0.1),
     utils,
     geojsonsf,
-    httr2
-Remotes: 
-    emlab-ucsb/spatialgridr,
-    emlab-ucsb/oceandatrsets
+    httr2,
+    exactextractr,
+    rnaturalearth,
+    rnaturalearthhires (>= 1.0.0.9000)
+Remotes:  
+    emlab-ucsb/oceandatrsets,
+    ropensci/rnaturalearthhires
 Depends: 
     R (>= 4.2)
 Suggests:

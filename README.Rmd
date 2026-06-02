@@ -49,7 +49,7 @@ library(oceandatr)
 
 ### Obtain an EEZ for an area of interest
 
-First we need a boundary for the area we are interested in. We can use the `get_boundary()` function, imported from `spatialgridr`, to get a boundary for land or ocean. In this example we will get Bermuda's Exclusive Economic Zone (EEZ)
+First we need a boundary for the area we are interested in. We can use the `get_boundary()` function, to get a boundary for land or ocean. In this example we will get Bermuda's Exclusive Economic Zone (EEZ)
 
 ```{r area_of_interest}
 bermuda_eez <- get_boundary(name = "Bermuda")

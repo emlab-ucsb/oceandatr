@@ -149,7 +149,7 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          temp_ras <- spatial_grid |> 
            terra::distance(terra::vect(dat)) |> 
            terra::mask(spatial_grid) |> 
-           setNames(layer_name)
+           stats::setNames(layer_name)
          
          if(inverse){
            ras_min <- as.numeric(terra::global(temp_ras, "min", na.rm = TRUE)[1])
@@ -171,7 +171,7 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
          
          spatial_grid[!is.na(spatial_grid)] <- dist_vect
          
-         spatial_grid <- setNames(spatial_grid, layer_name)
+         spatial_grid <- stats::setNames(spatial_grid, layer_name)
          
          if(inverse){
            ras_min <- as.numeric(terra::global(spatial_grid, "min", na.rm = TRUE)[1])
