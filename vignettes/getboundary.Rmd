@@ -7,9 +7,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
-
-
 ``` r
 #load oceandatr package
 library(oceandatr)
