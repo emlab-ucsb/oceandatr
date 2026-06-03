@@ -21,7 +21,6 @@ knitr::opts_chunk$set(
   crop = TRUE
 )
 
-devtools::load_all()
 ```
 
 Apart from `oceandatr`'s for retrieving data from specific datasets, such as `get_seamounts()`, there are three generic functions:
@@ -32,7 +31,7 @@ Apart from `oceandatr`'s for retrieving data from specific datasets, such as `ge
 
 This vignette show how to use these functions for get gridded data, in `terra::rast` and `sf` format, using the EEZ's of Samoa and Kiribati as examples.
 
-```{r eval=FALSE}
+```{r}
 #load the package
 library(oceandatr)
 ```
