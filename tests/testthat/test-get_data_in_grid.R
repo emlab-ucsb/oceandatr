@@ -17,11 +17,10 @@ test_that("returns Samoa example of raw data  - sf", {
 
 
 test_that("returns kiribati example (antimeridian example) of gridded data - raster", {
-  expect_s4_class(suppressWarnings(get_data_in_grid(spatial_grid = get_grid(boundary = get_boundary(name = "Kiribati", type = "eez", country_type = "sovereign"),
-                                                                                           crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs',
-                                                                                           resolution = 50000),
-                                                         dat = terra::rast(system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr")),
-                                                         antimeridian = TRUE)),
+  expect_s4_class(suppressWarnings(get_data_in_grid(spatial_grid = get_kiribati_grid(),
+                                                    dat = terra::rast(system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr")),
+                                                    antimeridian = TRUE, 
+                                                    meth = "near")),
                   class = "SpatRaster")
 
 })
