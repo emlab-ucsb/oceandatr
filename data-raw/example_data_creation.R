@@ -29,9 +29,11 @@ rbind(sf::st_crop(ridges, lhs_polygon), sf::st_crop(ridges, rhs_polygon)) |>
   saveRDS("inst/extdata/ridges_pacific.rds")
 
 #get some coral data
+#aggregate data for example purposes to keep file size small and function runtimes short
 
 system.file("extdata/cold_coral.tif", package = "oceandatrsets", mustWork = TRUE) |>
   terra::rast() |>
+  terra::aggregate(fact= 4) |>
   terra::crop(poly_samoa_kir) |>
   terra::writeRaster("inst/extdata/cold_coral_pacific.tif", gdal = c("COMPRESS=ZSTD", "PREDICTOR=2", "ZSTD_LEVEL=22", "NUM_THREADS=10"), datatype = "INT1U")
 

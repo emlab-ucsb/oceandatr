@@ -160,7 +160,7 @@ plot(kir_abyssal_features_raw[1] |> sf::st_shift_longitude(), border = FALSE)
 ```
 
 ```{r raw_data_raster}
-samoa_coral_raw <- get_data_in_grid(spatial_grid = samoa_eez, dat = cold_coral, raw = TRUE)
+samoa_coral_raw <- get_data_in_grid(spatial_grid = samoa_eez, dat = cold_coral, raw = TRUE, meth = "near")
 
 terra::plot(samoa_coral_raw)
 ```
