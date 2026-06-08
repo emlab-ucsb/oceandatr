@@ -10,7 +10,7 @@
 #'
 #' @return `terra::rast()` or `sf`; same as `dat`
 #' @noRd
-get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian){
+get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian, meth){
 
   if(is(dat, "SpatRaster")){
     if(matching_crs){
@@ -26,7 +26,7 @@ get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian){
          } else terra::crop(dat, spatial_grid_in_data_crs)
 
        data_cropped |>
-        terra::project(terra::crs(spatial_grid), method = "average") |>
+        terra::project(terra::crs(spatial_grid), method = meth) |>
         terra::mask(spatial_grid)
     }
   }else{

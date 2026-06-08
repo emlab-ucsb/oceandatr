@@ -109,7 +109,7 @@ if(is(dat, "character")) dat <- data_from_filepath(dat)
   }
 
   if(raw){
-    get_raw_data(spatial_grid, dat, matching_crs, antimeridian)
+    get_raw_data(spatial_grid, dat, matching_crs, antimeridian, meth)
 
   } else if(is(dat, "SpatRaster")){
     ras_to_grid(spatial_grid, dat, matching_crs, meth, name, antimeridian)
