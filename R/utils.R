@@ -110,14 +110,16 @@ polygon_in_4326 <-
           sf::st_union() |>
           sf::st_sf() |> 
           sf::st_wrap_dateline() |>  
-          (\(x) if(sf::st_is_valid(x)) x else sf::st_make_valid(x))()
+          (\(x) if(sf::st_is_valid(x)) x else sf::st_make_valid(x))() |> 
+          sf::st_set_geometry("geometry")
       } else{
         spatial_grid |> 
           (\(x) if(crs_is_4326) x else sf::st_transform(x, 4326))() |>  
           sf::st_union() |> 
           sf::st_sf() |> 
           sf::st_wrap_dateline() |> 
-          (\(x) if(sf::st_is_valid(x)) x else sf::st_make_valid(x))()
+          (\(x) if(sf::st_is_valid(x)) x else sf::st_make_valid(x))()|> 
+          sf::st_set_geometry("geometry")
       }
   }
 
