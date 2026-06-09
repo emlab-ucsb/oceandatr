@@ -33,10 +33,10 @@ get_enviro_zones(
   `sf` or
   [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
   grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html).
+  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
   Alternatively, if raw data is required, an `sf` polygon can be
   provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html),
+  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
   and set `raw = TRUE`.
 
 - raw:
@@ -156,8 +156,8 @@ number of available cores on your systems run
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpCgTNul/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-29 04:51:25.091922)
+#> Cache is fresh. Reading: /tmp/RtmpuD3tyd/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-09 01:12:06.144043)
 # Get raw Bio-Oracle environmental data for Bermuda
 enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 #> Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.

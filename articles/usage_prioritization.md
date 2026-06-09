@@ -33,7 +33,7 @@ terraOptions(progress = 0) #suppress the progress bars during large terra operat
 ## High Seas area of the Pacific Ocean
 
 First we retrieve geospatial data for the North Pacific Ocean using
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html),
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
 then we will crop for the area we are interested in, the planning
 region, highlighted in red on the map.
 
@@ -89,7 +89,7 @@ To make a nice context map, we can download bathymetry data using
 function, using the bounding box of the EEZs of Palau, Micronesia and
 Papua New Guinea as the input extent (grid). To get country boundaries
 to add to the map, we use the
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 functions from `oceandatr`, setting `name = NULL` so that all countries
 are downloaded. We can then plot everything using the `tmap` package,
 which is great for making nice maps.

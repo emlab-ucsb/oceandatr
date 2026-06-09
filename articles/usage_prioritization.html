@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Usage of oceandatr for spatial planning • oceandatr</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -23,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +42,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getboundary.html">Retrieving boundaries with get_boundary()</a></li>
+    <li><a class="dropdown-item" href="../articles/grid_data.html">Gridding spatial data</a></li>
     <li><a class="dropdown-item" href="../articles/usage_prioritization.html">Usage of oceandatr for spatial planning</a></li>
   </ul>
 </li>
@@ -94,10 +100,10 @@ Bioconductor website</p>
 <h2 id="high-seas-area-of-the-pacific-ocean">High Seas area of the Pacific Ocean<a class="anchor" aria-label="anchor" href="#high-seas-area-of-the-pacific-ocean"></a>
 </h2>
 <p>First we retrieve geospatial data for the North Pacific Ocean using
-<code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code>, then we will crop for the area we are
+<code><a href="../reference/get_boundary.html">get_boundary()</a></code>, then we will crop for the area we are
 interested in, the planning region, highlighted in red on the map.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">high_seas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"high_seas"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">high_seas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"high_seas"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pacific_hs_area_of_interest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/ext.html" class="external-link">ext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">135</span>, xmax <span class="op">=</span> <span class="fl">155</span>, ymin <span class="op">=</span> <span class="fl">0</span>, ymax <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="st">"epsg:4326"</span><span class="op">)</span></span>
@@ -122,7 +128,7 @@ Micronesia. We can get the EEZs of these states using
 <code class="sourceCode R"><span></span>
 <span><span class="va">country_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Indonesia"</span>, <span class="st">"Papua New Guinea"</span>, <span class="st">"Palau"</span>, <span class="st">"Micronesia"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">eezs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">country_names</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">[</span>, <span class="st">"territory1"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
+<span><span class="va">eezs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">country_names</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">[</span>, <span class="st">"territory1"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, args <span class="op">=</span> <span class="va">_</span><span class="op">)</span></span></code></pre></div>
 <p>We only want the high seas portion of the area outlined above. We can
 create a polygon for this planning region by removing the bordering
@@ -135,7 +141,7 @@ states EEZs.</p>
 <code>oceandatr</code>’s <code><a href="../reference/get_bathymetry.html">get_bathymetry()</a></code> function, using
 the bounding box of the EEZs of Palau, Micronesia and Papua New Guinea
 as the input extent (grid). To get country boundaries to add to the map,
-we use the <code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> functions from
+we use the <code><a href="../reference/get_boundary.html">get_boundary()</a></code> functions from
 <code>oceandatr</code>, setting <code>name = NULL</code> so that all
 countries are downloaded. We can then plot everything using the
 <code>tmap</code> package, which is great for making nice maps.</p>
@@ -146,7 +152,7 @@ countries are downloaded. We can then plot everything using the
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/classify.html" class="external-link">classify</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span>, <span class="cn">NA</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#retrieve country boundaries using oceandatr</span></span>
-<span><span class="va">world</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
+<span><span class="va">world</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">pacific_bathy</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="co">#multiply bathymetry by -1 to make values positive for nicer legend</span></span>
 <span>  <span class="fu">tm_raster</span><span class="op">(</span></span>
@@ -189,7 +195,7 @@ units will require more time/ computer memory get data for)</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">pacific_hs_projection</span> <span class="op">&lt;-</span> <span class="st">"+proj=cea +lon_0=145 +lat_ts=3 +datum=WGS84 +units=m +no_defs"</span></span>
 <span></span>
-<span><span class="va">pacific_hs_planning_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">pacific_hs</span><span class="op">)</span>,</span>
+<span><span class="va">pacific_hs_planning_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grid.html">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">pacific_hs</span><span class="op">)</span>,</span>
 <span>                                     crs <span class="op">=</span> <span class="va">pacific_hs_projection</span>,</span>
 <span>                                     resolution <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span> </span>
 <span></span>

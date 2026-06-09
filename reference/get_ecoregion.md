@@ -20,10 +20,10 @@ get_ecoregion(
   `sf` or
   [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
   grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html).
+  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
   Alternatively, if raw data is required, an `sf` polygon can be
   provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html),
+  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
   and set `raw = TRUE`.
 
 - raw:
@@ -74,8 +74,8 @@ The Following ecoregions can be obtained:
 ``` r
 #' # Get EEZ data first
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpCgTNul/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-05-29 04:51:25.091922)
+#> Cache is fresh. Reading: /tmp/RtmpuD3tyd/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-09 01:12:06.144043)
 # Get Marine Ecoregions of the World data
 ecoregions <- get_ecoregion(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off

@@ -29,10 +29,9 @@ library(oceandatr)
 
 First we need a boundary for the area we are interested in. We can use
 the
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
-function, imported from `spatialgridr`, to get a boundary for land or
-ocean. In this example we will get Bermuda’s Exclusive Economic Zone
-(EEZ)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
+function, to get a boundary for land or ocean. In this example we will
+get Bermuda’s Exclusive Economic Zone (EEZ)
 
 ``` r
 
@@ -47,7 +46,7 @@ plot(bermuda_eez[1], col = "lightblue", main=NULL, axes=TRUE)
 ## Get a grid
 
 We are going to get gridded data. To create a grid for Bermuda, we use
-[`get_grid()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html).
+[`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
 We need to provide a suitable projection for the area we are interested
 in, <https://projectionwizard.org> is useful for this purpose. Standard
 projections used for countries can also be found at <https://epsg.io/>
@@ -73,7 +72,7 @@ projection_bermuda <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WG
 ```
 
 We can now create a grid for Bermuda’s EEZ using
-[`get_grid()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html).
+[`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
 Along with the projection we found above, we will need to set a
 resolution: how wide and high will each grid cell be, in this case in
 metres. The units will depend on your crs and can be found using
@@ -84,8 +83,8 @@ e.g. `sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal`
 bermuda_grid <- get_grid(boundary = bermuda_eez, resolution = 5000, crs = projection_bermuda)
 
 #project the eez into same projection as grid for plotting
-bermuda_eez_projected <- bermuda_eez %>% 
-  sf::st_transform(crs = projection_bermuda) %>% 
+bermuda_eez_projected <- bermuda_eez |> 
+  sf::st_transform(crs = projection_bermuda) |> 
   sf::st_geometry()
 
 #plot the grid
@@ -167,7 +166,7 @@ are included in this package.
 
 ``` r
 
-geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>% 
+geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) |> 
   remove_empty_layers() #can remove any empty layers so we don't have so many layers to plot
 
 #brown colour indicates that geomorphological feature is present

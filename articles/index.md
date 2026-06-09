@@ -5,6 +5,9 @@
 - [Retrieving boundaries with
   get_boundary()](https://emlab-ucsb.github.io/oceandatr/articles/getboundary.md):
 
+- [Gridding spatial
+  data](https://emlab-ucsb.github.io/oceandatr/articles/grid_data.md):
+
 - [Usage of oceandatr for spatial
   planning](https://emlab-ucsb.github.io/oceandatr/articles/usage_prioritization.md):
 

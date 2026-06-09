@@ -6,7 +6,7 @@
 library(oceandatr)
 ```
 
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 can be used to retrieve a variety of marine and terrestrial boundary
 types. Details on the options are in the help file `?get_boundary()`,
 but figuring out exactly how to get a particular type of boundary can
@@ -14,20 +14,20 @@ still be confusing. Here we provide some examples.
 
 ## Marine boundaries
 
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 uses the
 [`mregions2::mrp_get()`](https://docs.ropensci.org/mregions2/reference/mrp_get.html)
 function from the [`mregions2`](https://lifewatch.github.io/mregions2/)
 package - the R package for the Marine Regions database. This database
 is quite extensive and has several options for querying areas.
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 is not intended to provide all the functionality of `mregions2`, just a
 slightly simpler interface for getting commonly used boundaries such as
 exclusive economic zones (EEZs), global ocean boundaries, and high seas
 areas.
 
 When using
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 with `type = "eez"`, `type = "12nm"` or `type = "24nm"`, the
 `country_type` can be either `country_type = "country"` or
 `country_type = "sovereign"`. Using `"country"` returns only the EEZ,
@@ -122,7 +122,7 @@ Kiribati’s EEZ. World coastlines are shown as dashed line for reference.
 
 The `mregions2` package can be used to query many different marine
 boundaries, not all of which are included as options for
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html):
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md):
 
 ``` r
 
@@ -155,7 +155,7 @@ mregions2::mrp_list[,c("title", "layer")]
 
 ## Land boundaries
 
-[`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html)
+[`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 uses the
 [`rnaturalearth::ne_countries()`](https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html)
 function from the

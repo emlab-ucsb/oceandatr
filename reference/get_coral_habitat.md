@@ -23,10 +23,10 @@ get_coral_habitat(
   `sf` or
   [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
   grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html).
+  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
   Alternatively, if raw data is required, an `sf` polygon can be
   provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html),
+  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
   and set `raw = TRUE`.
 
 - raw:
@@ -96,6 +96,8 @@ models for the following species groups:
 ``` r
 # Get EEZ data first
 bermuda_eez <- get_boundary(name = "Bermuda")
+#> Cache is fresh. Reading: /tmp/RtmpuD3tyd/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-09 01:12:06.144043)
 # Get raw coral habitat data
 coral_habitat <- get_coral_habitat(spatial_grid = bermuda_eez, raw = TRUE)
 terra::plot(coral_habitat)

@@ -4,8 +4,12 @@
 
 - [`get_bathymetry()`](https://emlab-ucsb.github.io/oceandatr/reference/get_bathymetry.md)
   : Get bathymetry data
+- [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
+  : Get boundaries for an area of interest
 - [`get_coral_habitat()`](https://emlab-ucsb.github.io/oceandatr/reference/get_coral_habitat.md)
   : Get coral habitat suitability data
+- [`get_data_in_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_data_in_grid.md)
+  : Get gridded or cropped data from input data
 - [`get_dist()`](https://emlab-ucsb.github.io/oceandatr/reference/get_dist.md)
   : Get distance to port or shore for a spatial grid
 - [`get_ecoregion()`](https://emlab-ucsb.github.io/oceandatr/reference/get_ecoregion.md)
@@ -18,6 +22,8 @@
   : Get seafloor geomorphology data
 - [`get_gfw()`](https://emlab-ucsb.github.io/oceandatr/reference/get_gfw.md)
   : Get data from Global Fishing Watch
+- [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md)
+  : Create a spatial grid
 - [`get_knolls()`](https://emlab-ucsb.github.io/oceandatr/reference/get_knolls.md)
   : Get knolls base areas
 - [`get_seamounts()`](https://emlab-ucsb.github.io/oceandatr/reference/get_seamounts.md)

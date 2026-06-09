@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Ocean Data Acquisition and processing • oceandatr</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -23,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +42,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/getboundary.html">Retrieving boundaries with get_boundary()</a></li>
+    <li><a class="dropdown-item" href="articles/grid_data.html">Gridding spatial data</a></li>
     <li><a class="dropdown-item" href="articles/usage_prioritization.html">Usage of oceandatr for spatial planning</a></li>
   </ul>
 </li>
@@ -82,9 +88,9 @@
 <div class="section level3">
 <h3 id="obtain-an-eez-for-an-area-of-interest">Obtain an EEZ for an area of interest<a class="anchor" aria-label="anchor" href="#obtain-an-eez-for-an-area-of-interest"></a>
 </h3>
-<p>First we need a boundary for the area we are interested in. We can use the <code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> function, imported from <code>spatialgridr</code>, to get a boundary for land or ocean. In this example we will get Bermuda’s Exclusive Economic Zone (EEZ)</p>
+<p>First we need a boundary for the area we are interested in. We can use the <code><a href="reference/get_boundary.html">get_boundary()</a></code> function, to get a boundary for land or ocean. In this example we will get Bermuda’s Exclusive Economic Zone (EEZ)</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bermuda_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Bermuda"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#plot to check we have Bermuda's EEZ</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"lightblue"</span>, main<span class="op">=</span><span class="cn">NULL</span>, axes<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -93,18 +99,18 @@
 <div class="section level2">
 <h2 id="get-a-grid">Get a grid<a class="anchor" aria-label="anchor" href="#get-a-grid"></a>
 </h2>
-<p>We are going to get gridded data. To create a grid for Bermuda, we use <code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid()</a></code>. We need to provide a suitable projection for the area we are interested in, <a href="https://projectionwizard.org" class="external-link uri">https://projectionwizard.org</a> is useful for this purpose. Standard projections used for countries can also be found at <a href="https://epsg.io/" class="external-link uri">https://epsg.io/</a> by searching with country name. For spatial planning, equal area projections are normally best.</p>
+<p>We are going to get gridded data. To create a grid for Bermuda, we use <code><a href="reference/get_grid.html">get_grid()</a></code>. We need to provide a suitable projection for the area we are interested in, <a href="https://projectionwizard.org" class="external-link uri">https://projectionwizard.org</a> is useful for this purpose. Standard projections used for countries can also be found at <a href="https://epsg.io/" class="external-link uri">https://epsg.io/</a> by searching with country name. For spatial planning, equal area projections are normally best.</p>
 <p>The bounding box coordinates for the area of interest can be found using <code>sf::st_bbox(bermuda_eez)</code> and these can then be used to generate the coordinate reference system (CRS) on <a href="https://projectionwizard.org" class="external-link">projection wizard</a></p>
 <p>The coordinates above should be entered as the ‘Geographic extent’ and the map should then have a box drawn around the bounding box of the area of interest. The projection can then be copied and pasted from the pop-up box when clicking on ‘WKT’ or ‘PROJ’. For brevity, we are using the PROJ string, but WKT is now <a href="https://inbo.github.io/tutorials/tutorials/spatial_crs_coding/" class="external-link">generally preferred</a>. The projection needs to be placed in quotation marks as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">projection_bermuda</span> <span class="op">&lt;-</span> <span class="st">'+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'</span></span></code></pre></div>
-<p>We can now create a grid for Bermuda’s EEZ using <code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid()</a></code>. Along with the projection we found above, we will need to set a resolution: how wide and high will each grid cell be, in this case in metres. The units will depend on your crs and can be found using e.g. <code>sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal</code></p>
+<p>We can now create a grid for Bermuda’s EEZ using <code><a href="reference/get_grid.html">get_grid()</a></code>. Along with the projection we found above, we will need to set a resolution: how wide and high will each grid cell be, in this case in metres. The units will depend on your crs and can be found using e.g. <code>sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal</code></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, resolution <span class="op">=</span> <span class="fl">5000</span>, crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bermuda_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid.html">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, resolution <span class="op">=</span> <span class="fl">5000</span>, crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#project the eez into same projection as grid for plotting</span></span>
-<span><span class="va">bermuda_eez_projected</span> <span class="op">&lt;-</span> <span class="va">bermuda_eez</span> <span class="op">%&gt;%</span> </span>
-<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span><span class="va">bermuda_eez_projected</span> <span class="op">&lt;-</span> <span class="va">bermuda_eez</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#plot the grid</span></span>
@@ -113,7 +119,7 @@
 <p><img src="reference/figures/README-bermuda-grid-1.png" alt="" style="display: block; margin: auto;"></p>
 <p>The raster covers Bermuda’s EEZ. The grid cells would be too small to see if we plotted them, but here is a coarser grid (lower resolution) visualized so we can see what the grid cells look like.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bermuda_grid_coarse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html" class="external-link">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, resolution <span class="op">=</span> <span class="fl">20000</span>, crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bermuda_grid_coarse</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid.html">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">bermuda_eez</span>, resolution <span class="op">=</span> <span class="fl">20000</span>, crs <span class="op">=</span> <span class="va">projection_bermuda</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bermuda_eez_projected</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html" class="external-link">as.polygons</a></span><span class="op">(</span><span class="va">bermuda_grid_coarse</span>, dissolve <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -155,7 +161,7 @@
 </h2>
 <p>The seafloor has its own valleys, plains and other geomorphological features just as on land. These data come from <a href="https://doi.org/10.1016/j.margeo.2014.01.011" class="external-link">Harris et al. 2014, Geomorphology of the Oceans</a> and are available for download from <a href="https://www.bluehabitats.org" class="external-link uri">https://www.bluehabitats.org</a>, but all but depth classifications (which can be created using <code><a href="reference/get_bathymetry.html">get_bathymetry()</a></code>) and seamounts (which can be retrieved from a more recent dataset using <code><a href="reference/get_seamounts.html">get_seamounts()</a></code>) are included in this package.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">geomorphology</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_geomorphology.html">get_geomorphology</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<code class="sourceCode R"><span><span class="va">geomorphology</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_geomorphology.html">get_geomorphology</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/remove_empty_layers.html">remove_empty_layers</a></span><span class="op">(</span><span class="op">)</span> <span class="co">#can remove any empty layers so we don't have so many layers to plot</span></span>
 <span></span>
 <span><span class="co">#brown colour indicates that geomorphological feature is present</span></span>

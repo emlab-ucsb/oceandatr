@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Retrieving boundaries with get_boundary() • oceandatr</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -20,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +39,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getboundary.html">Retrieving boundaries with get_boundary()</a></li>
+    <li><a class="dropdown-item" href="../articles/grid_data.html">Gridding spatial data</a></li>
     <li><a class="dropdown-item" href="../articles/usage_prioritization.html">Usage of oceandatr for spatial planning</a></li>
   </ul>
 </li>
@@ -67,7 +73,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#load oceandatr package</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://emlab-ucsb.github.io/oceandatr/">oceandatr</a></span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> can be used to retrieve a variety of
+<p><code><a href="../reference/get_boundary.html">get_boundary()</a></code> can be used to retrieve a variety of
 marine and terrestrial boundary types. Details on the options are in the
 help file <code>?get_boundary()</code>, but figuring out exactly how to
 get a particular type of boundary can still be confusing. Here we
@@ -75,15 +81,15 @@ provide some examples.</p>
 <div class="section level2">
 <h2 id="marine-boundaries">Marine boundaries<a class="anchor" aria-label="anchor" href="#marine-boundaries"></a>
 </h2>
-<p><code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> uses the
+<p><code><a href="../reference/get_boundary.html">get_boundary()</a></code> uses the
 <code><a href="https://docs.ropensci.org/mregions2/reference/mrp_get.html" class="external-link">mregions2::mrp_get()</a></code> function from the <a href="https://lifewatch.github.io/mregions2/" class="external-link"><code>mregions2</code></a>
 package - the R package for the Marine Regions database. This database
 is quite extensive and has several options for querying areas.
-<code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> is not intended to provide all the
+<code><a href="../reference/get_boundary.html">get_boundary()</a></code> is not intended to provide all the
 functionality of <code>mregions2</code>, just a slightly simpler
 interface for getting commonly used boundaries such as exclusive
 economic zones (EEZs), global ocean boundaries, and high seas areas.</p>
-<p>When using <code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> with
+<p>When using <code><a href="../reference/get_boundary.html">get_boundary()</a></code> with
 <code>type = "eez"</code>, <code>type = "12nm"</code> or
 <code>type = "24nm"</code>, the <code>country_type</code> can be either
 <code>country_type = "country"</code> or
@@ -97,7 +103,7 @@ examples below show how this works.</p>
 ignored.</p>
 <p>Here is a simple query to get Australia’s EEZ:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">aus_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, type <span class="op">=</span> <span class="st">"eez"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">aus_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, type <span class="op">=</span> <span class="st">"eez"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">aus_eez</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, axes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure/australia_eez-1.png" alt="" style="display: block; margin: auto;"></p>
@@ -105,7 +111,7 @@ ignored.</p>
 <code>country_type</code> from the default <code>"country"</code> to
 <code>"sovereign"</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">aus_eez_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">aus_eez_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">aus_eez_sov</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, axes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure/australia_eez_sovereign-1.png" alt="" style="display: block; margin: auto;"></p>
@@ -120,9 +126,9 @@ France is retrieved if <code>country_type = "country"</code>, but
 setting <code>country_type = "sovereign"</code> we also get all the
 islands France has sovereignty over.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fr_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fr_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fr_eez_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
+<span><span class="va">fr_eez_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">fr_eez_sov</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">1</span>, axes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -142,11 +148,11 @@ each island group is listed as a country. Note that if the
 <code>country_type</code> options to chose from is provided (only part
 of the output is shown for brevity):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Kiribati"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Kiribati"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figs/eez_countries_list.png" alt="" style="display: block; margin: auto;"></p>
 <p>Try again, setting <code>country_type = "sovereign"</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kir_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Kiribati"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">kir_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Kiribati"</span>, type <span class="op">=</span> <span class="st">"eez"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">kir_eez</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"royalblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">rnaturalearth</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_coastline.html" class="external-link">ne_coastline</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">110</span><span class="op">)</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, lty <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -157,7 +163,7 @@ Kiribati’s EEZ. World coastlines are shown as dashed line for reference.
 </div>
 <p>The <code>mregions2</code> package can be used to query many
 different marine boundaries, not all of which are included as options
-for <code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code>:</p>
+for <code><a href="../reference/get_boundary.html">get_boundary()</a></code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mregions2</span><span class="fu">::</span><span class="va"><a href="https://docs.ropensci.org/mregions2/reference/mrp_list.html" class="external-link">mrp_list</a></span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"title"</span>, <span class="st">"layer"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <table class="table">
@@ -267,7 +273,7 @@ control)</td>
 <div class="section level2">
 <h2 id="land-boundaries">Land boundaries<a class="anchor" aria-label="anchor" href="#land-boundaries"></a>
 </h2>
-<p><code><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary()</a></code> uses the
+<p><code><a href="../reference/get_boundary.html">get_boundary()</a></code> uses the
 <code><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">rnaturalearth::ne_countries()</a></code> function from the
 [<code>rnaturalearth``](https://docs.ropensci.org/rnaturalearth/index.html) package to retrieve land boundaries.</code>get_boundary()`
 is only intended to provide a slightly simpler interface for getting
@@ -284,7 +290,7 @@ for querying.</p>
 <p>If we query France setting <code>country_type = "country"</code> we
 get:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">france</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">france</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">france</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">rnaturalearth</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_coastline.html" class="external-link">ne_coastline</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">110</span><span class="op">)</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, lty <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -297,7 +303,7 @@ status as mainland France.</p>
 France’s overseas territories in the Pacific, Atlantic and
 Antarctic:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">france_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html" class="external-link">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">france_sov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"France"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">france_sov</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">rnaturalearth</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_coastline.html" class="external-link">ne_coastline</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">110</span><span class="op">)</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span>, lty <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>

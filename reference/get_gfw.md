@@ -35,10 +35,10 @@ get_gfw(
   `sf` or
   [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
   grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_grid.html).
+  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
   Alternatively, if raw data is required, an `sf` polygon can be
   provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/spatialgridr/reference/get_boundary.html),
+  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
   and set `raw = TRUE`.
 
 - raw:
