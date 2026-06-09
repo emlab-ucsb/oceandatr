@@ -33,9 +33,8 @@ library(oceandatr)
 ### Obtain an EEZ for an area of interest
 
 First we need a boundary for the area we are interested in. We can use
-the `get_boundary()` function, imported from `spatialgridr`, to get a
-boundary for land or ocean. In this example we will get Bermuda’s
-Exclusive Economic Zone (EEZ)
+the `get_boundary()` function, to get a boundary for land or ocean. In
+this example we will get Bermuda’s Exclusive Economic Zone (EEZ)
 
 ``` r
 bermuda_eez <- get_boundary(name = "Bermuda")
@@ -82,8 +81,8 @@ e.g. `sf::st_crs(projection_bermuda, parameters = TRUE)$units_gdal`
 bermuda_grid <- get_grid(boundary = bermuda_eez, resolution = 5000, crs = projection_bermuda)
 
 #project the eez into same projection as grid for plotting
-bermuda_eez_projected <- bermuda_eez %>% 
-  sf::st_transform(crs = projection_bermuda) %>% 
+bermuda_eez_projected <- bermuda_eez |> 
+  sf::st_transform(crs = projection_bermuda) |> 
   sf::st_geometry()
 
 #plot the grid
@@ -159,7 +158,7 @@ seamounts (which can be retrieved from a more recent dataset using
 `get_seamounts()`) are included in this package.
 
 ``` r
-geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) %>% 
+geomorphology <- get_geomorphology(spatial_grid = bermuda_grid) |> 
   remove_empty_layers() #can remove any empty layers so we don't have so many layers to plot
 
 #brown colour indicates that geomorphological feature is present

@@ -97,14 +97,9 @@ terra::plot(depth_zones)
 
 #It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE
 # and classify_bathymetry = FALSE
-
-bermuda_grid_sf <- get_grid(boundary = bermuda_eez, 
-                            crs = bermuda_crs, 
-                            resolution = 20000, 
-                            output = "sf_hex")
   
-gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid_sf, 
+gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, 
                                      classify_bathymetry = FALSE)
                                      
-plot(gridded_bathymetry)
+terra::plot(gridded_bathymetry)
 }

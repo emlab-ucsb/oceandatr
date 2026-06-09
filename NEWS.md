@@ -1,5 +1,10 @@
 # oceandatr (development version)
 
+# oceandatr 0.3.0
+* `spatialgridr` package functions (get_boundary(), get_grid(), and get_data_in_grid()) integrated into `oceandatr`
+* Dependency on `spatialgridr` removed
+* Speeded up tests and examples by downscaling cold_coral example data, and reducing number of bathymetry data tests and examples
+
 # oceandatr 0.2.6
 * Remove `gfwr` package dependency
 * Add `gfw_ais()` internal function for GFW API call. This is a simplified version of `gfwr` package functions.

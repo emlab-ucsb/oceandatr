@@ -42,20 +42,18 @@ check_antimeridian <- function(sf_object, dat){
 #' @return `sf` or `terra::rast` format data
 #' @noRd
 data_from_filepath <- function(dat){
-  ## First deal with whether the input is a file or a dataset
-  if (is(dat, "character")) { # If a file, we need to load the data
     
     ext <- tools::file_ext(dat)
     nm <- basename(dat)
+
     if (ext %in% c("tif", "tiff", "grd", "gri")) {
       print("Data is in raster format")
-      dat <- terra::rast(dat)
+      terra::rast(dat)
     } else if (ext %in% c("shp", "gpkg")) {
       print("Data is in vector format")
-      dat <- sf::read_sf(dat)
-    }
-  }
-  return(dat)
+      sf::read_sf(dat)
+    } else
+        stop(nm, " does not appear to be in one of the common spatial data formats, try reading it directly using e.g. `terra::rast()` or `sf::st_read()`")
 }
 
 #' Classify sf or raster data based on data breaks provided

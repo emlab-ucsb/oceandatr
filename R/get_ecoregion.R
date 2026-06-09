@@ -72,7 +72,7 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
      }else{
        ecoregion_data <- spatial_grid |>  
          terra::subst(1, 0) |>  
-         setNames("ecoregion")
+         stats::setNames("ecoregion")
      }
    }
  }
