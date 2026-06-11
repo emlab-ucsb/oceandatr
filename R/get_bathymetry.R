@@ -1,6 +1,6 @@
 #' Get bathymetry data
 #'
-#' @description Get bathymetry data from the GEBCO 2025 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting `classify_bathymetry = TRUE`
+#' @description Get bathymetry data from the GEBCO 2026 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting `classify_bathymetry = TRUE`
 #'
 #' @details Extracts bathymetry data for an `area_polygon`, or if a
 #'   `spatial_grid` is supplied, gridded bathymetry is returned.
@@ -18,9 +18,9 @@
 #'   If the user has downloaded bathymetry data for the area of interest, for
 #'   example from GEBCO (https://www.gebco.net), they can pass the file path to
 #'   this function in `bathymetry_data_filepath`. If no file path is provided,
-#'   the function will extract bathymetry data for the area from the GEBCO 2025
+#'   the function will extract bathymetry data for the area from the GEBCO 2026
 #'   global terrain model (sub-ice) from  the Natural Environment Research Council's (NERC) Centre for Environmental Data Analysis (CEDA)
-#'   (https://data.ceda.ac.uk/bodc/gebco/global/gebco_2025). 
+#'   (https://data.ceda.ac.uk/bodc/gebco/global/gebco_2026). 
 #'
 #' @param spatial_grid `sf` or `terra::rast()` grid, e.g. created using
 #'   `get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
@@ -36,8 +36,10 @@
 #' @param bathymetry_data_filepath `string`; the file path (including file name
 #'   and extension) where bathymetry raster data are saved locally
 #' @param name `string`; name of raster or column in sf object that is returned
-#' @param path `string`; the folder path where you would like to save the bathymetry
-#'   data. Defaults to `tempdir()`
+#' @param path `string`; the folder path where you would like to save the
+#'   bathymetry data. Defaults to `tempdir()`. If you are downloading data for
+#'   large areas (e.g. whole oceans), we strongly recommend you set your own
+#'   path to save to.
 #' @param antimeridian Does `spatial_grid` span the antimeridian? If so, this
 #'   should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
 #'   (default) the function will try to check if `spatial_grid` spans the
@@ -67,7 +69,7 @@
 #' 
 #' bermuda_grid <- get_grid(boundary = bermuda_eez, 
 #'                          crs = bermuda_crs, 
-#'                          resolution = 20000)
+#'                          resolution = 10000)
 #'                          
 #' depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 #' terra::plot(depth_zones)
@@ -141,7 +143,7 @@ get_bathymetry <- function(spatial_grid = NULL, raw = FALSE, classify_bathymetry
     return(bathymetry)
   }
 }
-#This function extracts relief data for the area of interest from the GEBCO 2025 grid
+#This function extracts relief data for the area of interest from the GEBCO 2026 grid
 #This is a helper function for get_bathymetry()
 
 get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
@@ -170,64 +172,134 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
   
   path <- if(is.null(path)) tempdir() else path
   
-  if(file_name %in% list.files(path = path)) {
-    message("Bathymetry data already downloaded, using cached version", 
-            sep = "")
-    return(terra::rast(file.path(path, file_name)))  
-  }
+  file_path <- file.path(path, file_name)
   
-  gebco_data_fetch <- function(min_x, max_x){
-    #Add or subtract 1 arc minute (4 steps in the index) to each coordinate to ensure we get the full extent
-    
-    index_min_x <- which.min(abs(nc_lon_vals - min_x)) -4
-    index_max_x <- which.min(abs(nc_lon_vals - max_x)) +4
-    index_min_y <- which.min(abs(nc_lat_vals - min_y)) -4
-    index_max_y <- which.min(abs(nc_lat_vals - max_y)) +4
-    
-    #make sure we don't go out of the index range (due to the +/-2 adjustment)
-    if(index_min_x < 1) index_min_x <- 1
-    if(index_max_x > length(nc_lon_vals)) index_max_x <- length(nc_lon_vals)
-    if(index_min_y < 1) index_min_y <- 1
-    if(index_max_y > length(nc_lat_vals)) index_max_y <- length(nc_lat_vals)
-    
-    x_count <- abs(index_max_x - index_min_x)
-    
-    y_count <- abs(index_max_y - index_min_y)
-    
-    bathy_arr <- ncdf4::ncvar_get(nc, "elevation", start = c(index_min_x, index_min_y), count = c(x_count, y_count))
-    
-   terra::rast(t(bathy_arr), 
-               crs = ncdf4::ncatt_get(nc, "crs")$epsg_code,
-               ext = c(nc_lon_vals[index_min_x], nc_lon_vals[index_max_x], nc_lat_vals[index_min_y], nc_lat_vals[index_max_y])) |> 
-     terra::flip()
+  if(file_name %in% list.files(path = path)) {
+    message("Bathymetry data already downloaded, loading data from: ",
+            file_path)
+    return(terra::rast(file_path))  
   }
   
   #GEBCO data url
-  url <- "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2025/sub_ice_topography_bathymetry/netcdf/gebco_2025_sub_ice.nc"
+  gebco_url <- "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc"
   
   #open the connection to the remote netcdf file
-  nc <- ncdf4::nc_open(url)
+  nc <- ncdf4::nc_open(gebco_url)
+  on.exit(ncdf4::nc_close(nc))
   
+  if(antimeridian){
+    
+    #Get left hand side of antimeridian
+    file_path_left <- paste0("bathy_", min_x_left, "_", max_x_left, "_", min_y, "_", max_y, ".tif") 
+    
+    message("Grid or polygon crosses the antimeridian, getting bathymetry from the left hand side of the antimeridian")
+    gebco_data_fetch(min_x_left, max_x_left, min_y, max_y, nc, file_path = file_path_left)
+    
+    #Get right hand side
+    file_path_right <- paste0("bathy_", min_x_right, "_", max_x_right, "_", min_y, "_", max_y, ".tif") 
+    
+    message("Grid or polygon crosses the antimeridian, getting bathymetry from the right hand side of the antimeridian")
+    gebco_data_fetch(min_x_right, max_x_right, min_y, max_y, nc, file_path_right)
+    
+    message("Merging the left and right hand side into a single raster")
+    terra::merge(terra::rast(file_path_left), terra::rast(file_path_right), filename = file_path) 
+    
+  } else{
+    gebco_data_fetch(min_x, max_x, min_y, max_y, nc, file_path)
+  }
+  
+  terra::rast(file_path) |> 
+    stats::setNames("elevation")
+  
+}
+
+gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path){
+  
+  #get the possible lat and long values from the NetCDF file
   nc_lat_vals <- nc$dim$lat$vals
   nc_lon_vals <- nc$dim$lon$vals
   
-  if(antimeridian){
-    left <- gebco_data_fetch(min_x_left, max_x_left)
-    right <- gebco_data_fetch(min_x_right, max_x_right)
+  #Add or subtract 1 arc minute (4 steps in the index) to each coordinate to ensure we get the full extent
+  
+  index_min_lon <- which.min(abs(nc_lon_vals - min_x)) -4
+  index_max_lon <- which.min(abs(nc_lon_vals - max_x)) +4
+  index_min_lat <- which.min(abs(nc_lat_vals - min_y)) -4
+  index_max_lat <- which.min(abs(nc_lat_vals - max_y)) +4
+  
+  #make sure we don't go out of the index range (due to the +/-2 adjustment)
+  if(index_min_lon < 1) index_min_lon <- 1
+  if(index_max_lon > length(nc_lon_vals)) index_max_lon <- length(nc_lon_vals)
+  if(index_min_lat < 1) index_min_lat <- 1
+  if(index_max_lat > length(nc_lat_vals)) index_max_lat <- length(nc_lat_vals)
+  
+  n_lon <- abs(index_max_lon - index_min_lon)
+  
+  n_lat <- abs(index_max_lat - index_min_lat)
+  
+  # From GEBCO website: "15 arc-second interval grid of 43200 rows x 86400 columns, giving 3,732,480,000 data points" (GEBCO 2026)
+  # this can result in large file sizes and can quickly fill up memory, so download will be done in chunks and written straight to 
+  # to disk 
+  
+  # set threshold at 15 million for cells in a chunk, c.f. Bermuda bathmetry is 3.3 million in GEBCO 2026 grid
+  
+  max_cells_at_a_time <- 15e6
+  
+  #how many rows of ncdf to read in a chunk, must be less than the total number of rows (n_lat)
+  rows_in_chunk <- min(ceiling(max_cells_at_a_time/n_lon), n_lat) 
+  
+  # Initialize a local raster template on disk
+  # Extent of raster defined by extracting min and max lat and lon from ncdf file using indexes
+  rast_bounds <- c(nc_lon_vals[index_min_lon], nc_lon_vals[index_max_lon], nc_lat_vals[index_min_lat], nc_lat_vals[index_max_lat])
+  
+  local_rast <- terra::rast(crs = ncdf4::ncatt_get(nc, "crs")$epsg_code,
+                            extent = rast_bounds,
+                            nrows = n_lat,
+                            ncols = n_lon)
+  
+  #define start of each chunk for reading, this will be relative to `index_min_lat` - 1
+  row_index_for_ncdf_read <- seq(1, n_lat, by = rows_in_chunk)
+  
+  #define row index for chunk writing - this has to be in reverse order for terra
+  # i.e. start writing the bottom rows in the raster, and work to the top, due to 
+  # the difference in the NetCDF and terra file specs
+  row_index_for_chunk_writing <- seq(n_lat, 1, by = -rows_in_chunk) - rows_in_chunk
+  
+  #make sure the final chunk is written at row 1 (don't go negative!)
+  row_index_for_chunk_writing[row_index_for_chunk_writing<1] <- 1
+  
+  # Initialize the terra writing session
+  read_write_info <- terra::writeStart(local_rast, filename = file_path, overwrite = TRUE)
+  
+  # Read from remote netcdf, write to Geotiff in chunks
+  for (i in seq_along(row_index_for_ncdf_read)) {
     
-    bath <- terra::merge(left, right) |> 
-      stats::setNames("bathymetry")
-  } else{
-    bath <- gebco_data_fetch(min_x, max_x) |> 
-      stats::setNames("bathymetry")
+    # How many rows to fetch in this block: avoids going past end of rows required (max is n_lat)
+    rows_to_get <- min(rows_in_chunk, n_lat - row_index_for_ncdf_read[i] + 1)
+    
+    start_row <- index_min_lat + row_index_for_ncdf_read[i] - 1
+    
+    # ncdf4 reads datasets as [lon, lat] 
+    # start: [lon_start, lat_start] | count: [lon_count, lat_count]
+    # Read ALL longitudes (index_min_lon to n_lon) but only a chunk of latitudes (rows)
+    chunk_data <-ncdf4::ncvar_get(nc, "elevation", 
+                                  start = c(index_min_lon, start_row), 
+                                  count = c(n_lon, rows_to_get)) 
+    
+    # NetCDF matrix is inverted relative to how terra expects it, so corrections is applied during
+    # writing of values
+    
+    # Write this specific spatial slice directly to the hard drive
+    terra::writeValues(local_rast, chunk_data[,ncol(chunk_data):1], row_index_for_chunk_writing[i], rows_to_get)
+    
+    # Housekeeping: free memory inside the loop
+    rm(chunk_data)
+    gc()
+    
+    message(sprintf("Downloaded and saved data chunk %d of %d", i, length(row_index_for_ncdf_read)))
+    
   }
   
-  if(!terra::inMemory(bath)) terra::set.values(bath)
-  
-  terra::writeRaster(bath, filename = file.path(path, file_name))
-  
-  ncdf4::nc_close(nc) 
-  
-  return(bath)
+  terra::writeStop(local_rast)
+  message("Finished! Data successfully streamed to ", file_path)
   
 }

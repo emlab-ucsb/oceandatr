@@ -112,10 +112,12 @@ bathymetry. If the user has bathymetry data for their area of interest
 already, they can pass the file path to this function and it will grid
 the data using the supplied spatial grid. If no file path is provided,
 the function will extract bathymetry data for the area from the [GEBCO
-2025 global terrain model](https://www.gebco.net).
+2026 global terrain model](https://www.gebco.net).
 
 ``` r
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
+#> Downloaded and saved data chunk 1 of 1
+#> Finished! Data successfully streamed to /tmp/RtmpEb15Vo/bathy_-68.93_-60.69_28.9_35.81.tif
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
@@ -138,7 +140,7 @@ We can get the depth zones for Bermuda simply by setting the
 
 ``` r
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
-#> Bathymetry data already downloaded, using cached version
+#> Bathymetry data already downloaded, loading data from: /tmp/RtmpEb15Vo/bathy_-68.93_-60.69_28.9_35.81.tif
 
 #value of 1 indicates that depth zone is present
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})
