@@ -70,8 +70,8 @@ fill from top to bottom, left to right.
 ``` r
 # use get_boundary() to get a polygon of Samoa's Exclusive Economic Zone
 samoa_eez <- get_boundary(name = "Samoa")
-#> Cache is fresh. Reading: /tmp/RtmpuD3tyd/eez-d0aa43d6/eez.shp
-#> (Last Modified: 2026-06-09 01:12:30.344456)
+#> Cache is fresh. Reading: /tmp/RtmpEtS2Us/eez-d0aa43d6/eez.shp
+#> (Last Modified: 2026-06-11 22:46:28.274498)
 # You need a suitable coordinate reference system (crs) for your area of interest,
 # https://projectionwizard.org is useful for this purpose. For spatial planning,
 # equal area projections are normally best.

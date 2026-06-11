@@ -1,6 +1,6 @@
 # Get bathymetry data
 
-Get bathymetry data from the GEBCO 2025 global terrain model. If data
+Get bathymetry data from the GEBCO 2026 global terrain model. If data
 are already downloaded locally, the user can specify the file path of
 the dataset. Data can be classified into depth zones by setting
 `classify_bathymetry = TRUE`
@@ -62,7 +62,9 @@ get_bathymetry(
 - path:
 
   `string`; the folder path where you would like to save the bathymetry
-  data. Defaults to [`tempdir()`](https://rdrr.io/r/base/tempfile.html)
+  data. Defaults to [`tempdir()`](https://rdrr.io/r/base/tempfile.html).
+  If you are downloading data for large areas (e.g. whole oceans), we
+  strongly recommend you set your own path to save to.
 
 - antimeridian:
 
@@ -103,9 +105,9 @@ If the user has downloaded bathymetry data for the area of interest, for
 example from GEBCO (https://www.gebco.net), they can pass the file path
 to this function in `bathymetry_data_filepath`. If no file path is
 provided, the function will extract bathymetry data for the area from
-the GEBCO 2025 global terrain model (sub-ice) from the Natural
+the GEBCO 2026 global terrain model (sub-ice) from the Natural
 Environment Research Council's (NERC) Centre for Environmental Data
-Analysis (CEDA) (https://data.ceda.ac.uk/bodc/gebco/global/gebco_2025).
+Analysis (CEDA) (https://data.ceda.ac.uk/bodc/gebco/global/gebco_2026).
 
 ## Examples
 
@@ -116,8 +118,10 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, 
                              raw = TRUE, 
                              classify_bathymetry = FALSE)
+#> Error in R_nc4_open: NetCDF: I/O failure
+#> Error in ncdf4::nc_open(gebco_url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )
 terra::plot(bathymetry)
-
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'bathymetry' not found
 # Get depth zones in spatial_grid
 
 #equal area projection for Bermuda
@@ -125,18 +129,22 @@ bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +un
 
 bermuda_grid <- get_grid(boundary = bermuda_eez, 
                          crs = bermuda_crs, 
-                         resolution = 20000)
+                         resolution = 10000)
                          
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
+#> Error in R_nc4_open: NetCDF: I/O failure
+#> Error in ncdf4::nc_open(gebco_url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )
 terra::plot(depth_zones)
-
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'depth_zones' not found
 
 #It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE
 # and classify_bathymetry = FALSE
   
 gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, 
                                      classify_bathymetry = FALSE)
-#> Bathymetry data already downloaded, using cached version
+#> Error in R_nc4_open: NetCDF: I/O failure
+#> Error in ncdf4::nc_open(gebco_url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )
                                      
 terra::plot(gridded_bathymetry)
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'gridded_bathymetry' not found
 ```

@@ -8,12 +8,12 @@
 ## Citation
 
 Flower J (2026). *oceandatr: Ocean Data Acquisition and processing*. R
-package version 0.3.0, <https://emlab-ucsb.github.io/oceandatr/>.
+package version 0.4.0, <https://emlab-ucsb.github.io/oceandatr/>.
 
     @Manual{,
       title = {oceandatr: Ocean Data Acquisition and processing},
       author = {Jason Flower},
       year = {2026},
-      note = {R package version 0.3.0},
+      note = {R package version 0.4.0},
       url = {https://emlab-ucsb.github.io/oceandatr/},
     }

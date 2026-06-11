@@ -2,6 +2,18 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.4.0
+
+- [`get_bathymetry()`](https://emlab-ucsb.github.io/oceandatr/reference/get_bathymetry.md)
+  now downloads data in chunks direct to disk to allow download of large
+  areas
+- [`get_bathymetry()`](https://emlab-ucsb.github.io/oceandatr/reference/get_bathymetry.md)
+  pulls data from the latests GEBCO 2026 data
+- fixed a minor issue in `polygon_in_4326()` to ensure geometry column
+  is named geometry
+- Update readme file to list GEBCO 2026 as source and update bathymetry
+  map
+
 ## oceandatr 0.3.0
 
 - `spatialgridr` package functions (get_boundary(), get_grid(), and
