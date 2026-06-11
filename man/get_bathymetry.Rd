@@ -36,8 +36,10 @@ to \code{NA} (\code{TRUE}) or zero (\code{FALSE})}
 \item{bathymetry_data_filepath}{\code{string}; the file path (including file name
 and extension) where bathymetry raster data are saved locally}
 
-\item{path}{\code{string}; the folder path where you would like to save the bathymetry
-data. Defaults to \code{tempdir()}}
+\item{path}{\code{string}; the folder path where you would like to save the
+bathymetry data. Defaults to \code{tempdir()}. If you are downloading data for
+large areas (e.g. whole oceans), we strongly recommend you set your own
+path to save to.}
 
 \item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
 should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
@@ -53,7 +55,7 @@ which case \code{spatial_grid} should be an \code{sf} polygon), the raw raster
 bathymetry data is classified into depth zones.
 }
 \description{
-Get bathymetry data from the GEBCO 2025 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}
+Get bathymetry data from the GEBCO 2026 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}
 }
 \details{
 Extracts bathymetry data for an \code{area_polygon}, or if a
@@ -71,9 +73,9 @@ Data can be classified into depth zones by setting \code{classify_bathymetry = T
 If the user has downloaded bathymetry data for the area of interest, for
 example from GEBCO (https://www.gebco.net), they can pass the file path to
 this function in \code{bathymetry_data_filepath}. If no file path is provided,
-the function will extract bathymetry data for the area from the GEBCO 2025
+the function will extract bathymetry data for the area from the GEBCO 2026
 global terrain model (sub-ice) from  the Natural Environment Research Council's (NERC) Centre for Environmental Data Analysis (CEDA)
-(https://data.ceda.ac.uk/bodc/gebco/global/gebco_2025).
+(https://data.ceda.ac.uk/bodc/gebco/global/gebco_2026).
 }
 \examples{
 # Get EEZ data first
@@ -90,7 +92,7 @@ bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +un
 
 bermuda_grid <- get_grid(boundary = bermuda_eez, 
                          crs = bermuda_crs, 
-                         resolution = 20000)
+                         resolution = 10000)
                          
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 terra::plot(depth_zones)

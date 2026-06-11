@@ -112,7 +112,7 @@ bathymetry. If the user has bathymetry data for their area of interest
 already, they can pass the file path to this function and it will grid
 the data using the supplied spatial grid. If no file path is provided,
 the function will extract bathymetry data for the area from the [GEBCO
-2025 global terrain model](https://www.gebco.net).
+2026 global terrain model](https://www.gebco.net).
 
 ``` r
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
