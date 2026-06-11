@@ -139,10 +139,10 @@ global terrain model (sub-ice) from  the Natural Environment Research Council's 
 <span class="r-in"><span><span class="va">bathymetry</span> <span class="op">&lt;-</span> <span class="fu">get_bathymetry</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_eez</span>, </span></span>
 <span class="r-in"><span>                             raw <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
 <span class="r-in"><span>                             classify_bathymetry <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Error in R_nc4_open: NetCDF: I/O failure</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ncdf4::nc_open(gebco_url):</span> Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Downloaded and saved data chunk 1 of 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finished! Data successfully streamed to /tmp/RtmpNTkiSH/bathy_-68.92_-60.7_28.91_35.81.tif</span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">bathymetry</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'plot': object 'bathymetry' not found</span>
+<span class="r-plt img"><img src="get_bathymetry-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Get depth zones in spatial_grid</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#equal area projection for Bermuda</span></span></span>
@@ -153,21 +153,20 @@ global terrain model (sub-ice) from  the Natural Environment Research Council's 
 <span class="r-in"><span>                         resolution <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span></span>
 <span class="r-in"><span>                         </span></span>
 <span class="r-in"><span><span class="va">depth_zones</span> <span class="op">&lt;-</span> <span class="fu">get_bathymetry</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Error in R_nc4_open: NetCDF: I/O failure</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ncdf4::nc_open(gebco_url):</span> Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Downloaded and saved data chunk 1 of 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finished! Data successfully streamed to /tmp/RtmpNTkiSH/bathy_-68.94_-60.68_28.9_35.81.tif</span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">depth_zones</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'plot': object 'depth_zones' not found</span>
+<span class="r-plt img"><img src="get_bathymetry-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE</span></span></span>
 <span class="r-in"><span><span class="co"># and classify_bathymetry = FALSE</span></span></span>
 <span class="r-in"><span>  </span></span>
 <span class="r-in"><span><span class="va">gridded_bathymetry</span> <span class="op">&lt;-</span> <span class="fu">get_bathymetry</span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">bermuda_grid</span>, </span></span>
 <span class="r-in"><span>                                     classify_bathymetry <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Error in R_nc4_open: NetCDF: I/O failure</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ncdf4::nc_open(gebco_url):</span> Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bathymetry data already downloaded, loading data from: /tmp/RtmpNTkiSH/bathy_-68.94_-60.68_28.9_35.81.tif</span>
 <span class="r-in"><span>                                     </span></span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gridded_bathymetry</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'plot': object 'gridded_bathymetry' not found</span>
+<span class="r-plt img"><img src="get_bathymetry-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

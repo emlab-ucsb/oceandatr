@@ -118,10 +118,10 @@ bermuda_eez <- get_boundary(name = "Bermuda")
 bathymetry <- get_bathymetry(spatial_grid = bermuda_eez, 
                              raw = TRUE, 
                              classify_bathymetry = FALSE)
-#> Error in R_nc4_open: NetCDF: I/O failure
-#> Error in ncdf4::nc_open(gebco_url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )
+#> Downloaded and saved data chunk 1 of 1
+#> Finished! Data successfully streamed to /tmp/RtmpNTkiSH/bathy_-68.92_-60.7_28.91_35.81.tif
 terra::plot(bathymetry)
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'bathymetry' not found
+
 # Get depth zones in spatial_grid
 
 #equal area projection for Bermuda
@@ -132,19 +132,17 @@ bermuda_grid <- get_grid(boundary = bermuda_eez,
                          resolution = 10000)
                          
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
-#> Error in R_nc4_open: NetCDF: I/O failure
-#> Error in ncdf4::nc_open(gebco_url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )
+#> Downloaded and saved data chunk 1 of 1
+#> Finished! Data successfully streamed to /tmp/RtmpNTkiSH/bathy_-68.94_-60.68_28.9_35.81.tif
 terra::plot(depth_zones)
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'depth_zones' not found
+
 
 #It is also possible to get the raw bathymetry data in gridded format by setting raw = FALSE
 # and classify_bathymetry = FALSE
   
 gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, 
                                      classify_bathymetry = FALSE)
-#> Error in R_nc4_open: NetCDF: I/O failure
-#> Error in ncdf4::nc_open(gebco_url): Error in nc_open trying to open file https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc (return_on_error= FALSE )
+#> Bathymetry data already downloaded, loading data from: /tmp/RtmpNTkiSH/bathy_-68.94_-60.68_28.9_35.81.tif
                                      
 terra::plot(gridded_bathymetry)
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'gridded_bathymetry' not found
 ```
