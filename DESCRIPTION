@@ -17,7 +17,7 @@ Imports:
     graphics,
     stats,
     rlang,
-    ncdf4,
+    RNetCDF,
     mregions2,
     checkmate,
     rerddap,
