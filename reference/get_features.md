@@ -102,12 +102,12 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpNTkiSH/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-11 23:11:34.123032)
+#> Cache is fresh. Reading: /tmp/Rtmpk2b9ku/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-15 23:31:51.214051)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmpNTkiSH/bathy_-68.92_-60.7_28.91_35.81.tif
+#> Bathymetry data already downloaded, loading data from: /tmp/Rtmpk2b9ku/bathy_-68.92_-60.7_28.91_35.81.tif
 #> Getting seamount data...
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
@@ -135,7 +135,7 @@ set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 #> Getting depth zones...
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully streamed to /tmp/RtmpNTkiSH/bathy_-68.95_-60.67_28.9_35.8.tif
+#> Finished! Data successfully streamed to /tmp/Rtmpk2b9ku/bathy_-68.95_-60.67_28.9_35.8.tif
 #> Getting seamount data...
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they

@@ -2,6 +2,12 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.4.1
+
+- Add Github actions for R-CMD-CHECK
+- Switch from ncdf4 to RNetCDF package for NetCDF file handling in
+  get_bathymetry() because it supports OPeNDAP.
+
 ## oceandatr 0.4.0
 
 - [`get_bathymetry()`](https://emlab-ucsb.github.io/oceandatr/reference/get_bathymetry.md)
