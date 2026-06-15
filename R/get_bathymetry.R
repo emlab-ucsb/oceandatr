@@ -184,8 +184,12 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
   gebco_url <- "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc"
   
   #open the connection to the remote netcdf file
-  nc <- ncdf4::nc_open(gebco_url)
-  on.exit(ncdf4::nc_close(nc))
+  nc <- RNetCDF::open.nc(gebco_url)
+  on.exit(RNetCDF::close.nc(nc))
+  
+  #get the possible lat and long values from the NetCDF file
+  nc_lat_vals <- RNetCDF::var.get.nc(nc, "lat")
+  nc_lon_vals <- RNetCDF::var.get.nc(nc, "lon")
   
   if(antimeridian){
     
@@ -193,19 +197,19 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
     file_path_left <- paste0("bathy_", min_x_left, "_", max_x_left, "_", min_y, "_", max_y, ".tif") 
     
     message("Grid or polygon crosses the antimeridian, getting bathymetry from the left hand side of the antimeridian")
-    gebco_data_fetch(min_x_left, max_x_left, min_y, max_y, nc, file_path = file_path_left)
+    gebco_data_fetch(min_x_left, max_x_left, min_y, max_y, nc, file_path = file_path_left, nc_lat_vals, nc_lon_vals)
     
     #Get right hand side
     file_path_right <- paste0("bathy_", min_x_right, "_", max_x_right, "_", min_y, "_", max_y, ".tif") 
     
     message("Grid or polygon crosses the antimeridian, getting bathymetry from the right hand side of the antimeridian")
-    gebco_data_fetch(min_x_right, max_x_right, min_y, max_y, nc, file_path_right)
+    gebco_data_fetch(min_x_right, max_x_right, min_y, max_y, nc, file_path_right, nc_lat_vals, nc_lon_vals)
     
     message("Merging the left and right hand side into a single raster")
     terra::merge(terra::rast(file_path_left), terra::rast(file_path_right), filename = file_path) 
     
   } else{
-    gebco_data_fetch(min_x, max_x, min_y, max_y, nc, file_path)
+    gebco_data_fetch(min_x, max_x, min_y, max_y, nc, file_path, nc_lat_vals, nc_lon_vals)
   }
   
   terra::rast(file_path) |> 
@@ -213,11 +217,7 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
   
 }
 
-gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path){
-  
-  #get the possible lat and long values from the NetCDF file
-  nc_lat_vals <- nc$dim$lat$vals
-  nc_lon_vals <- nc$dim$lon$vals
+gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path, nc_lat_vals, nc_lon_vals){
   
   #Add or subtract 1 arc minute (4 steps in the index) to each coordinate to ensure we get the full extent
   
@@ -251,7 +251,7 @@ gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path){
   # Extent of raster defined by extracting min and max lat and lon from ncdf file using indexes
   rast_bounds <- c(nc_lon_vals[index_min_lon], nc_lon_vals[index_max_lon], nc_lat_vals[index_min_lat], nc_lat_vals[index_max_lat])
   
-  local_rast <- terra::rast(crs = ncdf4::ncatt_get(nc, "crs")$epsg_code,
+  local_rast <- terra::rast(crs = "EPSG:4326",
                             extent = rast_bounds,
                             nrows = n_lat,
                             ncols = n_lon)
@@ -281,9 +281,10 @@ gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path){
     # ncdf4 reads datasets as [lon, lat] 
     # start: [lon_start, lat_start] | count: [lon_count, lat_count]
     # Read ALL longitudes (index_min_lon to n_lon) but only a chunk of latitudes (rows)
-    chunk_data <-ncdf4::ncvar_get(nc, "elevation", 
-                                  start = c(index_min_lon, start_row), 
-                                  count = c(n_lon, rows_to_get)) 
+    chunk_data <- RNetCDF::var.get.nc(nc, 
+                                      "elevation", 
+                                      start = c(index_min_lon, start_row), 
+                                      count = c(n_lon, rows_to_get)) 
     
     # NetCDF matrix is inverted relative to how terra expects it, so corrections is applied during
     # writing of values

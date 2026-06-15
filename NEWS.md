@@ -1,5 +1,9 @@
 # oceandatr (development version)
 
+# oceandatr 0.4.1 
+* Add Github actions for R-CMD-CHECK
+* Switch from ncdf4 to RNetCDF package for NetCDF file handling in get_bathymetry() because it supports OPeNDAP.
+
 # oceandatr 0.4.0 
 * `get_bathymetry()` now downloads data in chunks direct to disk to allow download of large areas
 * `get_bathymetry()` pulls data from the latests GEBCO 2026 data

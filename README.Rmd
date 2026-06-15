@@ -24,6 +24,7 @@ devtools::load_all()
 # oceandatr <a href="https://emlab-ucsb.github.io/oceandatr/"><img src="man/figures/logo.png" align="right" height="139" alt="oceandatr website" /></a>
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/emlab-ucsb/oceandatr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/emlab-ucsb/oceandatr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `oceandatr` provides simple functions for acquiring, processing and gridding ocean data.
