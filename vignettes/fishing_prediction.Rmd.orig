@@ -1,0 +1,265 @@
+---
+title: "Predicting fishing effort in Micronesia"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Predicting fishing effort in Micronesia}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+#for cropping whitespace from around figures, use crop = TRUE
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE, 
+	fig.align = "center",
+  fig.width = 7, 
+  fig.height = 5,
+  crop = TRUE
+)
+```
+
+```{r setup}
+library(oceandatr)
+library(terra)
+library(sf)
+library(mgcv) #for Generalized Additive Modelling
+```
+
+We will create a Generalized Additive Model (GAM) of fishing effort in the Exclusive Economic Zone (EEZ) of the Federated States of Micronesia (FSM), using physical and environmental predictors obtained using the `oceandatr` package, illustrating the usefulness of `oceandatr` for retrieving, gridding, and transforming spatial data with minimal input from the user. Note that this vignette is not intended as a guide to GAMs - entire books are written about that.
+
+## Obtain a spatial boundary for the area of interest
+
+Download FSM's EEZ using `oceandatr`
+
+```{r fsm-eez, fig.cap="Federated States of Micronesia's EEZ"}
+fsm <- get_boundary("Micronesia")
+
+plot(fsm[,1], axes = T)
+```
+
+## Get a suitable coordinate reference system for the area
+
+The ocean boundary comes in the widely used, 'unprojected', coordinate reference system (CRS) EPSG:4326. We will use a local, equal-area projection, which we can find using the [Projection Wizard website](https://projectionwizard.org/), entering the geographic extent of the EEZ:
+
+```{r extent}
+(geog_extent <- sf::st_bbox(fsm))
+```
+
+So the North extent coordinate is `r ceiling(geog_extent[[4]])`, South extent is `r floor(geog_extent[[2]])`, East extent is `r  ceiling(geog_extent[[3]])` E, and the West extent is `r floor(geog_extent[[1]])` E.  Putting this information in Projection Wizard and clicking the "PROJ" link underneath the map, we get a suitable equal-area projection.
+
+```{r projection}
+fsm_proj <- "+proj=cea +lon_0=150.5 +lat_ts=7 +datum=WGS84 +units=m +no_defs"
+
+# project the EEZ boundary into the local CRS
+fsm_eez_proj <- fsm |> 
+  sf::st_transform(fsm_proj) |> 
+  vect() #convert to a SpatVector for easy plotting with the rasters
+```
+
+## Create a raster grid for our data
+
+We can now create the grid we will use for all our data. The grid cell size is set at 10 km to ensure that the model runs reasonably fast; smaller grid cell sizes will result in more cells, and hence more data in the model.
+
+```{r}
+fsm_grid <- get_grid(fsm, resolution = 10e3, crs = fsm_proj)
+```
+
+## Fishing effort data
+
+We can now retrieve gridded fishing effort data for FSM from Global Fishing Watch. As noted in the help file (`?get_gfw()`), you need a (free) API key from Global Fishing Watch for this to work. For simplicity, we will use the mean total annual effort in each grid cell, using data from 2024 and 2025. In a more detailed model setup, different fishing gears, such as purse seine and longlines, could be modelled separately, and time could be included as a factor in the model.
+
+```{r gfw-micronesia, fig.cap="Mean annual fishing effort. 2024 - 2025", fig.subcap= "Data from Global Fishing Watch"}
+fishing_effort <- get_gfw(fsm_grid, 
+                          start_year = 2024,
+                          end_year = 2025,
+                          group_by = "location",
+                          summarise = "mean_total_annual_effort")
+
+plot(log(fishing_effort+1))
+lines(fsm_eez_proj, col = "orange", lwd = 0.5)
+```
+
+We plot the log+1 transformed data because there are many zero or near zero values.
+
+## Mask fishing effort nearshore
+
+There are some anomalously high values close to the islands. No industrial fishing is allowed within 12nm of shore in FSM, so to remove these [missclassified values](https://globalfishingwatch.org/faqs/port-buffer-explained/) we can download FSM's 12nm polygons and mask the fishing effort data.
+
+```{r fishing-effort-masked, fig.cap="Mean annual fishing effort with nearshore values removed."}
+fsm_12nm <- get_boundary("Micronesia", type = "12nm") |>
+  sf::st_transform(fsm_proj)
+
+fishing_effort_masked <- mask(fishing_effort, mask = fsm_12nm, inverse = TRUE)
+
+plot(log(fishing_effort_masked+1))
+```
+
+## Retrieve predictor data
+
+Bathymetry and environmental conditions, such as temperature, chlorophyll concentration, and dissolved oxygen, are all known to the be predictors of fish distributions. Distance from port is also a known factor in predicting fishing effort. We will use these variables as predictors of fishing effort in our simple model. All the data is downloaded, gridded, and transformed to the correct CRS using `oceandatr`.
+
+```{r predictor-data-download}
+# seafloor depth
+bathy <- get_bathymetry(spatial_grid = fsm_grid,
+                        classify_bathymetry = FALSE)
+
+# distance to ports data
+dist_port <- get_dist(spatial_grid = fsm_grid,
+                      dist_to = "ports")
+
+# sea surface environmental data such as temperature and chlorophyll
+enviro_data <- get_enviro_zones(fsm_grid, 
+                                enviro_zones = FALSE)
+```
+
+## Model
+
+We will use a basic Generalized Additive Model (GAM), implemented using the `mgcv` R package. First we create a multi-layer raster with all the data we want to use in the model, in our case:
+
+* Fishing effort (log+1 transformed)
+* Seafloor depth
+* Distance to port
+* Mean sea surface temperature
+* Dissolved oxygen
+
+```{r subset-data, fig.cap="Data for GAM"}
+#create multi-layer raster with all data needed for modelling
+model_data <- c(log(fishing_effort_masked+1), 
+                bathy,
+                dist_port,
+                enviro_data[[c("Mean_temp", "Dissolved_oxygen")]]) |> 
+  mask(fsm_12nm, inverse = TRUE)
+
+
+plot(model_data, main = c("Fishing effort", "Seafloor depth", "Distance to port", "Mean SST", "Dissolved oxgen"))
+```
+
+
+```{r include=FALSE, eval=FALSE}
+#nice figure for paper
+library(tmap)
+
+map_func <- function(shape_data, colour_scale, title_text, scale_reverse){
+  tm_shape(shape_data) +
+  tm_raster(col.scale = tm_scale_continuous(values = colour_scale),
+            col.legend = tmap::tm_legend(position = tm_pos_out("center", "bottom", pos.h = "center"),
+                                         reverse = scale_reverse,
+                                         title = title_text,
+                                         orientation = "landscape")) +
+  tm_shape(fsm_eez_proj) +
+  tm_lines()
+}
+
+
+colour_scales <- c("viridis", "-gmt.ocean", "greys", "brewer.oranges", "brewer.yl_gn") 
+
+legend_titles <- c("Mean fishing effort (hours)", "Seafloor depth (m)", "Distance to port (km)", "Mean sea surface temp (°C)", "Dissolved oxygen")
+
+scale_reverse_vec <- rep(FALSE, 5)
+tm_list <- vector("list", length = nlyr(model_data))
+
+tmap_data <- c(model_data[[1]], -model_data[[2]], model_data[[3]]/1e3, model_data[[4:5]])
+
+for (i in seq_along(tm_list)) {
+  tm_list[[i]] <- map_func(tmap_data[[i]],
+                           colour_scale = colour_scales[i],
+                           title_text = legend_titles[i],
+                           scale_reverse = scale_reverse_vec[i])
+}
+
+tmap_arrange(tm_list) |> 
+  tmap_save("/home/jason/Nextcloud/Documents/oceandatr paper/gam_data.png")
+```
+
+These data are then converted to a data frame for the modelling process.
+
+```{r raster-dataframe}
+# convert the raster to a dataframe
+model_df <- model_data |> 
+  as.data.frame(xy = TRUE, na.rm = TRUE)
+```
+
+Now we can create a basic GAM, using the gam() function from the package mgcv. Predictor variables (seafloor depth, distance to port, SST and dissolved oxygen) are modelled using penalized thin-plate regression splines, while a geographic Gaussian process smoother is included to account for spatial dependency across the pelagic grid. The model is fitted via Restricted Maximum Likelihood (REML) estimation using the log+1 transformed response (fishing effort) variable to address data skewness and stabilize residual variance.
+
+```{r gam}
+#run the GAM
+fishing_model <- mgcv::gam(
+  mean_total_annual_effort ~ 
+    s(bathymetry) + 
+    s(dist_ports) +
+    s(Mean_temp) + 
+    s(Dissolved_oxygen) + 
+    s(x,y, bs = "gp"),
+  data = model_df,
+  method = "REML"
+)
+
+(model_summary <- summary.gam(fishing_model))
+```
+
+The model successfully captured the spatial distribution of fishing effort, accounting for `r sprintf("%.1f", model_summary$dev.expl*100)` of the total deviance (adjusted R^2^ = `r sprintf("%.3f", model_summary$r.sq)`). All predictor variables had highly significant, non-linear effects on fishing distribution (p < 0.001).
+
+We can predict fishing effort using the GAM for the same model grid we used as input, and compare the GFW data to the predictions.
+
+```{r gam-prediction, fig.cap="Model prediction compared to GFW data"}
+# Predict using the GAM
+model_df$predicted_effort <- mgcv::predict.gam(fishing_model)
+
+# Convert back to a raster for mapping
+pred_rast <- rast(model_df[, c("x", "y", "predicted_effort")], crs = fsm_proj)
+
+#plot GFW data and predictions next to each other
+par(mfrow = c(1,2))
+plot(log(fishing_effort_masked+1), main = "Global Fishing Watch")
+plot(pred_rast, main = "Model predictions ")
+
+```
+
+```{r include=FALSE}
+par(mfrow = c(1,1))
+```
+
+Not bad for a very rough GAM! 
+
+When building a more robust model, diagnostic plots and information should be examined, e.g. using `mgcv::plot.gam(fishing_model)`  and `mgcv::gam.check(fishing_model)`.
+
+
+```{r include=FALSE, eval=FALSE}
+#nice plot of prediction vs GFW for paper
+
+tm_predicts <- tm_shape(c(log(fishing_effort_masked+1), pred_rast)) +
+  tm_raster(col.scale = tm_scale_continuous(values = "viridis"),
+            col.legend = tm_legend(reverse = TRUE,
+                                   title = c("Fishing effort"))) +
+  tm_facets(free.scales = FALSE) +
+  tm_shape(fsm_eez_proj) +
+  tm_lines() +
+  tm_layout(panel.labels = c("Global Fishing Watch data", "Model predictions"))
+
+tmap_save(tm_predicts, "/home/jason/Nextcloud/Documents/oceandatr paper/gam_predictions.png")
+```
+
+
+```{r eval = FALSE, include = FALSE}
+mgcv::plot.gam(fishing_model, 
+     pages = 1,          # Put all plots on one page
+     shade.col = "lightblue", 
+     seWithMean = TRUE,  # Include overall mean uncertainty
+     shift = coef(fishing_model)[1])
+```
+
+```{r eval = FALSE, include = FALSE}
+mgcv::gam.check(fishing_model)
+```
+
+```{r eval = FALSE, include = FALSE}
+# Map the residuals to see WHERE the model is over- or under-predicting
+model_df$residuals <- mgcv::residuals.gam(fishing_model)
+res_raster <- rast(model_df[, c("x", "y", "residuals")], crs = fsm_proj)
+plot(mask(res_raster, sf::st_transform(fsm, fsm_proj)), main = "Spatial Model Residuals")
+```
+
