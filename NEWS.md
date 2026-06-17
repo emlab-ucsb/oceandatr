@@ -1,5 +1,8 @@
 # oceandatr (development version)
 
+# oceandatr 0.4.2 
+* Add "Predicting fishing effort in Micronesia" vignette
+
 # oceandatr 0.4.1 
 * Add Github actions for R-CMD-CHECK
 * Switch from ncdf4 to RNetCDF package for NetCDF file handling in get_bathymetry() because it supports OPeNDAP.
