@@ -324,6 +324,9 @@ terra::plot(enviro_zones, col = c("grey60", "forestgreen"), axes = FALSE, fun = 
 
 ### All vignettes
 
+- [Predicting fishing effort in
+  Micronesia](https://emlab-ucsb.github.io/oceandatr/articles/fishing_prediction.md):
+
 - [Retrieving boundaries with
   get_boundary()](https://emlab-ucsb.github.io/oceandatr/articles/getboundary.md):
 

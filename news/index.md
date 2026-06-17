@@ -2,6 +2,10 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.4.2
+
+- Add “Predicting fishing effort in Micronesia” vignette
+
 ## oceandatr 0.4.1
 
 - Add Github actions for R-CMD-CHECK

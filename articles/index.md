@@ -2,6 +2,9 @@
 
 ### All vignettes
 
+- [Predicting fishing effort in
+  Micronesia](https://emlab-ucsb.github.io/oceandatr/articles/fishing_prediction.md):
+
 - [Retrieving boundaries with
   get_boundary()](https://emlab-ucsb.github.io/oceandatr/articles/getboundary.md):
 
