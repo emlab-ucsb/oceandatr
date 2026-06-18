@@ -74,14 +74,13 @@ The Following ecoregions can be obtained:
 ``` r
 #' # Get EEZ data first
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp1QWb7X/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-17 11:56:48.708485)
+#> Cache is fresh. Reading: /tmp/Rtmp0bPw6w/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-18 07:05:05.914955)
 # Get Marine Ecoregions of the World data
 ecoregions <- get_ecoregion(spatial_grid = bermuda_eez, raw = TRUE)
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
 #> Spherical geometry (s2) switched on
 
 # Get Longhurst Provinces in a spatial grid
@@ -92,6 +91,5 @@ longhurst_gridded <- get_ecoregion(spatial_grid = bermuda_grid, type = "Longhurs
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
 #> Spherical geometry (s2) switched on
 ```

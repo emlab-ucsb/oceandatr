@@ -102,29 +102,12 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/Rtmp1QWb7X/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-17 11:56:48.708485)
+#> Cache is fresh. Reading: /tmp/Rtmp0bPw6w/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-18 07:05:05.914955)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
-#> Bathymetry data already downloaded, loading data from: /tmp/Rtmp1QWb7X/bathy_-68.92_-60.7_28.91_35.81.tif
-#> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Warning: st_buffer does not correctly buffer longitude/latitude data
-#> dist is assumed to be in decimal degrees (arc_degrees).
-#> Spherical geometry (s2) switched on
-#> Getting knoll data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
-#> Getting geomorphology data...
-#> Getting coral data...
-#> Getting environmental zones data... This could take several minutes
+#> Error in RNetCDF::open.nc(gebco_url): NetCDF: I/O failure
 
 bermuda_crs <- '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs'
 # Get feature data in a spatial grid
@@ -134,22 +117,7 @@ bermuda_grid <- get_grid(boundary = bermuda_eez, crs = bermuda_crs, resolution =
 set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 #> Getting depth zones...
-#> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully streamed to /tmp/Rtmp1QWb7X/bathy_-68.95_-60.67_28.9_35.8.tif
-#> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
-#> Getting knoll data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
-#> Getting geomorphology data...
-#> Getting coral data...
-#> Getting environmental zones data... This could take several minutes
+#> Error in RNetCDF::open.nc(gebco_url): NetCDF: I/O failure
 terra::plot(features_gridded)
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'features_gridded' not found
 ```

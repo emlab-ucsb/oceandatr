@@ -112,7 +112,6 @@ samoa_projection <- '+proj=laea +lon_0=-172.5 +lat_0=0 +datum=WGS84 +units=m +no
 samoa_grid <- get_grid(boundary = samoa_eez, resolution = 5000, crs = samoa_projection)
 # Get ridges data, which is vector data in sf format, in the spatial grid
 ridges_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = ridges)
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
 terra::plot(ridges_gridded)
 
 
