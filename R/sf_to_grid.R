@@ -18,8 +18,7 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
   is_raster <- is(spatial_grid, "SpatRaster")
 
   if(matching_crs) {
-    dat_cropped <- dat |>
-      sf::st_crop(spatial_grid)
+    dat_cropped <- suppressWarnings(sf::st_crop(dat, spatial_grid))
   } else{
     grid_temp <- spatial_grid |>
       (\(x) if(is_raster) terra::as.polygons(x) |>  sf::st_as_sf() else x)() |>
@@ -28,8 +27,7 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
 
     if(antimeridian){
       if(!(any(c("POINT", "MULTIPOINT") %in% unique(sf::st_geometry_type(dat))))){
-        dat_temp <- dat |>
-          sf::st_break_antimeridian(lon_0 = 180) |>
+        dat_temp <- suppressWarnings(sf::st_break_antimeridian(dat, lon_0 = 180)) |>
           sf::st_shift_longitude()
       } else{
         data_temp <- sf::st_shift_longitude(dat)
@@ -38,8 +36,7 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
       dat_temp <- dat
     }
 
-    dat_cropped <- dat_temp |>
-      sf::st_crop(grid_temp) |>
+    dat_cropped <- suppressWarnings(sf::st_crop(dat_temp, grid_temp)) |>
       sf::st_transform(sf::st_crs(spatial_grid)) |>
       (\(x) if (all(sf::st_is_valid(x))) x else sf::st_make_valid(x))() |>
       #after cropping, can end up with mixed geometry type: get only polygons (includes MULTIPOLYGON)
@@ -141,7 +138,7 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
     intersected_data_list <- list()
 
     for (layer in layer_names) {
-      temp_intersection <- sf::st_intersection(spatial_grid_with_id, dat_list[[layer]]) |>
+      temp_intersection <- suppressWarnings(sf::st_intersection(spatial_grid_with_id, dat_list[[layer]])) |>
         (\(x) if(all(sf::st_is_valid(x))) x else sf::st_make_valid(x))()
 
       if(nrow(temp_intersection)>0) {

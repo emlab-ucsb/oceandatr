@@ -31,8 +31,7 @@ get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian, meth){
     }
   }else{
     if(matching_crs){
-      data_intersected <- dat |>
-        sf::st_intersection(sf::st_geometry(spatial_grid))
+      data_intersected <- suppressWarnings(sf::st_intersection(dat, sf::st_geometry(spatial_grid)))
 
         if(antimeridian) data_intersected <- sf::st_wrap_dateline(data_intersected)
 

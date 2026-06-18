@@ -65,7 +65,7 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
    if(is(ecoregion_data, "sf")){
      ecoregion_data <- ecoregion_data |>  
        remove_empty_layers() |>  
-       (\(x) if((ncol(x)-no_sf_cols) >1) x else dplyr::mutate(x, ecoregion = 0, .after = no_sf_cols))()
+       (\(x) if((ncol(x)-no_sf_cols) >1) x else cbind(x, data.frame(ecoregion = rep(0, nrow(x)))))()
    }else{
      if(sum(terra::global(ecoregion_data, "sum", na.rm = TRUE)$sum)>0){
         ecoregion_data <- remove_empty_layers(ecoregion_data)
