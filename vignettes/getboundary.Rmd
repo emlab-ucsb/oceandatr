@@ -7,6 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+
+
 ``` r
 #load oceandatr package
 library(oceandatr)
@@ -51,6 +54,9 @@ Here is another example using France. Only the EEZ bordering mainland France is 
 
 
 ``` r
+#check if rnaturalearthdata package is installed and give option to install if not
+rnaturalearth::check_rnaturalearthdata()
+
 fr_eez <- get_boundary(name = "France", type = "eez", country_type = "country")
 
 fr_eez_sov <- get_boundary(name = "France", type = "eez", country_type = "sovereign")
@@ -66,13 +72,99 @@ plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 <p class="caption">EEZ of mainland France (blue) and all overseas territories (solid outlines). World coastlines are shown as dashed line for reference.</p>
 </div>
 
-An example, where you might want to use `sovereign` is when you are trying to get all the islands that make up Kiribati. Using `country_type = "country"` does not return anything because each island group is listed as a country. Note that if the `name` provided is not found, a list of all possible `country_type` options to chose from is provided (only part of the output is shown for brevity):
+An example, where you might want to use `sovereign` is when you are trying to get all the islands that make up Kiribati. Using `country_type = "country"` does not return anything because each island group is listed as a country. Note that if the `name` provided is not found, the function will error and print a list of all possible `country_type` options:
 
 
 ``` r
 get_boundary(name = "Kiribati", type = "eez", country_type = "country")
+#>   [1] "Abu musa, Greater and Lesser Tunb"            "Alaska"                                       "Albania"                                     
+#>   [4] "Algeria"                                      "Alhucemas Islands"                            "American Samoa"                              
+#>   [7] "Amsterdam and Saint Paul Islands"             "Andaman and Nicobar"                          "Angola"                                      
+#>  [10] "Anguilla"                                     "Antigua and Barbuda"                          "Argentina"                                   
+#>  [13] "Aruba"                                        "Ascension"                                    "Australia"                                   
+#>  [16] "Azerbaijan"                                   "Azores"                                       "Bahamas"                                     
+#>  [19] "Bahrain"                                      "Bajo Nuevo Bank"                              "Bangladesh"                                  
+#>  [22] "Barbados"                                     "Bassas da India"                              "Belgium"                                     
+#>  [25] "Belize"                                       "Benin"                                        "Bermuda"                                     
+#>  [28] "Bonaire"                                      "Bosnia and Herzegovina"                       "Brazil"                                      
+#>  [31] "British Virgin Islands"                       "Brunei"                                       "Bulgaria"                                    
+#>  [34] "Cambodia"                                     "Cameroon"                                     "Canada"                                      
+#>  [37] "Canary Islands"                               "Cape Verde"                                   "Cayman Islands"                              
+#>  [40] "Ceuta"                                        "Chafarinas Islands"                           "Chagos Archipelago"                          
+#>  [43] "Chile"                                        "China"                                        "Christmas Island"                            
+#>  [46] "Clipperton Island"                            "Cocos Islands"                                "Collectivity of Saint Martin"                
+#>  [49] "Colombia"                                     "Comores"                                      "Cook Islands"                                
+#>  [52] "Costa Rica"                                   "Croatia"                                      "Crozet Islands"                              
+#>  [55] "Cuba"                                         "Curaçao"                                      "Cyprus"                                      
+#>  [58] "Democratic Republic of the Congo"             "Denmark"                                      "Djibouti"                                    
+#>  [61] "Dominica"                                     "Dominican Republic"                           "Doumeira Islands"                            
+#>  [64] "East Timor"                                   "Easter Island"                                "Ecuador"                                     
+#>  [67] "Egypt"                                        "El Salvador"                                  "Equatorial Guinea"                           
+#>  [70] "Eritrea"                                      "Estonia"                                      "Europa Island"                               
+#>  [73] "Faeroe"                                       "Falkland / Malvinas Islands"                  "Federal Republic of Somalia"                 
+#>  [76] "Fiji"                                         "Finland"                                      "France"                                      
+#>  [79] "French Guiana"                                "French Polynesia"                             "Gabon"                                       
+#>  [82] "Galapagos"                                    "Gambia"                                       "Georgia"                                     
+#>  [85] "Germany"                                      "Ghana"                                        "Gibraltar"                                   
+#>  [88] "Gilbert Islands"                              "Glorioso Islands"                             "Greece"                                      
+#>  [91] "Greenland"                                    "Grenada"                                      "Guadeloupe"                                  
+#>  [94] "Guam"                                         "Guatemala"                                    "Guernsey"                                    
+#>  [97] "Guinea"                                       "Guinea-Bissau"                                "Guyana"                                      
+#> [100] "Haiti"                                        "Halaib Triangle"                              "Hawaii"                                      
+#> [103] "Heard and McDonald Islands"                   "Honduras"                                     "Howland and Baker Islands"                   
+#> [106] "Iceland"                                      "Ile Tromelin"                                 "India"                                       
+#> [109] "Indonesia"                                    "Iran"                                         "Iraq"                                        
+#> [112] "Ireland"                                      "Islas San Félix and San Ambrosio"             "Isle of Man"                                 
+#> [115] "Israel"                                       "Italy"                                        "Ivory Coast"                                 
+#> [118] "Jamaica"                                      "Jan Mayen"                                    "Japan"                                       
+#> [121] "Jarvis Island"                                "Jersey"                                       "Johnston Atoll"                              
+#> [124] "Jordan"                                       "Juan de Nova Island"                          "Kazakhstan"                                  
+#> [127] "Kenya"                                        "Kerguélen"                                    "Kuril Islands"                               
+#> [130] "Kuwait"                                       "Latvia"                                       "Lebanon"                                     
+#> [133] "Liancourt Rocks"                              "Liberia"                                      "Libya"                                       
+#> [136] "Line Group"                                   "Lithuania"                                    "Macquarie Island"                            
+#> [139] "Madagascar"                                   "Madeira"                                      "Malaysia"                                    
+#> [142] "Maldives"                                     "Malta"                                        "Marshall Islands"                            
+#> [145] "Martinique"                                   "Matthew and Hunter Islands"                   "Mauritania"                                  
+#> [148] "Mayotte"                                      "Melilla"                                      "Mexico"                                      
+#> [151] "Micronesia"                                   "Monaco"                                       "Montenegro"                                  
+#> [154] "Montserrat"                                   "Morocco"                                      "Mozambique"                                  
+#> [157] "Myanmar"                                      "Namibia"                                      "Nauru"                                       
+#> [160] "Navassa Island"                               "Netherlands"                                  "New Caledonia"                               
+#> [163] "New Zealand"                                  "Nicaragua"                                    "Nigeria"                                     
+#> [166] "Niue"                                         "Norfolk Island"                               "North Korea"                                 
+#> [169] "Northern Mariana Islands"                     "Norway"                                       "Oecusse"                                     
+#> [172] "Oman"                                         "Pakistan"                                     "Palau"                                       
+#> [175] "Palestine"                                    "Palmyra Atoll"                                "Panama"                                      
+#> [178] "Papua New Guinea"                             "Peñón de Vélez de la Gomera"                  "Perejil Island"                              
+#> [181] "Peru"                                         "Philippines"                                  "Phoenix Group"                               
+#> [184] "Pitcairn"                                     "Poland"                                       "Portugal"                                    
+#> [187] "Prince Edward Islands"                        "Puerto Rico"                                  "Qatar"                                       
+#> [190] "Quitasueño Bank"                              "Republic of Mauritius"                        "Republic of the Congo"                       
+#> [193] "Réunion"                                      "Romania"                                      "Russia"                                      
+#> [196] "Saba"                                         "Saint Helena"                                 "Saint Kitts and Nevis"                       
+#> [199] "Saint Lucia"                                  "Saint Vincent and the Grenadines"             "Saint-Barthélemy"                            
+#> [202] "Saint-Pierre and Miquelon"                    "Samoa"                                        "Sao Tome and Principe"                       
+#> [205] "São Tomé and Principe"                        "Saudi Arabia"                                 "Senegal"                                     
+#> [208] "Senkaku Islands"                              "Serrana Bank"                                 "Serranilla Bank"                             
+#> [211] "Seychelles"                                   "Sierra Leone"                                 "Singapore"                                   
+#> [214] "Sint-Eustatius"                               "Sint-Maarten"                                 "Slovenia"                                    
+#> [217] "Solomon Islands"                              "South Africa"                                 "South Georgia and the South Sandwich Islands"
+#> [220] "South Korea"                                  "Spain"                                        "Sri Lanka"                                   
+#> [223] "Sudan"                                        "Suriname"                                     "Svalbard"                                    
+#> [226] "Sweden"                                       "Syria"                                        "Taiwan"                                      
+#> [229] "Tanzania"                                     "Thailand"                                     "Togo"                                        
+#> [232] "Tokelau"                                      "Tonga"                                        "Trindade"                                    
+#> [235] "Trinidad and Tobago"                          "Tristan da Cunha"                             "Tunisia"                                     
+#> [238] "Turkey"                                       "Turkmenistan"                                 "Turks and Caicos Islands"                    
+#> [241] "Tuvalu"                                       "Ukraine"                                      "United Arab Emirates"                        
+#> [244] "United Kingdom"                               "United States"                                "United States Virgin Islands"                
+#> [247] "Uruguay"                                      "Vanuatu"                                      "Venezuela"                                   
+#> [250] "Vietnam"                                      "Wake Island / Enenkio"                        "Wallis and Futuna"                           
+#> [253] "Western Sahara"                               "Yemen"
+#> Error:
+#> ! "Kiribati" is not a valid name. Please re-run get_boundary() with one of the names above.
 ```
-<img src="figs/eez_countries_list.png" alt="" style="display: block; margin: auto;" />
 
 Try again, setting `country_type = "sovereign"`:
 
@@ -127,7 +219,7 @@ mregions2::mrp_list[,c("title", "layer")]
 
 # Land boundaries
 
-`get_boundary()` uses the `rnaturalearth::ne_countries()` function from the [`rnaturalearth``](https://docs.ropensci.org/rnaturalearth/index.html) package to retrieve land boundaries. `get_boundary()` is only intended to provide a slightly simpler interface for getting some commonly used land boundaries.
+`get_boundary()` uses the `rnaturalearth::ne_countries()` function from the [`rnaturalearth`](https://docs.ropensci.org/rnaturalearth/index.html) package to retrieve land boundaries. `get_boundary()` is only intended to provide a slightly simpler interface for getting some commonly used land boundaries.
 
 As with maritime boundaries, the `country_type` can be specified as either `country_type = "country"` or `country_type = "sovereign"` depending on whether only the main country is required or the country and all territories/ states it has sovereignty over. The following examples show how these options work in practice. 
 

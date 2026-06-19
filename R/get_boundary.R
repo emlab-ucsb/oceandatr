@@ -8,8 +8,8 @@
 #'[`rnaturalearth`](https://github.com/ropensci/rnaturalearth/) is used.
 #'
 #'@param name `character` name of the country or region. If `NULL` all
-#'  boundaries of `type` are returned. If an incorrect `name` is input, the user
-#'  is given a list of valid names to chose from. Ignored for `type =
+#'  boundaries of `type` are returned. If `name` is not an exact match, fuzzy
+#'  matching with a list of possible options is attempted. Ignored for `type =
 #'  "high_seas"`
 #'@param type `character` the boundary type. Can be one of:
 #' * `eez`: Exclusive Economic Zone (EEZ; 200nm). These EEZs differ slightly from the the [UN Convention on the Law of the Sea (UNCLOS)](https://www.un.org/depts/los/convention_agreements/texts/unclos/part5.htm) definition because the archipelagic waters and the internal waters of a country are included.
@@ -99,13 +99,10 @@ get_boundary <- function(name = "Australia", type = "eez", country_type = "count
 
     query_name_options <- mregions2::mrp_col_unique(query_type, mregions_country_type) |>
       sort()
+    
+    name_matched <- if(name %in% query_name_options) name else name_matching(name, query_name_options)
 
-    if(!(name %in% query_name_options)) {
-      message("'name' is not a valid name. Please select one of the following: ")
-      name <- utils::select.list(choices = query_name_options)
-    }
-
-    eval(parse(text = paste0("mregions2::mrp_get(\"", query_type, "\", cql_filter = \"", mregions_country_type, " = '", name, "'\")")))
+    eval(parse(text = paste0("mregions2::mrp_get(\"", query_type, "\", cql_filter = \"", mregions_country_type, " = '", name_matched, "'\")")))
   } else{
     if(is.null(name)) {
       message("You have requested all ", type, " boundaries.")
@@ -122,13 +119,10 @@ get_boundary <- function(name = "Australia", type = "eez", country_type = "count
       query_name_options <- sort(seas_oceans_data$name)
     }
 
-    if(!(name %in% query_name_options)) {
-      message("'name' is not a valid name. Please select one of the following: ")
-      name <- utils::select.list(choices = query_name_options)
-    }
+    name_matched <- if(name %in% query_name_options) name else name_matching(name, query_name_options)
 
-    if(type == "country") rnaturalearth::ne_countries(scale = 10, type = rnaturalearth_country_type, country = name) else {
-      seas_oceans_data[which(seas_oceans_data$name == name), ] #like dpyr filter, which() drops NA rows
+    if(type == "country") rnaturalearth::ne_countries(scale = 10, type = rnaturalearth_country_type, country = name_matched) else {
+      seas_oceans_data[which(seas_oceans_data$name == name_matched), ] #like dpyr filter, which() drops NA rows
     }
   }
 }
