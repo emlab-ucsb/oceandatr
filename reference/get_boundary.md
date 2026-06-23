@@ -18,8 +18,8 @@ get_boundary(name = "Australia", type = "eez", country_type = "country")
 - name:
 
   `character` name of the country or region. If `NULL` all boundaries of
-  `type` are returned. If an incorrect `name` is input, the user is
-  given a list of valid names to chose from. Ignored for
+  `type` are returned. If `name` is not an exact match, fuzzy matching
+  with a list of possible options is attempted. Ignored for
   `type = "high_seas"`
 
 - type:

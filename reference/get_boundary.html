@@ -15,7 +15,7 @@ rnaturalearth is used.'><meta property="og:image" content="https://emlab-ucsb.gi
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,8 +65,8 @@ boundary (e.g. an EEZ) from <a href="https://marineregions.org/gazetteer.php" cl
 
 <dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p><code>character</code> name of the country or region. If <code>NULL</code> all
-boundaries of <code>type</code> are returned. If an incorrect <code>name</code> is input, the user
-is given a list of valid names to chose from. Ignored for <code>type = "high_seas"</code></p></dd>
+boundaries of <code>type</code> are returned. If <code>name</code> is not an exact match, fuzzy
+matching with a list of possible options is attempted. Ignored for <code>type = "high_seas"</code></p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
