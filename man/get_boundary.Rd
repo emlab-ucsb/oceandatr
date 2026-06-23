@@ -8,8 +8,8 @@ get_boundary(name = "Australia", type = "eez", country_type = "country")
 }
 \arguments{
 \item{name}{\code{character} name of the country or region. If \code{NULL} all
-boundaries of \code{type} are returned. If an incorrect \code{name} is input, the user
-is given a list of valid names to chose from. Ignored for \code{type = "high_seas"}}
+boundaries of \code{type} are returned. If \code{name} is not an exact match, fuzzy
+matching with a list of possible options is attempted. Ignored for \code{type = "high_seas"}}
 
 \item{type}{\code{character} the boundary type. Can be one of:
 \itemize{

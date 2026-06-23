@@ -1,5 +1,10 @@
 # oceandatr (development version)
 
+# oceandatr 0.4.3
+* Add fuzzy matching for get_boundary() using base::agrep()
+* When no matches found for the name in get_boundary(), a selectable list of options is no longer presented as the behaviour of the pop-up list varied across OSes. Options are still printed to the console, but the user is asked to re-run the function with a correct name.
+* getboundary vignette updated to reflect above change
+
 # oceandatr 0.4.2 
 * Add "Predicting fishing effort in Micronesia" vignette
 

@@ -63,6 +63,9 @@ We now get not just the main country of Australia, but all the islands it has so
 Here is another example using France. Only the EEZ bordering mainland France is retrieved if `country_type = "country"`, but setting `country_type = "sovereign"` we also get all the islands France has sovereignty over.
 
 ```{r france_eez, fig.cap="EEZ of mainland France (blue) and all overseas territories (solid outlines). World coastlines are shown as dashed line for reference."}
+#check if rnaturalearthdata package is installed and give option to install if not
+rnaturalearth::check_rnaturalearthdata()
+
 fr_eez <- get_boundary(name = "France", type = "eez", country_type = "country")
 
 fr_eez_sov <- get_boundary(name = "France", type = "eez", country_type = "sovereign")
@@ -73,13 +76,10 @@ plot(fr_eez["geometry"], col = "royalblue", add = T)
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
-An example, where you might want to use `sovereign` is when you are trying to get all the islands that make up Kiribati. Using `country_type = "country"` does not return anything because each island group is listed as a country. Note that if the `name` provided is not found, a list of all possible `country_type` options to chose from is provided (only part of the output is shown for brevity):
+An example, where you might want to use `sovereign` is when you are trying to get all the islands that make up Kiribati. Using `country_type = "country"` does not return anything because each island group is listed as a country. Note that if the `name` provided is not found, the function will error and print a list of all possible `country_type` options:
 
-```{r kribati_example_wrong, eval=FALSE}
+```{r kribati_example_wrong}
 get_boundary(name = "Kiribati", type = "eez", country_type = "country")
-```
-```{r eez_countries_list, echo=FALSE, fig.cap = ""}
-knitr::include_graphics("figs/eez_countries_list.png")
 ```
 
 Try again, setting `country_type = "sovereign"`:
@@ -104,7 +104,7 @@ knitr::kable(mregions2::mrp_list[,c("title", "layer")])
 
 # Land boundaries
 
-`get_boundary()` uses the `rnaturalearth::ne_countries()` function from the [`rnaturalearth``](https://docs.ropensci.org/rnaturalearth/index.html) package to retrieve land boundaries. `get_boundary()` is only intended to provide a slightly simpler interface for getting some commonly used land boundaries.
+`get_boundary()` uses the `rnaturalearth::ne_countries()` function from the [`rnaturalearth`](https://docs.ropensci.org/rnaturalearth/index.html) package to retrieve land boundaries. `get_boundary()` is only intended to provide a slightly simpler interface for getting some commonly used land boundaries.
 
 As with maritime boundaries, the `country_type` can be specified as either `country_type = "country"` or `country_type = "sovereign"` depending on whether only the main country is required or the country and all territories/ states it has sovereignty over. The following examples show how these options work in practice. 
 

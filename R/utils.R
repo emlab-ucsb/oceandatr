@@ -187,3 +187,30 @@ get_kiribati_grid <- function(resolution = 50, output = "raster") {
            touches = TRUE
           )
 }
+
+#' Fuzzy matching function
+#'
+#' @param name_for_matching `character` name to be matched 
+#' @param vector_of_names `vector` of `character`s to match
+#'
+#' @returns matched name
+#'
+#' @noRd
+name_matching <- function(name_for_matching, vector_of_names){
+  
+  fuzzy_match <- vector_of_names[agrep(name_for_matching, vector_of_names, ignore.case = TRUE)]
+  
+  if(length(fuzzy_match)>1){
+    print(vector_of_names)
+    stop('"', name_for_matching, '"', " has more than 1 close match, please re-run get_boundary() with one of the names above. The following are the closest matches: ", 
+         paste(fuzzy_match, collapse = ", "),
+         call. = FALSE)
+  }else if(length(fuzzy_match) == 1){
+    message(paste0("Matched entered name ", '"', name_for_matching, '"', " with close match " ,  '"', fuzzy_match, '"'))
+    return(fuzzy_match)
+  }else{
+    print(vector_of_names)
+    stop('"', name_for_matching, '"', " is not a valid name. Please re-run get_boundary() with one of the names above.",
+         call. = FALSE)
+  }
+}
