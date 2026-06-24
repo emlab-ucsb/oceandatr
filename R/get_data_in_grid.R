@@ -64,7 +64,7 @@
 #' 
 #' cold_coral <- system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr") |>  
 #'                 terra::rast()
-#' coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral, meth = "near")
+#' coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral)
 #' 
 #' terra::plot(coral_gridded)
 get_data_in_grid <- function(spatial_grid = NULL, dat = NULL, raw = FALSE, meth = NULL, name = NULL, feature_names = NULL, antimeridian = NULL, cutoff = 0.5){
