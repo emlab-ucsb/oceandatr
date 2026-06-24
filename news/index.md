@@ -2,6 +2,11 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.4.4
+
+- remove meth = “” arguments from examples and vignette now that
+  terra::spatSample() has been fixed. Fixes \#77
+
 ## oceandatr 0.4.3
 
 - Add fuzzy matching for get_boundary() using base::agrep()

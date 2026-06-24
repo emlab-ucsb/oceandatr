@@ -156,8 +156,8 @@ number of available cores on your systems run
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpAXFBmI/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-23 01:19:22.938294)
+#> Cache is fresh. Reading: /tmp/RtmpnUraOk/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-06-24 03:07:50.196629)
 # Get raw Bio-Oracle environmental data for Bermuda
 enviro_data <- get_enviro_zones(spatial_grid = bermuda_eez, raw = TRUE, enviro_zones = FALSE)
 #> Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.

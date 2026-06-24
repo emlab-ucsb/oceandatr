@@ -113,7 +113,7 @@ coral distribution data which has been pre-cropped to the Pacific
 cold_coral <- terra::rast(system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr"))
 
 #grid the data
-coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral, meth = "near")
+coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral)
 
 #plot
 terra::plot(coral_gridded)
@@ -202,7 +202,7 @@ plot(kir_abyssal_features_raw[1] |> sf::st_shift_longitude(), border = FALSE)
 
 ``` r
 
-samoa_coral_raw <- get_data_in_grid(spatial_grid = samoa_eez, dat = cold_coral, raw = TRUE, meth = "near")
+samoa_coral_raw <- get_data_in_grid(spatial_grid = samoa_eez, dat = cold_coral, raw = TRUE)
 
 terra::plot(samoa_coral_raw)
 ```

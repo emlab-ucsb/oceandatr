@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,7 +161,7 @@ coral distribution data which has been pre-cropped to the Pacific</p>
 <span><span class="va">cold_coral</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"cold_coral_pacific.tif"</span>, package <span class="op">=</span> <span class="st">"oceandatr"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#grid the data</span></span>
-<span><span class="va">coral_gridded</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_grid</span>, dat <span class="op">=</span> <span class="va">cold_coral</span>, meth <span class="op">=</span> <span class="st">"near"</span><span class="op">)</span></span>
+<span><span class="va">coral_gridded</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_grid</span>, dat <span class="op">=</span> <span class="va">cold_coral</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#plot</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">coral_gridded</span><span class="op">)</span></span>
@@ -230,7 +230,7 @@ you can provide an <code>sf</code> polygon to
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">kir_abyssal_features_raw</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_shift_longitude.html" class="external-link">st_shift_longitude</a></span><span class="op">(</span><span class="op">)</span>, border <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="grid_data_files/figure-html/raw_data_sf-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">samoa_coral_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_eez</span>, dat <span class="op">=</span> <span class="va">cold_coral</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, meth <span class="op">=</span> <span class="st">"near"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">samoa_coral_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_eez</span>, dat <span class="op">=</span> <span class="va">cold_coral</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">samoa_coral_raw</span><span class="op">)</span></span></code></pre></div>
 <p><img src="grid_data_files/figure-html/raw_data_raster-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>

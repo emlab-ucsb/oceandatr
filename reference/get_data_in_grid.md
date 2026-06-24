@@ -119,7 +119,7 @@ terra::plot(ridges_gridded)
 
 cold_coral <- system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr") |>  
                 terra::rast()
-coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral, meth = "near")
+coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral)
 
 terra::plot(coral_gridded)
 ```
