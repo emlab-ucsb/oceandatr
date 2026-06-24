@@ -1,5 +1,8 @@
 # oceandatr (development version)
 
+# oceandatr 0.4.4
+* remove meth = "" arguments from examples and vignette now that terra::spatSample() has been fixed. Fixes #77
+
 # oceandatr 0.4.3
 * Add fuzzy matching for get_boundary() using base::agrep()
 * When no matches found for the name in get_boundary(), a selectable list of options is no longer presented as the behaviour of the pop-up list varied across OSes. Options are still printed to the console, but the user is asked to re-run the function with a correct name.
