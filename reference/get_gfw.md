@@ -92,8 +92,7 @@ For gridded data, a
 [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
 or `sf` object, depending on the `spatial_grid` format. If `raw = TRUE`,
 non-summarised data in `tibble` format is returned for the polygon area
-direct from the GFW query
-[`gfwr::gfw_ais_fishing_hours()`](https://globalfishingwatch.github.io/gfwr/reference/gfw_ais_fishing_hours.html).
+direct from the GFW query `gfwr::gfw_ais_fishing_hours()`.
 
 ## Examples
 

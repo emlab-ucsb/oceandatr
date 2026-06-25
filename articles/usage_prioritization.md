@@ -220,8 +220,7 @@ opportunity cost for each planning unit.
 [Global Fishing Watch](https://globalfishingwatch.org/) has global
 fishing effort data, and this can be accessed easily using
 [`get_gfw()`](https://emlab-ucsb.github.io/oceandatr/reference/get_gfw.md)
-function in `oceandatr` (which is a wrapper for the
-[`get_raster()`](https://globalfishingwatch.github.io/gfwr/reference/gfw_renamed.html)
+function in `oceandatr` (which is a wrapper for the `get_raster()`
 function from the [`gfwr`](https://github.com/GlobalFishingWatch/gfwr)
 package). An API key is required, but can be easily generated at no
 cost; see the `gfwr` website for more details.
