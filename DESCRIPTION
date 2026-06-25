@@ -2,7 +2,11 @@ Package: oceandatr
 Type: Package
 Title: Ocean Data Acquisition and processing
 Version: 0.4.4
-Authors@R: person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182"))
+Authors@R: c(
+    person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182")),
+    person(given = "Echelle S.", family = "Burns", email = "echelle_burns@ucsb.edu", role = c("aut"), comment = c(ORCID = "0000-0002-3902-1410")),
+    person(given = "Jason D.", family = "Everett", email = "JaseEverett@gmail.com", role = c("ctb"), comment = c(ORCID = "0000-0002-6681-8054"))
+    )
 Description: For acquiring, processing, and gridding ocean related data.
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
