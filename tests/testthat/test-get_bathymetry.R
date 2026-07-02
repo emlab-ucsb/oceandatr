@@ -2,8 +2,8 @@ test_that("returns gridded Bermuda depth classes", {
   expect_s4_class(get_bathymetry(spatial_grid = get_bermuda_grid()), class = "SpatRaster")
 })
 
-test_that("returns Kiribati gridded depth classes", {
-  expect_s4_class(get_bathymetry(spatial_grid = get_kiribati_grid()),
+test_that("returns Fiji gridded depth classes", {
+  expect_s4_class(get_bathymetry(spatial_grid = get_fiji_grid()),
                   class = "SpatRaster")
 })
 

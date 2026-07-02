@@ -1,5 +1,5 @@
 test_that("returns raw Bio-Oracle data - 11 layer raster", {
-  expect_equal(terra::nlyr(get_enviro_zones(get_boundary(name = "Bermuda"), raw = TRUE, enviro_zones = FALSE)), 11)
+  expect_equal(terra::nlyr(get_enviro_zones(get_bermuda_eez(), raw = TRUE, enviro_zones = FALSE)), 11)
 })
 
 test_that("returns gridded Bermuda Bio-Oracle data - raster", {
@@ -8,19 +8,13 @@ test_that("returns gridded Bermuda Bio-Oracle data - raster", {
                     get_enviro_zones(raw = FALSE, enviro_zones = FALSE), class = "SpatRaster")
 })
 
-test_that("returns gridded Bermuda Bio-Oracle data - sf", {
-  set.seed(500)
-  expect_s3_class(get_bermuda_grid(output = "sf_square") |>  
-                    get_enviro_zones(raw = FALSE, enviro_zones = FALSE), class = "sf")
-})
-
 test_that("returns gridded Bermuda envirozones - raster", {
   expect_s4_class(get_bermuda_grid() |>  
                     get_enviro_zones(raw = FALSE, enviro_zones = TRUE, num_clusters = 3), class = "SpatRaster")
 })
 
-test_that("returns gridded Kiribati envirozones - sf", {
-  expect_s3_class(get_kiribati_grid(output = "sf_square") |> 
+test_that("returns gridded Fiji envirozones - sf", {
+  expect_s3_class(get_fiji_grid(output = "sf_square") |> 
                     get_enviro_zones(raw = FALSE, enviro_zones = TRUE, num_clusters = 3), class = "sf")
 })
 

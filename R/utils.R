@@ -150,44 +150,6 @@ remove_empty_layers <- function(dat){
   }
 }
 
-# Helper functions for tests
-
-#' Get a grid for Bermuda's EEZ in local equal area projection
-#'
-#' @param resolution `numeric` grid cell width in kilometres
-#' @param output `character` the desired output format, either "raster",
-#'   "sf_square" (vector), or "sf_hex" (vector); default is "raster"
-#'
-#' @returns Grid for Bermuda's EEZ in local equal area projection and specified
-#'   format and cell size
-#' 
-#' @noRd
-get_bermuda_grid <- function(resolution = 20, output = "raster") {
-  get_grid(boundary = get_boundary(name = "Bermuda"), 
-           crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
-           resolution = resolution*1e3, 
-           output = output)
-}
-
-#' Get a grid for Kiribati's EEZ in local equal area projection
-#'
-#' @param resolution `numeric` grid cell width in kilometres
-#' @param output `character` the desired output format, either "raster",
-#'   "sf_square" (vector), or "sf_hex" (vector); default is "raster"
-#'
-#' @returns Grid for Kiribati's EEZ in local equal area projection and specified
-#'   format and cell size
-#' 
-#' @noRd
-get_kiribati_grid <- function(resolution = 50, output = "raster") {
-  get_grid(boundary = get_boundary(name = "Kiribati", country_type = "sovereign"),
-           crs = '+proj=laea +lon_0=-159.609375 +lat_0=0 +datum=WGS84 +units=m +no_defs', 
-           resolution = resolution*1e3, 
-           output = output,
-           touches = TRUE
-          )
-}
-
 #' Fuzzy matching function
 #'
 #' @param name_for_matching `character` name to be matched 
@@ -213,4 +175,61 @@ name_matching <- function(name_for_matching, vector_of_names){
     stop('"', name_for_matching, '"', " is not a valid name. Please re-run get_boundary() with one of the names above.",
          call. = FALSE)
   }
+}
+
+# Helper functions for tests
+
+#' Get Bermuda EEZ from file
+#'
+#' @returns Bermuda EEZ boundary in `sf`
+#'
+#' @noRd
+get_bermuda_eez <- function(){
+  readRDS(system.file("extdata", "bermuda_eez.rds", package = "oceandatr", mustWork = TRUE))
+}
+
+
+#' Get a grid for Bermuda's EEZ in local equal area projection
+#'
+#' @param resolution `numeric` grid cell width in kilometres
+#' @param output `character` the desired output format, either "raster",
+#'   "sf_square" (vector), or "sf_hex" (vector); default is "raster"
+#'
+#' @returns Grid for Bermuda's EEZ in local equal area projection and specified
+#'   format and cell size
+#' 
+#' @noRd
+get_bermuda_grid <- function(resolution = 20, output = "raster") {
+  get_grid(boundary = get_bermuda_eez(), 
+           crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs',
+           resolution = resolution*1e3, 
+           output = output)
+}
+
+#' Get Fiji EEZ from file
+#'
+#' @returns Fiji EEZ boundary in `sf`
+#'
+#' @noRd
+get_fiji_eez <- function(){
+  readRDS(system.file("extdata", "fiji_eez.rds", package = "oceandatr", mustWork = TRUE))
+}
+
+#' Get a grid for Fiji's EEZ in local equal area projection
+#'
+#' @param resolution `numeric` grid cell width in kilometres
+#' @param output `character` the desired output format, either "raster",
+#'   "sf_square" (vector), or "sf_hex" (vector); default is "raster"
+#'
+#' @returns Grid for Fiji's EEZ in local equal area projection and specified
+#'   format and cell size
+#' 
+#' @noRd
+get_fiji_grid <- function(resolution = 20, output = "raster") {
+  get_grid(boundary = get_fiji_eez(),
+           crs = 8859, 
+           resolution = resolution*1e3, 
+           output = output,
+           touches = TRUE
+  )
 }

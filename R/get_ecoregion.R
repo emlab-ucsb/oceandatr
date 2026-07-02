@@ -58,7 +58,9 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
 
   if(is.null(marine_ecoregions))  marine_ecoregions <- mregions2::mrp_get(type)
   
-  sf::sf_use_s2(FALSE)
+  suppressMessages(sf::sf_use_s2(FALSE))
+  on.exit(expr = suppressMessages(sf::sf_use_s2(TRUE)))
+  
  ecoregion_data <- get_data_in_grid(spatial_grid = spatial_grid, dat = marine_ecoregions, raw = raw, antimeridian = antimeridian, feature_names = col_name)
  
  if(!raw){
@@ -76,6 +78,5 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
      }
    }
  }
-  sf::sf_use_s2(TRUE)
   return(ecoregion_data)
 }

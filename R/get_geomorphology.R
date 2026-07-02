@@ -60,6 +60,7 @@
 #' bermuda_eez <- get_boundary(name = "Bermuda")
 #' # Get geomorphology for the EEZ
 #' bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
+#' plot(bermuda_geomorph)
 #' 
 #' # Get geomorphological features in spatial_grid
 #' bermuda_grid <- get_grid(boundary = bermuda_eez, 
@@ -74,7 +75,9 @@ get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = N
   
   meth <- if(is(spatial_grid, "SpatRaster")) 'near' else 'mode'
   
-  sf::sf_use_s2(FALSE)
+  suppressMessages(sf::sf_use_s2(FALSE))
+  on.exit(expr = suppressMessages(sf::sf_use_s2(TRUE)))
+  
   suppressWarnings(
     geomorph_data <- system.file("extdata", "geomorphology", package = "oceandatrsets", mustWork = TRUE) |>  
       list.files(full.names = TRUE) |>  
@@ -82,8 +85,6 @@ get_geomorphology <- function(spatial_grid = NULL, raw = FALSE, antimeridian = N
       do.call(rbind, args = _) |> 
       get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = raw, meth = meth, feature_names = "geomorph_type", antimeridian = antimeridian)
   )
-  
-  sf::sf_use_s2(TRUE)
   
   return(geomorph_data)
 }

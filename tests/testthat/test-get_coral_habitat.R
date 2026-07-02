@@ -11,8 +11,8 @@ test_that("returns Bermuda gridded data - raster", {
   expect_s4_class(get_coral_habitat(spatial_grid = get_bermuda_grid()), class = "SpatRaster")
 })
 
-test_that("returns gridded data for Kiribati - raster", {
-  expect_s4_class(get_coral_habitat(spatial_grid = get_kiribati_grid()),
+test_that("returns gridded data for Fiji - raster", {
+  expect_s4_class(get_coral_habitat(spatial_grid = get_fiji_grid()),
                   class = "SpatRaster")
 })
 

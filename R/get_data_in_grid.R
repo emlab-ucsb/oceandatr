@@ -44,7 +44,8 @@
 #'
 #' @examples
 #' # ridges data for area of Pacific
-#' ridges <- system.file("extdata", "ridges_pacific.rds", package = "oceandatr") |>  readRDS()
+#' ridges <- system.file("extdata/geomorphology", "ridges.rds", package = "oceandatrsets") |>
+#'            readRDS()
 #' # use get_boundary() to get Samoa's Exclusive Economic Zone
 #' samoa_eez <- get_boundary(name = "Samoa")
 #'
@@ -61,11 +62,11 @@
 #' terra::plot(ridges_gridded)
 #'
 #' #Get some raster data on cold water corals for the same spatial grid
-#' 
-#' cold_coral <- system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr") |>  
+#'
+#' cold_coral <- system.file("extdata", "cold_coral.tif", package = "oceandatrsets") |>
 #'                 terra::rast()
 #' coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral)
-#' 
+#'
 #' terra::plot(coral_gridded)
 get_data_in_grid <- function(spatial_grid = NULL, dat = NULL, raw = FALSE, meth = NULL, name = NULL, feature_names = NULL, antimeridian = NULL, cutoff = 0.5){
 

@@ -194,13 +194,13 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
   if(antimeridian){
     
     #Get left hand side of antimeridian
-    file_path_left <- paste0("bathy_", min_x_left, "_", max_x_left, "_", min_y, "_", max_y, ".tif") 
+    file_path_left <- file.path(path, paste0("bathy_", min_x_left, "_", max_x_left, "_", min_y, "_", max_y, ".tif")) 
     
     message("Grid or polygon crosses the antimeridian, getting bathymetry from the left hand side of the antimeridian")
     gebco_data_fetch(min_x_left, max_x_left, min_y, max_y, nc, file_path = file_path_left, nc_lat_vals, nc_lon_vals)
     
     #Get right hand side
-    file_path_right <- paste0("bathy_", min_x_right, "_", max_x_right, "_", min_y, "_", max_y, ".tif") 
+    file_path_right <- file.path(path, paste0("bathy_", min_x_right, "_", max_x_right, "_", min_y, "_", max_y, ".tif")) 
     
     message("Grid or polygon crosses the antimeridian, getting bathymetry from the right hand side of the antimeridian")
     gebco_data_fetch(min_x_right, max_x_right, min_y, max_y, nc, file_path_right, nc_lat_vals, nc_lon_vals)

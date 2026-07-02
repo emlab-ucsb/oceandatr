@@ -50,4 +50,5 @@ bermuda_grid <- get_grid(boundary = bermuda_eez,
   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
   resolution = 10000)
 knolls_gridded <- get_knolls(spatial_grid = bermuda_grid)
+terra::plot(knolls_gridded)
 }
