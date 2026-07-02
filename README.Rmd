@@ -25,6 +25,7 @@ devtools::load_all()
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/emlab-ucsb/oceandatr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/emlab-ucsb/oceandatr/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/emlab-ucsb/oceandatr/graph/badge.svg)](https://app.codecov.io/gh/emlab-ucsb/oceandatr)
 <!-- badges: end -->
 
 `oceandatr` provides simple functions for acquiring, processing and gridding ocean data.

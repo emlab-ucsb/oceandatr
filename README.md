@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/emlab-ucsb/oceandatr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/emlab-ucsb/oceandatr/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/emlab-ucsb/oceandatr/graph/badge.svg)](https://app.codecov.io/gh/emlab-ucsb/oceandatr)
 <!-- badges: end -->
 
 `oceandatr` provides simple functions for acquiring, processing and
@@ -26,9 +28,9 @@ pak::pkg_install("emlab-ucsb/oceandatr")
 
 A Linux user reported having to manually install the `rdflib` and
 `redland` packages that are required for `mregions2`, which is used by
-`oceandatr`. If you get an error message regarding those packages
-or the `librdf0-dev` library, try installing that library from the
-command line, e.g. on Ubuntu `apt install librdf0-dev`, then running
+`oceandatr`. If you get an error message regarding those packages or the
+`librdf0-dev` library, try installing that library from the command
+line, e.g. on Ubuntu `apt install librdf0-dev`, then running
 `install.packages(c("rdflib", "redland"))` in R.
 
 # Getting gridded ocean data
@@ -125,7 +127,7 @@ the function will extract bathymetry data for the area from the [GEBCO
 ``` r
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully streamed to /tmp/RtmpyVfCNO/bathy_-68.93_-60.69_28.9_35.81.tif
+#> Finished! Data successfully streamed to /tmp/RtmpA0lyVf/bathy_-68.93_-60.69_28.9_35.81.tif
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
@@ -148,7 +150,7 @@ We can get the depth zones for Bermuda simply by setting the
 
 ``` r
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmpyVfCNO/bathy_-68.93_-60.69_28.9_35.81.tif
+#> Bathymetry data already downloaded, loading data from: /tmp/RtmpA0lyVf/bathy_-68.93_-60.69_28.9_35.81.tif
 
 #value of 1 indicates that depth zone is present
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})

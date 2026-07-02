@@ -11,3 +11,4 @@
 ^\.github$
 figure$
 ^\.covrignore$
+^codecov\.yml$
