@@ -3,7 +3,7 @@
 # 2. Fiji - crosses antimeridian, so checks antimeridian crossing functionality works
 
 oceandatr::get_boundary("Bermuda") |> 
-  saveRDS("inst/extdata/bermua_eez.rds")
+  saveRDS("inst/extdata/bermuda_eez.rds")
 
 oceandatr::get_boundary("Fiji") |> 
   saveRDS("inst/extdata/fiji_eez.rds")
