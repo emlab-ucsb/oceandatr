@@ -12,6 +12,9 @@
 #' @noRd
 get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian, meth){
 
+  suppressMessages(sf::sf_use_s2(FALSE))
+  on.exit(expr = suppressMessages(sf::sf_use_s2(TRUE)))
+  
   if(is(dat, "SpatRaster")){
     if(matching_crs){
         terra::crop(dat, sf::st_as_sf(spatial_grid)) |>
