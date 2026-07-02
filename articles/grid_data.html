@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,10 +87,11 @@ used to crop/ intersect a polygon with data</li>
 </ul>
 <p>This vignette show how to use these functions for get gridded data,
 in <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast</a></code> and <code>sf</code> format, using the EEZ’s
-of Samoa and Kiribati as examples.</p>
+of Samoa and Fiji as examples.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#load the package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://emlab-ucsb.github.io/oceandatr/">oceandatr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://emlab-ucsb.github.io/oceandatr/">oceandatr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">oceandatrsets</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="get-a-boundary">Get a boundary<a class="anchor" aria-label="anchor" href="#get-a-boundary"></a>
 </h2>
@@ -117,8 +118,6 @@ projections are normally best. A good option for the Pacific is <a href="https:/
 is equal area and centered on the Pacific.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">samoa_projection</span> <span class="op">&lt;-</span> <span class="st">'+proj=laea +lon_0=-172.5 +lat_0=0 +datum=WGS84 +units=m +no_defs'</span></span>
-<span></span>
 <span><span class="co"># Create a raster grid with 10km sized cells</span></span>
 <span><span class="va">samoa_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grid.html">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">samoa_eez</span>, resolution <span class="op">=</span> <span class="fl">10000</span>, crs <span class="op">=</span> <span class="fl">8859</span><span class="op">)</span></span>
 <span></span>
@@ -141,11 +140,12 @@ create and plot a hexagonal grid with 10 km wide cells.</p>
 </h2>
 <p>Now we can grid some data. Data can be in raster
 (<code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast</a></code>) or <code>sf</code> format. Here’s an example
-using a global map of seafloor ridges which is in <code>sf</code>
-format:</p>
+using a global map of seafloor ridges which is in <code>sf</code> format
+and is part of the <code>oceandatrsets</code> package that houses
+datasets for <code>oceandatr</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ridges data for area of Pacific</span></span>
-<span><span class="va">ridges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/serialize.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ridges_pacific.rds"</span>, package <span class="op">=</span> <span class="st">"oceandatr"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ridges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/serialize.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/geomorphology"</span>, <span class="st">"ridges.rds"</span>, package <span class="op">=</span> <span class="st">"oceandatrsets"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#grid the data</span></span>
 <span><span class="va">ridges_gridded</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_grid</span>, dat <span class="op">=</span> <span class="va">ridges</span><span class="op">)</span></span>
@@ -155,10 +155,10 @@ format:</p>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">samoa_eez</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">8859</span><span class="op">)</span><span class="op">)</span> <span class="co">#add Samoa's EEZ</span></span></code></pre></div>
 <p><img src="grid_data_files/figure-html/grid_sf_data-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <p>And another example using raster data, in this case global cold water
-coral distribution data which has been pre-cropped to the Pacific</p>
+coral distribution data</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#load cold water coral data</span></span>
-<span><span class="va">cold_coral</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"cold_coral_pacific.tif"</span>, package <span class="op">=</span> <span class="st">"oceandatr"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cold_coral</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"cold_coral.tif"</span>, package <span class="op">=</span> <span class="st">"oceandatrsets"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#grid the data</span></span>
 <span><span class="va">coral_gridded</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_grid</span>, dat <span class="op">=</span> <span class="va">cold_coral</span><span class="op">)</span></span>
@@ -202,19 +202,19 @@ antimeridian (international date line). You can set
 know you are using a grid that crosses the antimeridian, or if
 <code>antimeridian = NULL</code> (the default option), the function will
 automatically determine if the grid crosses the antimeridian. Here’s an
-example using Kiribati’s EEZ as the grid area.</p>
+example using Fiji’s EEZ as the grid area.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#load the Kiribati EEZ polygon</span></span>
-<span><span class="va">kir_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Kiribati"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co">#load the Fiji EEZ polygon</span></span>
+<span><span class="va">fiji_eez</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Fiji"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#create a grid for the Kiribati EEZ - Equal area projection obtained from https://projectionwizard.org</span></span>
-<span><span class="va">kir_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grid.html">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">kir_eez</span>, resolution <span class="op">=</span> <span class="fl">50000</span>, crs <span class="op">=</span> <span class="fl">8859</span>, output <span class="op">=</span> <span class="st">"sf_square"</span><span class="op">)</span></span>
+<span><span class="co">#create a grid for the Fiji EEZ</span></span>
+<span><span class="va">fiji_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grid.html">get_grid</a></span><span class="op">(</span>boundary <span class="op">=</span> <span class="va">fiji_eez</span>, resolution <span class="op">=</span> <span class="fl">20000</span>, crs <span class="op">=</span> <span class="fl">8859</span>, output <span class="op">=</span> <span class="st">"sf_square"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#get abyssal plains classification for Kiribati grid</span></span>
-<span><span class="va">kir_abyssal_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">kir_grid</span>, dat <span class="op">=</span> <span class="va">abyssal_features</span>, feature_names <span class="op">=</span> <span class="st">"Class"</span><span class="op">)</span></span>
+<span><span class="co">#get abyssal plains classification for Fiji grid</span></span>
+<span><span class="va">fiji_abyssal_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">fiji_grid</span>, dat <span class="op">=</span> <span class="va">abyssal_features</span>, feature_names <span class="op">=</span> <span class="st">"Class"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#plot</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">kir_abyssal_features</span>, border <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fiji_abyssal_features</span>, border <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="grid_data_files/figure-html/grid_multi_sf_antimeridian-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
@@ -224,10 +224,10 @@ example using Kiribati’s EEZ as the grid area.</p>
 you can provide an <code>sf</code> polygon to
 <code><a href="../reference/get_data_in_grid.html">get_data_in_grid()</a></code> and set <code>raw = TRUE</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kir_abyssal_features_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">kir_eez</span>, dat <span class="op">=</span> <span class="va">abyssal_features</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fiji_abyssal_features_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">fiji_eez</span>, dat <span class="op">=</span> <span class="va">abyssal_features</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#shift longitude to make it easier to view data</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">kir_abyssal_features_raw</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_shift_longitude.html" class="external-link">st_shift_longitude</a></span><span class="op">(</span><span class="op">)</span>, border <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fiji_abyssal_features_raw</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_shift_longitude.html" class="external-link">st_shift_longitude</a></span><span class="op">(</span><span class="op">)</span>, border <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="grid_data_files/figure-html/raw_data_sf-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samoa_coral_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data_in_grid.html">get_data_in_grid</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">samoa_eez</span>, dat <span class="op">=</span> <span class="va">cold_coral</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>

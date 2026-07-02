@@ -102,24 +102,14 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmptDr7nB/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-25 02:39:20.787909)
+#> Cache is fresh. Reading: /tmp/RtmpTCoHVD/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-07-02 15:11:18.062791)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmptDr7nB/bathy_-68.92_-60.7_28.91_35.81.tif
+#> Bathymetry data already downloaded, loading data from: /tmp/RtmpTCoHVD/bathy_-68.92_-60.7_28.91_35.81.tif
 #> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: st_buffer does not correctly buffer longitude/latitude data
-#> dist is assumed to be in decimal degrees (arc_degrees).
-#> Spherical geometry (s2) switched on
 #> Getting knoll data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Spherical geometry (s2) switched on
 #> Getting geomorphology data...
 #> Getting coral data...
 #> Getting environmental zones data... This could take several minutes
@@ -133,18 +123,11 @@ set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 #> Getting depth zones...
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully streamed to /tmp/RtmptDr7nB/bathy_-68.95_-60.67_28.9_35.8.tif
+#> Finished! Data successfully streamed to /tmp/RtmpTCoHVD/bathy_-68.95_-60.67_28.9_35.8.tif
 #> Getting seamount data...
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Warning: attribute variables are assumed to be spatially constant throughout all geometries
-#> Spherical geometry (s2) switched on
 #> Getting knoll data...
-#> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
-#> Spherical geometry (s2) switched on
 #> Getting geomorphology data...
 #> Getting coral data...
 #> Getting environmental zones data... This could take several minutes

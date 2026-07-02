@@ -2,6 +2,13 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.5.0
+
+- improve package testing by simplifying and speeding up tests
+- add Github actions for code coverage
+- add note to readme about package installation in Linux as per package
+  reviewer note
+
 ## oceandatr 0.4.4
 
 - remove meth = “” arguments from examples and vignette now that

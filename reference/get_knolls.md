@@ -61,22 +61,17 @@ from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)
 ``` r
 # Get EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmptDr7nB/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-25 02:39:20.787909)
+#> Cache is fresh. Reading: /tmp/RtmpTCoHVD/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-07-02 15:11:18.062791)
 # Get raw knolls data for Bermuda's EEZ
 knolls <- get_knolls(spatial_grid= bermuda_eez, raw = TRUE)
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Spherical geometry (s2) switched on
 
 # Get gridded knolls data: first create a grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, 
   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
   resolution = 10000)
 knolls_gridded <- get_knolls(spatial_grid = bermuda_grid)
-#> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
-#> Spherical geometry (s2) switched on
+terra::plot(knolls_gridded)
 ```

@@ -81,43 +81,35 @@ get_boundary(name = "Australia", type = "eez", country_type = "country")
 
 ``` r
 #Marine boundary examples:
-if(require("mregions2")){
 australia_mainland_eez <- get_boundary(name = "Australia")
 plot(australia_mainland_eez["geometry"])
+
 
 #this includes all islands that Australia has jurisdiction over:
 australia_including_territories_eez <- get_boundary(name = "Australia", country_type = "sovereign")
 plot(australia_including_territories_eez["geometry"])
 
+
 #South Atlantic Ocean area:
 south_atlantic <- get_boundary(name = "South Atlantic Ocean", type = "ocean")
 
 plot(south_atlantic["geometry"])
-}
-#> Loading required package: mregions2
-
-
 
 
 #Land boundary example:
-if(require("rnaturalearth")){
 australia_land <- get_boundary(name = "Australia", type = "country")
 plot(australia_land["geometry"])
+
 
 #this includes all islands that Australia has jurisdiction over:
 australia_land_and_territories <-
 get_boundary(name = "Australia", type = "country", country_type = "sovereign")
 plot(australia_land_and_territories["geometry"])
 
+
 #Sea boundary:
 coral_sea <- get_boundary(name = "Coral Sea", type = "seas_oceans")
-plot(coral_sea["geometry"])
-}
-#> Loading required package: rnaturalearth
-
-
 #> Reading ne_10m_geography_marine_polys.zip from naturalearth...
+plot(coral_sea["geometry"])
 
-
-#
 ```

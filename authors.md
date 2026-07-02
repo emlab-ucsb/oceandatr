@@ -14,13 +14,13 @@
 ## Citation
 
 Flower J, Burns E (2026). *oceandatr: Ocean Data Acquisition and
-processing*. R package version 0.4.4,
+processing*. R package version 0.5.0,
 <https://emlab-ucsb.github.io/oceandatr/>.
 
     @Manual{,
       title = {oceandatr: Ocean Data Acquisition and processing},
       author = {Jason Flower and Echelle S. Burns},
       year = {2026},
-      note = {R package version 0.4.4},
+      note = {R package version 0.5.0},
       url = {https://emlab-ucsb.github.io/oceandatr/},
     }

@@ -16,12 +16,13 @@ there are three generic functions:
 
 This vignette show how to use these functions for get gridded data, in
 [`terra::rast`](https://rspatial.github.io/terra/reference/rast.html)
-and `sf` format, using the EEZ’s of Samoa and Kiribati as examples.
+and `sf` format, using the EEZ’s of Samoa and Fiji as examples.
 
 ``` r
 
 #load the package
 library(oceandatr)
+library(oceandatrsets)
 ```
 
 ## Get a boundary
@@ -56,8 +57,6 @@ area and centered on the Pacific.
 ``` r
 
 
-samoa_projection <- '+proj=laea +lon_0=-172.5 +lat_0=0 +datum=WGS84 +units=m +no_defs'
-
 # Create a raster grid with 10km sized cells
 samoa_grid <- get_grid(boundary = samoa_eez, resolution = 10000, crs = 8859)
 
@@ -87,12 +86,13 @@ plot(samoa_grid_sf)
 Now we can grid some data. Data can be in raster
 ([`terra::rast`](https://rspatial.github.io/terra/reference/rast.html))
 or `sf` format. Here’s an example using a global map of seafloor ridges
-which is in `sf` format:
+which is in `sf` format and is part of the `oceandatrsets` package that
+houses datasets for `oceandatr`:
 
 ``` r
 
 # ridges data for area of Pacific
-ridges <- readRDS(system.file("extdata", "ridges_pacific.rds", package = "oceandatr"))
+ridges <- readRDS(system.file("extdata/geomorphology", "ridges.rds", package = "oceandatrsets"))
 
 #grid the data
 ridges_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = ridges)
@@ -105,12 +105,12 @@ terra::lines(samoa_eez |> sf::st_transform(crs = 8859)) #add Samoa's EEZ
 ![](grid_data_files/figure-html/grid_sf_data-1.png)
 
 And another example using raster data, in this case global cold water
-coral distribution data which has been pre-cropped to the Pacific
+coral distribution data
 
 ``` r
 
 #load cold water coral data
-cold_coral <- terra::rast(system.file("extdata", "cold_coral_pacific.tif", package = "oceandatr"))
+cold_coral <- terra::rast(system.file("extdata", "cold_coral.tif", package = "oceandatrsets"))
 
 #grid the data
 coral_gridded <- get_data_in_grid(spatial_grid = samoa_grid, dat = cold_coral)
@@ -164,21 +164,21 @@ plot(abyssal_features_sf)
 `get_data_in_grid` if you know you are using a grid that crosses the
 antimeridian, or if `antimeridian = NULL` (the default option), the
 function will automatically determine if the grid crosses the
-antimeridian. Here’s an example using Kiribati’s EEZ as the grid area.
+antimeridian. Here’s an example using Fiji’s EEZ as the grid area.
 
 ``` r
 
-#load the Kiribati EEZ polygon
-kir_eez <- get_boundary(name = "Kiribati", country_type = "sovereign")
+#load the Fiji EEZ polygon
+fiji_eez <- get_boundary(name = "Fiji")
 
-#create a grid for the Kiribati EEZ - Equal area projection obtained from https://projectionwizard.org
-kir_grid <- get_grid(boundary = kir_eez, resolution = 50000, crs = 8859, output = "sf_square")
+#create a grid for the Fiji EEZ
+fiji_grid <- get_grid(boundary = fiji_eez, resolution = 20000, crs = 8859, output = "sf_square")
 
-#get abyssal plains classification for Kiribati grid
-kir_abyssal_features <- get_data_in_grid(spatial_grid = kir_grid, dat = abyssal_features, feature_names = "Class")
+#get abyssal plains classification for Fiji grid
+fiji_abyssal_features <- get_data_in_grid(spatial_grid = fiji_grid, dat = abyssal_features, feature_names = "Class")
 
 #plot
-plot(kir_abyssal_features, border = FALSE)
+plot(fiji_abyssal_features, border = FALSE)
 ```
 
 ![](grid_data_files/figure-html/grid_multi_sf_antimeridian-1.png)
@@ -192,10 +192,10 @@ and set `raw = TRUE`.
 
 ``` r
 
-kir_abyssal_features_raw <- get_data_in_grid(spatial_grid = kir_eez, dat = abyssal_features, raw = TRUE)
+fiji_abyssal_features_raw <- get_data_in_grid(spatial_grid = fiji_eez, dat = abyssal_features, raw = TRUE)
 
 #shift longitude to make it easier to view data
-plot(kir_abyssal_features_raw[1] |> sf::st_shift_longitude(), border = FALSE)
+plot(fiji_abyssal_features_raw[1] |> sf::st_shift_longitude(), border = FALSE)
 ```
 
 ![](grid_data_files/figure-html/raw_data_sf-1.png)

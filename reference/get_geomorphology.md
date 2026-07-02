@@ -114,14 +114,12 @@ List of features:
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmptDr7nB/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-06-25 02:39:20.787909)
+#> Cache is fresh. Reading: /tmp/RtmpTCoHVD/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-07-02 15:11:18.062791)
 # Get geomorphology for the EEZ
 bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
-#> Spherical geometry (s2) switched off
-#> although coordinates are longitude/latitude, st_intersection assumes that they
-#> are planar
-#> Spherical geometry (s2) switched on
+plot(bermuda_geomorph)
+
 
 # Get geomorphological features in spatial_grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, 
@@ -129,9 +127,7 @@ bermuda_grid <- get_grid(boundary = bermuda_eez,
   resolution = 20000)
 geomorph_gridded <- get_geomorphology(spatial_grid = bermuda_grid) |>  
   remove_empty_layers() #helper function to remove data layers that are all zero or NA values
-#> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar
-#> Spherical geometry (s2) switched on
 terra::plot(geomorph_gridded)
 ```

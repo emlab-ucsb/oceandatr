@@ -15,7 +15,7 @@ rnaturalearth is used.'><meta property="og:image" content="https://emlab-ucsb.gi
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,45 +101,38 @@ country via the <code>rnaturalearth</code> package
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#Marine boundary examples:</span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://docs.ropensci.org/mregions2" class="external-link">"mregions2"</a></span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">australia_mainland_eez</span> <span class="op">&lt;-</span> <span class="fu">get_boundary</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">australia_mainland_eez</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_boundary-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#this includes all islands that Australia has jurisdiction over:</span></span></span>
 <span class="r-in"><span><span class="va">australia_including_territories_eez</span> <span class="op">&lt;-</span> <span class="fu">get_boundary</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">australia_including_territories_eez</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_boundary-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#South Atlantic Ocean area:</span></span></span>
 <span class="r-in"><span><span class="va">south_atlantic</span> <span class="op">&lt;-</span> <span class="fu">get_boundary</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"South Atlantic Ocean"</span>, type <span class="op">=</span> <span class="st">"ocean"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">south_atlantic</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: mregions2</span>
-<span class="r-plt img"><img src="get_boundary-1.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="get_boundary-2.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="get_boundary-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#Land boundary example:</span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">"rnaturalearth"</a></span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">australia_land</span> <span class="op">&lt;-</span> <span class="fu">get_boundary</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, type <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">australia_land</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_boundary-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#this includes all islands that Australia has jurisdiction over:</span></span></span>
 <span class="r-in"><span><span class="va">australia_land_and_territories</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span><span class="fu">get_boundary</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Australia"</span>, type <span class="op">=</span> <span class="st">"country"</span>, country_type <span class="op">=</span> <span class="st">"sovereign"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">australia_land_and_territories</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_boundary-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#Sea boundary:</span></span></span>
 <span class="r-in"><span><span class="va">coral_sea</span> <span class="op">&lt;-</span> <span class="fu">get_boundary</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Coral Sea"</span>, type <span class="op">=</span> <span class="st">"seas_oceans"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">coral_sea</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: rnaturalearth</span>
-<span class="r-plt img"><img src="get_boundary-4.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="get_boundary-5.png" alt="" width="700" height="433"></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading <span style="color: #0000BB;">ne_10m_geography_marine_polys.zip</span> from naturalearth...</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">coral_sea</span><span class="op">[</span><span class="st">"geometry"</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="get_boundary-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
