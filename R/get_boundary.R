@@ -40,7 +40,6 @@
 #'
 #' @examples
 #' #Marine boundary examples:
-#' if(require("mregions2")){
 #'australia_mainland_eez <- get_boundary(name = "Australia")
 #'plot(australia_mainland_eez["geometry"])
 #'
@@ -52,10 +51,8 @@
 #' south_atlantic <- get_boundary(name = "South Atlantic Ocean", type = "ocean")
 #'
 #' plot(south_atlantic["geometry"])
-#' }
 #'
 #' #Land boundary example:
-#'if(require("rnaturalearth")){
 #'australia_land <- get_boundary(name = "Australia", type = "country")
 #'plot(australia_land["geometry"])
 #'
@@ -67,9 +64,7 @@
 #' #Sea boundary:
 #' coral_sea <- get_boundary(name = "Coral Sea", type = "seas_oceans")
 #' plot(coral_sea["geometry"])
-#' }
 #'
-#'#
 get_boundary <- function(name = "Australia", type = "eez", country_type = "country"){
 
   mregions_types <- c("eez", "12nm", "24nm", "ocean", "high_seas")

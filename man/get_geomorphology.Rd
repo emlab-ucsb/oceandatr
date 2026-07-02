@@ -78,6 +78,7 @@ a more recent dataset using \code{get_seamounts()}. List of features:
 bermuda_eez <- get_boundary(name = "Bermuda")
 # Get geomorphology for the EEZ
 bermuda_geomorph <- get_geomorphology(spatial_grid = bermuda_eez, raw = TRUE)
+plot(bermuda_geomorph)
 
 # Get geomorphological features in spatial_grid
 bermuda_grid <- get_grid(boundary = bermuda_eez, 

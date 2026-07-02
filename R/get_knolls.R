@@ -25,6 +25,7 @@
 #'   crs = '+proj=laea +lon_0=-64.8108333 +lat_0=32.3571917 +datum=WGS84 +units=m +no_defs', 
 #'   resolution = 10000)
 #' knolls_gridded <- get_knolls(spatial_grid = bermuda_grid)
+#' terra::plot(knolls_gridded)
 get_knolls <- function(spatial_grid = NULL, raw = FALSE, name = "knolls", antimeridian = NULL){
   
       knolls <- system.file("extdata", "knolls.rds", package = "oceandatrsets", mustWork = TRUE) |> 
