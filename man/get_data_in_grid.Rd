@@ -69,7 +69,7 @@ Get gridded or cropped data from input data
 }
 \examples{
 # ridges data for area of Pacific
-ridges <- system.file("extdata", "ridges_pacific.rds", package = "oceandatr") |>  readRDS()
+ridges <- system.file("extdata/geomorphology", "ridges.rds", package = "oceandatrsets") |>  readRDS()
 # use get_boundary() to get Samoa's Exclusive Economic Zone
 samoa_eez <- get_boundary(name = "Samoa")
 
