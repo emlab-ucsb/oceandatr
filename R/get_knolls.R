@@ -29,11 +29,11 @@ get_knolls <- function(spatial_grid = NULL, raw = FALSE, name = "knolls", antime
   
       knolls <- system.file("extdata", "knolls.rds", package = "oceandatrsets", mustWork = TRUE) |> 
         readRDS() 
+
+      suppressMessages(sf::sf_use_s2(FALSE))
+      on.exit(expr = suppressMessages(sf::sf_use_s2(TRUE)))
       
-      sf::sf_use_s2(FALSE)
       knolls_dat <- get_data_in_grid(spatial_grid = spatial_grid, dat = knolls, raw = raw, name = name, antimeridian = antimeridian)
-    
-      sf::sf_use_s2(TRUE)
       
       return(knolls_dat)
 }

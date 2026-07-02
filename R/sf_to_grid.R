@@ -27,8 +27,8 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
 
     if(antimeridian){
       if(!(any(c("POINT", "MULTIPOINT") %in% unique(sf::st_geometry_type(dat))))){
-        dat_temp <- suppressWarnings(sf::st_break_antimeridian(dat, lon_0 = 180)) |>
-          sf::st_shift_longitude()
+        dat_temp <- suppressWarnings(sf::st_break_antimeridian(dat, lon_0 = 180) |>
+          sf::st_shift_longitude())
       } else{
         data_temp <- sf::st_shift_longitude(dat)
       }
@@ -36,12 +36,13 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
       dat_temp <- dat
     }
 
-    dat_cropped <- suppressWarnings(sf::st_crop(dat_temp, grid_temp)) |>
+    dat_cropped <- suppressWarnings(
+      sf::st_crop(dat_temp, grid_temp) |>
       sf::st_transform(sf::st_crs(spatial_grid)) |>
       (\(x) if (all(sf::st_is_valid(x))) x else sf::st_make_valid(x))() |>
       #after cropping, can end up with mixed geometry type: get only polygons (includes MULTIPOLYGON)
       (\(x) if(any(sf::st_is(x, c("POINT", "MULTIPOINT")), all(sf::st_is(x, "POLYGON")),  all(sf::st_is(x, "MULTIPOLYGON")))) x else sf::st_collection_extract(x, "POLYGON"))()
-
+      )
   }
 
   if(is.null(feature_names)){
@@ -138,8 +139,8 @@ sf_to_grid <- function(spatial_grid, dat, matching_crs, name, feature_names, ant
     intersected_data_list <- list()
 
     for (layer in layer_names) {
-      temp_intersection <- suppressWarnings(sf::st_intersection(spatial_grid_with_id, dat_list[[layer]])) |>
-        (\(x) if(all(sf::st_is_valid(x))) x else sf::st_make_valid(x))()
+      temp_intersection <- suppressWarnings(sf::st_intersection(spatial_grid_with_id, dat_list[[layer]]) |>
+        (\(x) if(all(sf::st_is_valid(x))) x else sf::st_make_valid(x))())
 
       if(nrow(temp_intersection)>0) {
         intersected_data_list[[layer]] <- temp_intersection |>

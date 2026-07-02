@@ -34,7 +34,7 @@ get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian, meth){
     }
   }else{
     if(matching_crs){
-      data_intersected <- suppressWarnings(sf::st_intersection(dat, sf::st_geometry(spatial_grid)))
+      data_intersected <- suppressMessages(suppressWarnings(sf::st_intersection(dat, sf::st_geometry(spatial_grid))))
 
         if(antimeridian) data_intersected <- sf::st_wrap_dateline(data_intersected)
 
@@ -42,19 +42,28 @@ get_raw_data <- function(spatial_grid, dat, matching_crs, antimeridian, meth){
 
     }else{
       if(antimeridian){
-        spatial_grid |>
-          sf::st_transform(sf::st_crs(dat)) |>
-          sf::st_shift_longitude() |>
-          sf::st_intersection(sf::st_shift_longitude(dat)) |>
-          sf::st_wrap_dateline() |>
-          sf::st_transform(sf::st_crs(spatial_grid))
+        suppressMessages(
+          suppressWarnings(
+            spatial_grid |>
+              sf::st_transform(sf::st_crs(dat)) |>
+              sf::st_shift_longitude() |>
+              sf::st_intersection(sf::st_shift_longitude(dat)) |>
+              sf::st_wrap_dateline() |>
+              sf::st_transform(sf::st_crs(spatial_grid)) 
+          )
+          )
       }else{
         spatial_grid_in_data_crs <- spatial_grid |>
           sf::st_transform(sf::st_crs(dat))
 
-        spatial_grid_in_data_crs |>
-          sf::st_intersection(dat, sf::st_geometry(spatial_grid_in_data_crs)) |>
-          sf::st_transform(sf::st_crs(spatial_grid))
+        suppressMessages(
+          suppressWarnings(
+            spatial_grid_in_data_crs |>
+              sf::st_intersection(dat, sf::st_geometry(spatial_grid_in_data_crs)) |>
+              sf::st_transform(sf::st_crs(spatial_grid))    
+          )
+        )
+        
       }
     }
   }

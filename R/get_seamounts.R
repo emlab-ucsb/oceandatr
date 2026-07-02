@@ -52,13 +52,14 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
   seamounts <- system.file("extdata", "seamounts.rds", package = "oceandatrsets", mustWork = TRUE) |>
     readRDS()
   
+  suppressMessages(sf::sf_use_s2(FALSE))
+  on.exit(expr = suppressMessages(sf::sf_use_s2(TRUE)))
+  
   if(raw){
-    sf::sf_use_s2(FALSE)
     raw_seamounts <- get_data_in_grid(spatial_grid = spatial_grid, dat = seamounts, raw = TRUE, antimeridian = antimeridian) 
     
     if(!is.null(buffer)) raw_seamounts <- sf::st_buffer(raw_seamounts, buffer)
     
-    sf::sf_use_s2(TRUE)
     return(raw_seamounts)
   } else{
     
@@ -70,7 +71,6 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
       }else{
         spatial_grid
     } 
-    sf::sf_use_s2(FALSE)
     gridded_buffered_seamounts <- get_data_in_grid(spatial_grid = cropping_polygon, dat = seamounts, raw = TRUE, antimeridian = antimeridian) |> 
       sf::st_geometry() |> 
       sf::st_sf() |> 
@@ -78,8 +78,6 @@ get_seamounts <- function(spatial_grid = NULL, raw = FALSE, buffer = NULL, name 
       sf::st_union() |> 
       sf::st_sf() |> 
       get_data_in_grid(spatial_grid = spatial_grid, dat = _, raw = FALSE, meth = meth, name = "seamounts", antimeridian = antimeridian)
-    
-    sf::sf_use_s2(TRUE)
     
     return(gridded_buffered_seamounts)
   }
