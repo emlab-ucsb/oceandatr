@@ -23,6 +23,12 @@ Useful links:
 Authors:
 \itemize{
   \item Jason Flower \email{jflower@ucsb.edu} (\href{https://orcid.org/0000-0002-6731-8182}{ORCID})
+  \item Echelle S. Burns \email{echelle_burns@ucsb.edu} (\href{https://orcid.org/0000-0002-3902-1410}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Jason D. Everett \email{JaseEverett@gmail.com} (\href{https://orcid.org/0000-0002-6681-8054}{ORCID}) [contributor]
 }
 
 }
