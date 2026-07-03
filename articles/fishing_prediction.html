@@ -74,12 +74,8 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://emlab-ucsb.github.io/oceandatr/">oceandatr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; terra 1.9.27</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span> <span class="co">#for Generalized Additive Modelling</span></span>
-<span><span class="co">#&gt; Loading required package: nlme</span></span>
-<span><span class="co">#&gt; This is mgcv 1.9-4. For overview type '?mgcv'.</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span> <span class="co">#for Generalized Additive Modelling</span></span></code></pre></div>
 <p>We will create a Generalized Additive Model (GAM) of fishing effort
 in the Exclusive Economic Zone (EEZ) of the Federated States of
 Micronesia (FSM), using physical and environmental predictors obtained
@@ -94,6 +90,8 @@ that.</p>
 <p>Download FSM’s EEZ using <code>oceandatr</code></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fsm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span><span class="st">"Micronesia"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Cache is fresh. Reading: '/tmp/RtmpmxUBrw/eez-9e33e424/eez.shp'</span></span>
+<span><span class="co">#&gt; (Last Modified: 2026-07-03 10:22:32.424902)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fsm</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, axes <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
@@ -151,6 +149,7 @@ separately, and time could be included as a factor in the model.</p>
 <span>                          end_year <span class="op">=</span> <span class="fl">2025</span>,</span>
 <span>                          group_by <span class="op">=</span> <span class="st">"location"</span>,</span>
 <span>                          summarise <span class="op">=</span> <span class="st">"mean_total_annual_effort"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; GFW data already downloaded, using cached version</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">fishing_effort</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">fsm_eez_proj</span>, col <span class="op">=</span> <span class="st">"orange"</span>, lwd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
@@ -173,6 +172,8 @@ effort data.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fsm_12nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_boundary.html">get_boundary</a></span><span class="op">(</span><span class="st">"Micronesia"</span>, type <span class="op">=</span> <span class="st">"12nm"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">fsm_proj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Cache is fresh. Reading: '/tmp/RtmpmxUBrw/eez_12nm-77146a5e/eez_12nm.shp'</span></span>
+<span><span class="co">#&gt; (Last Modified: 2026-07-03 10:23:23.333102)</span></span>
 <span></span>
 <span><span class="va">fishing_effort_masked</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html" class="external-link">mask</a></span><span class="op">(</span><span class="va">fishing_effort</span>, mask <span class="op">=</span> <span class="va">fsm_12nm</span>, inverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -197,9 +198,7 @@ downloaded, gridded, and transformed to the correct CRS using
 <code class="sourceCode R"><span><span class="co"># seafloor depth</span></span>
 <span><span class="va">bathy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_bathymetry.html">get_bathymetry</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">fsm_grid</span>,</span>
 <span>                        classify_bathymetry <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Downloaded and saved data chunk 1 of 2</span></span>
-<span><span class="co">#&gt; Downloaded and saved data chunk 2 of 2</span></span>
-<span><span class="co">#&gt; Finished! Data successfully streamed to /tmp/Rtmp3exIrx/bathy_135.32_165.68_-1.17_13.44.tif</span></span>
+<span><span class="co">#&gt; Bathymetry data already downloaded, loading data from: /tmp/RtmpmxUBrw/bathy_135.32_165.68_-1.17_13.44.tif</span></span>
 <span></span>
 <span><span class="co"># distance to ports data</span></span>
 <span><span class="va">dist_port</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dist.html">get_dist</a></span><span class="op">(</span>spatial_grid <span class="op">=</span> <span class="va">fsm_grid</span>,</span>
@@ -217,8 +216,12 @@ downloaded, gridded, and transformed to the correct CRS using
 <p>We will use a basic Generalized Additive Model (GAM), implemented
 using the <code>mgcv</code> R package. First we create a multi-layer
 raster with all the data we want to use in the model, in our case:</p>
+<p>Response variable:</p>
 <ul>
 <li>Fishing effort (log+1 transformed)</li>
+</ul>
+<p>Predictor variables:</p>
+<ul>
 <li>Seafloor depth</li>
 <li>Distance to port</li>
 <li>Mean sea surface temperature</li>
@@ -245,16 +248,17 @@ process.</p>
 <code class="sourceCode R"><span><span class="co"># convert the raster to a dataframe</span></span>
 <span><span class="va">model_df</span> <span class="op">&lt;-</span> <span class="va">model_data</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span>xy <span class="op">=</span> <span class="cn">TRUE</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Now we can create a basic GAM, using the gam() function from the
-package mgcv. Predictor variables (seafloor depth, distance to port, SST
-and dissolved oxygen) are modelled using penalized thin-plate regression
+<p>Now we can fit a basic GAM, using the gam() function from the package
+mgcv. Predictor variables (seafloor depth, distance to port, SST and
+dissolved oxygen) are modelled using penalized thin-plate regression
 splines, while a geographic Gaussian process smoother is included to
 account for spatial dependency across the pelagic grid. The model is
 fitted via Restricted Maximum Likelihood (REML) estimation using the
 log+1 transformed response (fishing effort) variable to address data
-skewness and stabilize residual variance.</p>
+skewness and stabilize residual variance, and a normal error structure
+is used.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#run the GAM</span></span>
+<code class="sourceCode R"><span><span class="co">#fit the GAM</span></span>
 <span><span class="va">fishing_model</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span></span>
 <span>  <span class="va">mean_total_annual_effort</span> <span class="op">~</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">bathymetry</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -277,26 +281,25 @@ skewness and stabilize residual variance.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Parametric coefficients:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; (Intercept) 1.432412   0.003452     415   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; (Intercept)  1.42992    0.00345   414.5   &lt;2e-16 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Approximate significance of smooth terms:</span></span>
 <span><span class="co">#&gt;                        edf Ref.df      F p-value    </span></span>
-<span><span class="co">#&gt; s(bathymetry)        8.236  8.848  15.54  &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; s(dist_ports)        8.721  8.979  64.51  &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; s(Mean_temp)         8.886  8.995  86.41  &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; s(Dissolved_oxygen)  8.654  8.968  38.59  &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; s(x,y)              31.418 31.879 318.94  &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; s(bathymetry)        8.461  8.922  18.41  &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; s(dist_ports)        8.711  8.977  61.78  &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; s(Mean_temp)         8.892  8.995  99.89  &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; s(Dissolved_oxygen)  8.593  8.957  35.27  &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; s(x,y)              31.332 31.847 330.51  &lt;2e-16 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; R-sq.(adj) =  0.488   Deviance explained = 48.9%</span></span>
-<span><span class="co">#&gt; -REML =  18879  Scale est. = 0.28235   n = 23696</span></span></code></pre></div>
+<span><span class="co">#&gt; R-sq.(adj) =   0.49   Deviance explained = 49.1%</span></span>
+<span><span class="co">#&gt; -REML =  18902  Scale est. = 0.28241   n = 23726</span></span></code></pre></div>
 <p>The model successfully captured the spatial distribution of fishing
-effort, accounting for 48.9 of the total deviance (adjusted
-R<sup>2</sup> = 0.488). All predictor variables had highly significant,
-non-linear effects on fishing distribution (p &lt; 0.001).</p>
+effort (adjusted R<sup>2</sup> = 0.490) and all predictor variables had
+highly significant, non-linear effects (p &lt; 0.001)</p>
 <p>We can predict fishing effort using the GAM for the same model grid
 we used as input, and compare the GFW data to the predictions.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
