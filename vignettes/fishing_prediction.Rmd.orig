@@ -120,7 +120,12 @@ enviro_data <- get_enviro_zones(fsm_grid,
 
 We will use a basic Generalized Additive Model (GAM), implemented using the `mgcv` R package. First we create a multi-layer raster with all the data we want to use in the model, in our case:
 
+Response variable:
+
 * Fishing effort (log+1 transformed)
+
+Predictor variables:
+
 * Seafloor depth
 * Distance to port
 * Mean sea surface temperature
@@ -183,10 +188,10 @@ model_df <- model_data |>
   as.data.frame(xy = TRUE, na.rm = TRUE)
 ```
 
-Now we can create a basic GAM, using the gam() function from the package mgcv. Predictor variables (seafloor depth, distance to port, SST and dissolved oxygen) are modelled using penalized thin-plate regression splines, while a geographic Gaussian process smoother is included to account for spatial dependency across the pelagic grid. The model is fitted via Restricted Maximum Likelihood (REML) estimation using the log+1 transformed response (fishing effort) variable to address data skewness and stabilize residual variance.
+Now we can fit a basic GAM, using the gam() function from the package mgcv. Predictor variables (seafloor depth, distance to port, SST and dissolved oxygen) are modelled using penalized thin-plate regression splines, while a geographic Gaussian process smoother is included to account for spatial dependency across the pelagic grid. The model is fitted via Restricted Maximum Likelihood (REML) estimation using the log+1 transformed response (fishing effort) variable to address data skewness and stabilize residual variance, and a normal error structure is used.
 
 ```{r gam}
-#run the GAM
+#fit the GAM
 fishing_model <- mgcv::gam(
   mean_total_annual_effort ~ 
     s(bathymetry) + 
@@ -201,7 +206,7 @@ fishing_model <- mgcv::gam(
 (model_summary <- summary.gam(fishing_model))
 ```
 
-The model successfully captured the spatial distribution of fishing effort, accounting for `r sprintf("%.1f", model_summary$dev.expl*100)` of the total deviance (adjusted R^2^ = `r sprintf("%.3f", model_summary$r.sq)`). All predictor variables had highly significant, non-linear effects on fishing distribution (p < 0.001).
+The model successfully captured the spatial distribution of fishing effort (adjusted R^2^ = `r sprintf("%.3f", model_summary$r.sq)`) and all predictor variables had highly significant, non-linear effects (p < 0.001)
 
 We can predict fishing effort using the GAM for the same model grid we used as input, and compare the GFW data to the predictions.
 
