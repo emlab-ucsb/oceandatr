@@ -102,12 +102,12 @@ format.
 ``` r
 # Grab EEZ data first 
 bermuda_eez <- get_boundary(name = "Bermuda")
-#> Cache is fresh. Reading: /tmp/RtmpQ3RO4z/eez-2205f12f/eez.shp
-#> (Last Modified: 2026-07-03 00:37:26.36112)
+#> Cache is fresh. Reading: /tmp/RtmpHK44st/eez-2205f12f/eez.shp
+#> (Last Modified: 2026-07-03 01:41:15.982945)
 # Get raw data for Bermuda's EEZ
 raw_data <- get_features(spatial_grid = bermuda_eez, raw = TRUE)
 #> Getting depth zones...
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmpQ3RO4z/bathy_-68.92_-60.7_28.91_35.81.tif
+#> Bathymetry data already downloaded, loading data from: /tmp/RtmpHK44st/bathy_-68.92_-60.7_28.91_35.81.tif
 #> Getting seamount data...
 #> Getting knoll data...
 #> Getting geomorphology data...
@@ -123,7 +123,7 @@ set.seed(500)
 features_gridded <- get_features(spatial_grid = bermuda_grid)
 #> Getting depth zones...
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully streamed to /tmp/RtmpQ3RO4z/bathy_-68.95_-60.67_28.9_35.8.tif
+#> Finished! Data successfully streamed to /tmp/RtmpHK44st/bathy_-68.95_-60.67_28.9_35.8.tif
 #> Getting seamount data...
 #> Getting knoll data...
 #> although coordinates are longitude/latitude, st_intersection assumes that they
