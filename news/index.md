@@ -2,6 +2,10 @@
 
 ## oceandatr (development version)
 
+## oceandatr 0.5.1
+
+- Add CITATION file and publication link badge
+
 ## oceandatr 0.5.0
 
 - improve package testing by simplifying and speeding up tests

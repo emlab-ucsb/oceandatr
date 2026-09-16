@@ -24,6 +24,17 @@ A Linux user reported having to manually install the `rdflib` and
 line, e.g. on Ubuntu `apt install librdf0-dev`, then running
 `install.packages(c("rdflib", "redland"))` in R.
 
+## Citation
+
+Please cite the `oceandatr` package when using it in a publication. The
+citation details can be found using `citation("oceandatr")` and are as
+follows:
+
+> Flower J, Burns ES, Dunn DC, Estep A, Everett JD, Hanson JO, Lester
+> SE, Richardson AJ (2026). “oceandatr: An R Package to Acquire and
+> Process Geospatial Ocean Data.” *Ecology and Evolution*, *16*(8),
+> e74211. [doi:10.1002/ece3.74211](https://doi.org/10.1002/ece3.74211)
+
 # Getting gridded ocean data
 
 ``` r
@@ -128,7 +139,7 @@ the function will extract bathymetry data for the area from the [GEBCO
 
 bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = FALSE)
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully streamed to /tmp/RtmpA0lyVf/bathy_-68.93_-60.69_28.9_35.81.tif
+#> Finished! Data successfully streamed to /tmp/Rtmp75uSLG/bathy_-68.93_-60.69_28.9_35.81.tif
 
 terra::plot(bathymetry, col = hcl.colors(n=255, "Blues"), axes = FALSE) 
 plot(bermuda_eez_projected, add=TRUE)
@@ -152,7 +163,7 @@ We can get the depth zones for Bermuda simply by setting the
 ``` r
 
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid, classify_bathymetry = TRUE)
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmpA0lyVf/bathy_-68.93_-60.69_28.9_35.81.tif
+#> Bathymetry data already downloaded, loading data from: /tmp/Rtmp75uSLG/bathy_-68.93_-60.69_28.9_35.81.tif
 
 #value of 1 indicates that depth zone is present
 terra::plot(depth_zones, col = c("grey60", "navyblue"), axes = FALSE, fun = function(){terra::lines(terra::vect(bermuda_eez_projected))})

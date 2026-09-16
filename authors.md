@@ -13,14 +13,18 @@
 
 ## Citation
 
-Flower J, Burns E (2026). *oceandatr: Ocean Data Acquisition and
-processing*. R package version 0.5.0,
-<https://emlab-ucsb.github.io/oceandatr/>.
+Flower J, Burns ES, Dunn DC, Estep A, Everett JD, Hanson JO, Lester SE,
+Richardson AJ (2026). “oceandatr: An R Package to Acquire and Process
+Geospatial Ocean Data.” *Ecology and Evolution*, **16**(8), e74211.
+[doi:10.1002/ece3.74211](https://doi.org/10.1002/ece3.74211).
 
-    @Manual{,
-      title = {oceandatr: Ocean Data Acquisition and processing},
-      author = {Jason Flower and Echelle S. Burns},
+    @Article{,
+      title = {oceandatr: An R Package to Acquire and Process Geospatial Ocean Data},
+      author = {Jason Flower and Echelle S Burns and Daniel C Dunn and Andy Estep and Jason D Everett and Jeffrey O Hanson and Sarah E Lester and Anthony J Richardson},
       year = {2026},
-      note = {R package version 0.5.0},
-      url = {https://emlab-ucsb.github.io/oceandatr/},
+      journal = {Ecology and Evolution},
+      volume = {16},
+      number = {8},
+      pages = {e74211},
+      doi = {10.1002/ece3.74211},
     }
