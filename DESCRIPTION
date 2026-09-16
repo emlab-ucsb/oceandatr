@@ -1,7 +1,7 @@
 Package: oceandatr
 Type: Package
 Title: Ocean Data Acquisition and processing
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: c(
     person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182")),
     person(given = "Echelle S.", family = "Burns", email = "echelle_burns@ucsb.edu", role = c("aut"), comment = c(ORCID = "0000-0002-3902-1410")),

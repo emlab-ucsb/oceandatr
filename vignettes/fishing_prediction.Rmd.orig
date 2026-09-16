@@ -177,7 +177,7 @@ for (i in seq_along(tm_list)) {
 }
 
 tmap_arrange(tm_list) |> 
-  tmap_save("/home/jason/Nextcloud/Documents/oceandatr paper/gam_data.png")
+  tmap_save("/home/jason/Nextcloud/Documents/oceandatr paper/Figures_revised/Figure 3.png", width = 1800, height = 1800, dpi = 300)
 ```
 
 These data are then converted to a data frame for the modelling process.
@@ -239,13 +239,16 @@ When building a more robust model, diagnostic plots and information should be ex
 tm_predicts <- tm_shape(c(log(fishing_effort_masked+1), pred_rast)) +
   tm_raster(col.scale = tm_scale_continuous(values = "viridis"),
             col.legend = tm_legend(reverse = TRUE,
-                                   title = c("Fishing effort"))) +
-  tm_facets(free.scales = FALSE) +
+                                   title = c("Fishing effort")),
+            col.free = FALSE) +
   tm_shape(fsm_eez_proj) +
   tm_lines() +
   tm_layout(panel.labels = c("Global Fishing Watch data", "Model predictions"))
 
-tmap_save(tm_predicts, "/home/jason/Nextcloud/Documents/oceandatr paper/gam_predictions.png")
+tmap_save(tm_predicts, "/home/jason/Nextcloud/Documents/oceandatr paper/Figures_revised/Figure 4.png",
+          width = 1400, 
+          height = 1200,
+          dpi = 300)
 ```
 
 
