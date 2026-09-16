@@ -1,0 +1,24 @@
+citHeader("To cite the oceandatr package in publications, please use:")
+
+bibentry(
+  bibtype = "Article",
+  title = "oceandatr: An R Package to Acquire and Process Geospatial Ocean Data",
+  author = c(
+    person(c("Jason"), "Flower"),
+    person(c("Echelle", "S"), "Burns"),
+    person(c("Daniel", "C"), "Dunn"),
+    person(c("Andy"), "Estep"),
+    person(c("Jason", "D"), "Everett"),
+    person(c("Jeffrey", "O"), "Hanson"),
+    person(c("Sarah", "E"), "Lester"),
+    person(c("Anthony", "J"), "Richardson")
+  ),
+  year = "2026",
+  journal = "Ecology and Evolution",
+  volume = "16",
+  number = "8",
+  pages = "e74211",
+  doi = "10.1002/ece3.74211"
+)
+
+citFooter("For package version, use \"packageVersion('oceandatr')\"\n\n")
