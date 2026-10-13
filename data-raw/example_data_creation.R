@@ -14,7 +14,7 @@ oceandatr::get_boundary("Fiji") |>
 #retrieve Samoan EEZ - small EEZ that doesn't cross the antimeridian,
 #but is close to Fiji, the other EEZ we will use
 
-samoa_eez <- mregions2::mrp_get("eez", cql_filter = "territory1 = 'Samoa'")[, "sovereign1"]
+samoa_eez <- oceandatr:::mr_get("eez", cql_filter = "territory1 = 'Samoa'")[, "sovereign1"]
 
 fiji_eez <- readRDS(system.file("extdata", "fiji_eez.rds", package = "oceandatr"))[, "sovereign1"]
 

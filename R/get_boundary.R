@@ -1,10 +1,9 @@
 #'Get boundaries for an area of interest
 #'
-#'Marine and land boundaries can be obtained.  For marine boundaries, the
-#'`mrp_get` function from the `mregions2` package is used to retrieve the
-#'boundary (e.g. an EEZ) from [Marine
-#'Regions](https://marineregions.org/gazetteer.php). For land boundaries and the
-#'"seas_oceans" type, the package
+#'Marine and land boundaries can be obtained.  For marine boundaries, a boundary
+#'(e.g. an EEZ) is retrieved directly from the [Marine
+#'Regions](https://marineregions.org/gazetteer.php) WFS API. For land boundaries
+#'and the "seas_oceans" type, the package
 #'[`rnaturalearth`](https://github.com/ropensci/rnaturalearth/) is used.
 #'
 #'@param name `character` name of the country or region. If `NULL` all
@@ -84,20 +83,20 @@ get_boundary <- function(name = "Australia", type = "eez", country_type = "count
   if(type %in% mregions_types){
     query_type <- mregions_types_lookup[which(mregions_types == type)]
 
-    if(type == "high_seas") return(mregions2::mrp_get("high_seas"))
+    if(type == "high_seas") return(mr_get("high_seas"))
 
     if(is.null(name)) {
       message("You have requested all ", type, " boundaries, the download will take several minutes.")
-      return(mregions2::mrp_get(query_type))
+      return(mr_get(query_type))
     }
     mregions_country_type <- ifelse(type == "ocean", "name", mregions_country_types_lookup[which(country_types == country_type)])
 
-    query_name_options <- mregions2::mrp_col_unique(query_type, mregions_country_type) |>
+    query_name_options <- mr_col_unique(query_type, mregions_country_type) |>
       sort()
     
     name_matched <- if(name %in% query_name_options) name else name_matching(name, query_name_options)
 
-    eval(parse(text = paste0("mregions2::mrp_get(\"", query_type, "\", cql_filter = \"", mregions_country_type, " = '", name_matched, "'\")")))
+    mr_get(query_type, cql_filter = paste0(mregions_country_type, " = '", name_matched, "'"))
   } else{
     if(is.null(name)) {
       message("You have requested all ", type, " boundaries.")

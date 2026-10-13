@@ -1,5 +1,5 @@
-test_that("retrieving eez matches mregions2", {
-  expect_equal(get_boundary(name = "Bermuda", type = "eez", country_type = "country"), mregions2::mrp_get("eez", cql_filter = "territory1 = 'Bermuda'"))
+test_that("retrieving eez matches direct Marine Regions WFS query using internal oceandatr function", {
+  expect_equal(get_boundary(name = "Bermuda", type = "eez", country_type = "country"), mr_get("eez", cql_filter = "territory1 = 'Bermuda'"))
 })
 
 test_that("eez is sf object", {

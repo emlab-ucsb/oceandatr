@@ -299,23 +299,23 @@ get_enviro_data <- function(spatial_grid = NULL){
                       latitude = c(y_min, y_max),
                       longitude = c(x_min, x_max))
   
-  biooracle_data <- vector("list", length(biooracle_datasets_info$dataset_id))
-  
   message("Retrieving environmental data from https://erddap.bio-oracle.org/erddap/, or disk if previously downloaded.")
   
+  biooracle_files <- vector("character", length(biooracle_datasets_info$dataset_id))
+  
   for(i in seq_along(biooracle_datasets_info$dataset_id)){
-    biooracle_data[[i]] <- rerddap::griddap(biooracle_datasets_info$dataset_id[i], 
-                                            time = constraints[[1]], 
-                                            latitude = constraints[[2]],
-                                            longitude = constraints[[3]],
-                                            fields = biooracle_datasets_info$variables[i],
-                                            url = biooracle_erddap_url,
-                                            read = FALSE,
-                                            fmt = "nc")
+    biooracle_files[[i]] <- get_erddap_griddap(
+      base_url = biooracle_erddap_url,
+      dataset_id = biooracle_datasets_info$dataset_id[i], 
+      variable = biooracle_datasets_info$variables[i],
+      time = constraints[[1]], 
+      latitude = constraints[[2]],
+      longitude = constraints[[3]]
+    )
   }
   message("Data retrieval complete")
   
-  biooracle_rast_list <- lapply(biooracle_data, function(x) terra::rast(x$summary$filename))
+  biooracle_rast_list <- lapply(biooracle_files, function(x) terra::rast(x))
   
   biooracle_rast <- terra::rast(biooracle_rast_list) |> 
     stats::setNames(c("Chlorophyll", "Dissolved_oxygen", "Nitrate", "Minimum_temp", "Mean_temp", "Max_temp", "pH", "Phosphate", "Salinity", "Silicate", "Phytoplankton"))
