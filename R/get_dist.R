@@ -92,7 +92,11 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
       #get high res land polygons from Natural Earth
       ne_data_filename <- "ne_land_data.zip"
       
-      utils::download.file(url = "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_land.zip", destfile = file.path(tempdir(), ne_data_filename), mode = "wb", quiet = TRUE)
+      oceandatr_download_file(
+        url = "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_land.zip", 
+        destfile = file.path(tempdir(), ne_data_filename),
+        service_name = "Natural Earth"
+      )
       utils::unzip(file.path(tempdir(), ne_data_filename), exdir = tempdir())
     }
     
@@ -102,7 +106,11 @@ get_dist <- function(spatial_grid, dist_to = "shore", raw = FALSE, inverse = FAL
     
   }else if(dist_to == "ports"){
     if(!file.exists(file.path(tempdir(), "wpi_ports.csv"))){
-      utils::download.file(url = "https://msi.nga.mil/api/publications/download?type=view&key=16920959/SFH00000/UpdatedPub150.csv", destfile = file.path(tempdir(), "wpi_ports.csv"), method = "curl", quiet = TRUE) 
+      oceandatr_download_file(
+        url = "https://msi.nga.mil/api/publications/download?type=view&key=16920959/SFH00000/UpdatedPub150.csv", 
+        destfile = file.path(tempdir(), "wpi_ports.csv"),
+        service_name = "the World Port Index"
+        ) 
     }
     dat <- utils::read.csv(file.path(tempdir(), "wpi_ports.csv"))[,c("Longitude", "Latitude")]  |>  
       sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)

@@ -56,7 +56,10 @@ get_ecoregion <- function(spatial_grid = NULL, raw = FALSE, type = "MEOW", antim
     col_name <- "provname"
   }
 
-  if(is.null(marine_ecoregions))  marine_ecoregions <- mregions2::mrp_get(type)
+  if(is.null(marine_ecoregions))  {
+    ecoregions_namespace <- if(type == "ecoregions") "Ecoregions" else "MarineRegions"
+    marine_ecoregions <- mr_get(type, namespace = ecoregions_namespace)
+  }
   
   suppressMessages(sf::sf_use_s2(FALSE))
   on.exit(expr = suppressMessages(sf::sf_use_s2(TRUE)))

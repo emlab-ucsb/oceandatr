@@ -184,12 +184,25 @@ get_gebco_bathymetry <- function(area_polygon_for_cropping, path, antimeridian){
   gebco_url <- "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/sub_ice_topography_bathymetry/netcdf/GEBCO_2026_sub_ice.nc"
   
   #open the connection to the remote netcdf file
-  nc <- RNetCDF::open.nc(gebco_url)
+  nc <- with_friendly_download_error(
+    RNetCDF::open.nc(gebco_url),
+    service_name = "GEBCO bathymetry (CEDA THREDDS)",
+    service_url = gebco_url
+      )
   on.exit(RNetCDF::close.nc(nc))
   
   #get the possible lat and long values from the NetCDF file
-  nc_lat_vals <- RNetCDF::var.get.nc(nc, "lat")
-  nc_lon_vals <- RNetCDF::var.get.nc(nc, "lon")
+  nc_lat_vals <- with_friendly_download_error(
+    RNetCDF::var.get.nc(nc, "lat"),
+    service_name = "GEBCO bathymetry (CEDA THREDDS)",
+    service_url = gebco_url
+    )
+  
+  nc_lon_vals <- with_friendly_download_error(
+    RNetCDF::var.get.nc(nc, "lon"),
+    service_name = "GEBCO bathymetry (CEDA THREDDS)",
+    service_url = gebco_url
+    )
   
   if(antimeridian){
     
@@ -270,6 +283,15 @@ gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path, nc_lat_v
   # Initialize the terra writing session
   read_write_info <- terra::writeStart(local_rast, filename = file_path, overwrite = TRUE)
   
+  # If anything below fails partway through (e.g. the connection drops
+  # after some chunks have already been written), file_path will exist on
+  # disk but contain incomplete data. Since get_gebco_bathymetry() treats
+  # any existing file of that name as a complete, previously-downloaded
+  # cache, an incomplete file must not be left behind, or a failed
+  # download would look "successful" and serve corrupt data next time.
+  download_completed <- FALSE
+  on.exit(if(!download_completed) unlink(file_path), add = TRUE)
+  
   # Read from remote netcdf, write to Geotiff in chunks
   for (i in seq_along(row_index_for_ncdf_read)) {
     
@@ -281,10 +303,14 @@ gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path, nc_lat_v
     # ncdf4 reads datasets as [lon, lat] 
     # start: [lon_start, lat_start] | count: [lon_count, lat_count]
     # Read ALL longitudes (index_min_lon to n_lon) but only a chunk of latitudes (rows)
-    chunk_data <- RNetCDF::var.get.nc(nc, 
-                                      "elevation", 
-                                      start = c(index_min_lon, start_row), 
-                                      count = c(n_lon, rows_to_get)) 
+    chunk_data <- with_friendly_download_error(
+      RNetCDF::var.get.nc(nc, 
+                          "elevation", 
+                          start = c(index_min_lon, start_row), 
+                          count = c(n_lon, rows_to_get)),
+      service_name = sprintf("GEBCO bathymetry (CEDA THREDDS), data chunk %d of %d", i, length(row_index_for_ncdf_read)),
+      service_url = "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/"
+    )
     
     # NetCDF matrix is inverted relative to how terra expects it, so corrections is applied during
     # writing of values
@@ -301,6 +327,7 @@ gebco_data_fetch <- function(min_x, max_x, min_y, max_y, nc, file_path, nc_lat_v
   }
   
   terra::writeStop(local_rast)
-  message("Finished! Data successfully streamed to ", file_path)
+  download_completed <- TRUE
+  message("Finished! Data successfully saved to ", file_path)
   
 }

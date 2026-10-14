@@ -1,5 +1,9 @@
 # oceandatr (development version)
 
+# oceandatr 0.6.0
+* Switch to internal functions to access Marine Regions data and Bio-Oracle data on ERDDAP server. This removes `mregions2` and `rerddap` external dependencies, but adds the light dependency `jsonlite`.
+* Add better handling of errors when APIs/ web files are unreachable or stop downloading part way through.
+
 # oceandatr 0.5.1
 * Add CITATION file and publication link badge
 

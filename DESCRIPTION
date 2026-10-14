@@ -1,7 +1,7 @@
 Package: oceandatr
 Type: Package
 Title: Ocean Data Acquisition and processing
-Version: 0.5.1
+Version: 0.6.0
 Authors@R: c(
     person(given = "Jason", family = "Flower", email = "jflower@ucsb.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6731-8182")),
     person(given = "Echelle S.", family = "Burns", email = "echelle_burns@ucsb.edu", role = c("aut"), comment = c(ORCID = "0000-0002-3902-1410")),
@@ -22,13 +22,12 @@ Imports:
     stats,
     rlang,
     RNetCDF,
-    mregions2,
     checkmate,
-    rerddap,
     oceandatrsets (>= 0.1),
     utils,
     geojsonsf,
     httr2,
+    jsonlite,
     exactextractr,
     rnaturalearth,
     rnaturalearthhires (>= 1.0.0.9000)
@@ -47,6 +46,5 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/
-Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.0.0
-RoxygenNote: 8.0.0
+Config/roxygen2/version: 8.1.0
+Config/roxygen2/rmarkdown: true
