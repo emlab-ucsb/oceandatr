@@ -15,11 +15,10 @@ still be confusing. Here we provide some examples.
 ## Marine boundaries
 
 [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
-uses the
-[`mregions2::mrp_get()`](https://docs.ropensci.org/mregions2/reference/mrp_get.html)
-function from the [`mregions2`](https://lifewatch.github.io/mregions2/)
-package - the R package for the Marine Regions database. This database
-is quite extensive and has several options for querying areas.
+uses the `mregions2::mrp_get()` function from the
+[`mregions2`](https://lifewatch.github.io/mregions2/) package - the R
+package for the Marine Regions database. This database is quite
+extensive and has several options for querying areas.
 [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
 is not intended to provide all the functionality of `mregions2`, just a
 slightly simpler interface for getting commonly used boundaries such as
