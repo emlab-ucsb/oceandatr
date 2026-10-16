@@ -7,43 +7,44 @@
 get_boundary(name = "Australia", type = "eez", country_type = "country")
 }
 \arguments{
-\item{name}{\code{character} name of the country or region. If \code{NULL} all
-boundaries of \code{type} are returned. If \code{name} is not an exact match, fuzzy
-matching with a list of possible options is attempted. Ignored for \code{type = "high_seas"}}
+\item{name}{`character` name of the country or region. If `NULL` all
+boundaries of `type` are returned. If `name` is not an exact match, fuzzy
+matching with a list of possible options is attempted. Ignored for `type =
+"high_seas"`}
 
-\item{type}{\code{character} the boundary type. Can be one of:
-\itemize{
-\item \code{eez}: Exclusive Economic Zone (EEZ; 200nm). These EEZs differ slightly from the the \href{https://www.un.org/depts/los/convention_agreements/texts/unclos/part5.htm}{UN Convention on the Law of the Sea (UNCLOS)} definition because the archipelagic waters and the internal waters of a country are included.
-\item \verb{12nm}: 12 nautical miles zone (Territorial Seas), defined in \href{https://www.un.org/Depts/los/convention_agreements/texts/unclos/part2.htm}{UNCLOS}
-\item \verb{24nm}: 24 nautical miles zone (Contiguous Zone), defined in \href{https://www.un.org/Depts/los/convention_agreements/texts/unclos/part2.htm}{UNCLOS}
-\item \code{ocean}: Global Oceans and Seas as compiled by the Flanders Marine Data Centre. Names are: "Arctic Ocean", "Baltic Sea", "Indian Ocean", "Mediterranean Region", "North Atlantic Ocean", "North Pacific Ocean", "South Atlantic Ocean", "South China and Easter Archipelagic Seas", "South Pacific Ocean", and "Southern Ocean".
-\item \code{high_seas}: as defined by the UN Law of the Sea: "all parts of the sea that are not included in the exclusive economic zone, in the territorial sea or in the internal waters of a State, or in the archipelagic waters of an archipelagic State". Note that \code{name} and \code{country_type} are not relevant for this query: only all High Seas areas can be downloaded.
-\item \code{country}: country boundaries from Natural Earth
-\item \code{seas_oceans}: Seas, oceans, bays, gulfs, inlets etc. as defined in the Natural Earth marine polygons
-}
+\item{type}{`character` the boundary type. Can be one of:
+* `eez`: Exclusive Economic Zone (EEZ; 200nm). These EEZs differ slightly from the the [UN Convention on the Law of the Sea (UNCLOS)](https://www.un.org/depts/los/convention_agreements/texts/unclos/part5.htm) definition because the archipelagic waters and the internal waters of a country are included.
+* `12nm`: 12 nautical miles zone (Territorial Seas), defined in [UNCLOS](https://www.un.org/Depts/los/convention_agreements/texts/unclos/part2.htm)
+* `24nm`: 24 nautical miles zone (Contiguous Zone), defined in [UNCLOS](https://www.un.org/Depts/los/convention_agreements/texts/unclos/part2.htm)
+* `ocean`: Global Oceans and Seas as compiled by the Flanders Marine Data Centre. Names are: "Arctic Ocean", "Baltic Sea", "Indian Ocean", "Mediterranean Region", "North Atlantic Ocean", "North Pacific Ocean", "South Atlantic Ocean", "South China and Easter Archipelagic Seas", "South Pacific Ocean", and "Southern Ocean".
+* `high_seas`: as defined by the UN Law of the Sea: "all parts of the sea that are not included in the exclusive economic zone, in the territorial sea or in the internal waters of a State, or in the archipelagic waters of an archipelagic State". Note that `name` and `country_type` are not relevant for this query: only all High Seas areas can be downloaded.
+* `country`: country boundaries from Natural Earth
+* `seas_oceans`: Seas, oceans, bays, gulfs, inlets etc. as defined in the Natural Earth marine polygons
 
-More details on the marine boundaries can be found on the \href{https://marineregions.org/sources.php}{Marine Regions website}, and for land boundaries
-(plus "seas_oceans"), the \href{https://www.naturalearthdata.com/features/}{Natural Earth website}. Note that data from
-Natural Earth is downlaoded at the highest resolution (1:10m).}
+ More details on the marine boundaries can be found on the [Marine Regions
+ website](https://marineregions.org/sources.php), and for land boundaries
+ (plus "seas_oceans"), the [Natural Earth
+ website](https://www.naturalearthdata.com/features/). Note that data from
+ Natural Earth is downlaoded at the highest resolution (1:10m).}
 
-\item{country_type}{\code{character} must be either \code{country} or \code{sovereign};
-ignored for \code{type = "high_seas"}, \code{"ocean"} or \code{"seas_oceans"}. Some
+\item{country_type}{`character` must be either `country` or `sovereign`;
+ignored for `type = "high_seas"`, `"ocean"` or `"seas_oceans"`. Some
 countries have many territories that it has jurisdiction over. For example,
 Australia, France and the U.K. have jurisdiction over many overseas islands.
-Using \code{sovereign} returns the main country and all the territories, whereas
-using \code{country} returns just the main country. More details about what is a
-country via the \code{rnaturalearth} package
-\href{https://cran.r-project.org/web/packages/rnaturalearth/vignettes/what-is-a-country.html}{vignette}}
+Using `sovereign` returns the main country and all the territories, whereas
+using `country` returns just the main country. More details about what is a
+country via the `rnaturalearth` package
+[vignette](https://cran.r-project.org/web/packages/rnaturalearth/vignettes/what-is-a-country.html)}
 }
 \value{
 'sf' polygon or multipolygon object of the boundary requested
 }
 \description{
-Marine and land boundaries can be obtained.  For marine boundaries, the
-\code{mrp_get} function from the \code{mregions2} package is used to retrieve the
-boundary (e.g. an EEZ) from \href{https://marineregions.org/gazetteer.php}{Marine Regions}. For land boundaries and the
-"seas_oceans" type, the package
-\href{https://github.com/ropensci/rnaturalearth/}{\code{rnaturalearth}} is used.
+Marine and land boundaries can be obtained.  For marine boundaries, a boundary
+(e.g. an EEZ) is retrieved directly from the [Marine
+Regions](https://marineregions.org/gazetteer.php) WFS API. For land boundaries
+and the "seas_oceans" type, the package
+[`rnaturalearth`](https://github.com/ropensci/rnaturalearth/) is used.
 }
 \examples{
 #Marine boundary examples:

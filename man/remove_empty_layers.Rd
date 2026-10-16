@@ -7,11 +7,11 @@
 remove_empty_layers(dat)
 }
 \arguments{
-\item{dat}{\code{sf} or \code{terra::rast} object}
+\item{dat}{`sf` or `terra::rast` object}
 }
 \value{
-\code{sf} or \code{terra::rast} depending on input
+`sf` or `terra::rast` depending on input
 }
 \description{
-Removes any layers (\code{terra::rast} object) or columns (\code{sf} object) that are all zero or NA
+Removes any layers (`terra::rast` object) or columns (`sf` object) that are all zero or NA
 }

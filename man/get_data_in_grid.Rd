@@ -16,53 +16,53 @@ get_data_in_grid(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
-\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
-be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.}
 
-\item{dat}{\code{sf} or \code{terra::rast()} data to be gridded/ cropped. Can also be a
+\item{dat}{`sf` or `terra::rast()` data to be gridded/ cropped. Can also be a
 path to a file.}
 
-\item{raw}{\code{logical} TRUE returns \code{dat} cropped and masked/ intersected with
-\code{spatial_grid}. If \code{TRUE}, \code{spatial_grid} should be an \code{sf} polygon.}
+\item{raw}{`logical` TRUE returns `dat` cropped and masked/ intersected with
+`spatial_grid`. If `TRUE`, `spatial_grid` should be an `sf` polygon.}
 
-\item{meth}{\code{character} method to use for for gridding/ resampling/
+\item{meth}{`character` method to use for for gridding/ resampling/
 reprojecting raster data. If NULL (default), function checks if data values
 are binary (all 0, 1, NA, or NaN) in which case method is set to "mode" for
 sf output or "near" for raster output. If data is non-binary, method is set
 to "mean" for sf output or "average" for raster output. Note that different
-methods are used for sf and raster as \code{exactextractr::exact_extract()} is
+methods are used for sf and raster as `exactextractr::exact_extract()` is
 used for gridding to sf spatial grid, whereas
-\code{terra::project()}/\code{terra::resample()} is used for transforming/ gridding
+`terra::project()`/`terra::resample()` is used for transforming/ gridding
 raster data.}
 
-\item{name}{\code{character} to name the data output; unless \code{feature_names} is
+\item{name}{`character` to name the data output; unless `feature_names` is
 supplied, in which case that column is used as the feature names}
 
-\item{feature_names}{\code{character} (\code{sf} data only) column with feature names
-that will be used for grouping of input data. If NULL, \code{sf} data is assumed
+\item{feature_names}{`character` (`sf` data only) column with feature names
+that will be used for grouping of input data. If NULL, `sf` data is assumed
 to represent a single features, e.g. one habitat or species.}
 
-\item{antimeridian}{\code{logical} can be set to true if the  \code{spatial_grid} for
+\item{antimeridian}{`logical` can be set to true if the  `spatial_grid` for
 which data will be extracted crosses the antimeridian and the data source
-is in lon-lat (EPSG:4326) format. If set to \code{NULL} (default) the function
+is in lon-lat (EPSG:4326) format. If set to `NULL` (default) the function
 will try to check if the antimeridian is crossed and set this
-appropriately. Note that if you are using an \code{boundary} or \code{spatial_grid}
+appropriately. Note that if you are using an `boundary` or `spatial_grid`
 that crosses the antimeridian and have data that is not in lon-lat}
 
-\item{cutoff}{\code{numeric} for \code{sf} gridded data only, i.e. an \code{sf}
-\code{spatial_grid} is provided. How much of each grid cell should be covered by
-an \code{sf} feature for it to be classified as that feature type (cover
-fraction value between 0 and 1). For example, if \code{cutoff = 0.5} (default),
+\item{cutoff}{`numeric` for `sf` gridded data only, i.e. an `sf`
+`spatial_grid` is provided. How much of each grid cell should be covered by
+an `sf` feature for it to be classified as that feature type (cover
+fraction value between 0 and 1). For example, if `cutoff = 0.5` (default),
 at least half of each grid cell has to be covered by a feature for the cell
-to be classified as that feature. If \code{NULL}, the \% coverage of each feature
+to be classified as that feature. If `NULL`, the % coverage of each feature
 in each grid cell is returned.}
 }
 \value{
-\code{sf} or \code{terra::rast()} object; cropped and intersected data in same
-format as \code{dat} if  an \code{boundary} is provided, otherwise \code{sf} or
-\code{terra::rast()} gridded data depending on the format of the spatial grid
-provided
+`sf` or `terra::rast()` object; cropped and intersected data in same
+  format as `dat` if  an `boundary` is provided, otherwise `sf` or
+  `terra::rast()` gridded data depending on the format of the spatial grid
+  provided
 }
 \description{
 Get gridded or cropped data from input data

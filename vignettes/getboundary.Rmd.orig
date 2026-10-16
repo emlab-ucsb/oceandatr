@@ -36,7 +36,7 @@ library(oceandatr)
 
 # Marine boundaries
 
-`get_boundary()` uses the `mregions2::mrp_get()` function from the [`mregions2`](https://lifewatch.github.io/mregions2/) package - the R package for the Marine Regions database. This database is quite extensive and has several options for querying areas. `get_boundary()` is not intended to provide all the functionality of `mregions2`, just a slightly simpler interface for getting commonly used boundaries such as exclusive economic zones (EEZs), global ocean boundaries, and high seas areas.
+`get_boundary()` uses the [Marine Regions](https://marineregions.org/gazetteer.php) web service API to access marine boundaries. The available data are extensive and there are several options for querying areas. 
 
 When using `get_boundary()` with `type = "eez"`, `type = "12nm"` or `type = "24nm"`, the `country_type` can be either `country_type = "country"` or `country_type = "sovereign"`. Using `"country"` returns only the EEZ, 12nm or 24nm boundary of the mainland country, while using `"sovereign"` returns boundaries for all the states and territories that a country has sovereignty over as well. The examples below show how this works. 
 
@@ -63,8 +63,6 @@ We now get not just the main country of Australia, but all the islands it has so
 Here is another example using France. Only the EEZ bordering mainland France is retrieved if `country_type = "country"`, but setting `country_type = "sovereign"` we also get all the islands France has sovereignty over.
 
 ```{r france_eez, fig.cap="EEZ of mainland France (blue) and all overseas territories (solid outlines). World coastlines are shown as dashed line for reference."}
-#check if rnaturalearthdata package is installed and give option to install if not
-rnaturalearth::check_rnaturalearthdata()
 
 fr_eez <- get_boundary(name = "France", type = "eez", country_type = "country")
 
@@ -91,8 +89,7 @@ plot(sf::st_geometry(kir_eez), col = "royalblue")
 plot(rnaturalearth::ne_coastline(scale = 110)["geometry"], lty = 3, add = TRUE)
 ```
 
-
-The `mregions2` package can be used to query many different marine boundaries, not all of which are included as options for `get_boundary()`:
+`oceandatr` allows for download of the main marine boundary types such as EEZs, territorial waters (12nm), and contiguous zones (24nm) via the `get_boundary()` function, as well as several types of ecoregions via the `get_ecoregion()` function. However, there are many other data sources available via the Marine Regions website (see list below), many of which can be queried via the dedicated R package [`mregions2`](https://docs.ropensci.org/mregions2/articles/mregions2.html)
 
 ```{r possible_query_types, eval=FALSE}
 mregions2::mrp_list[,c("title", "layer")]

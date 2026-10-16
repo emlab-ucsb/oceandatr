@@ -31,7 +31,7 @@ Imports:
     exactextractr,
     rnaturalearth,
     rnaturalearthhires (>= 1.0.0.9000)
-Remotes:  
+Remotes: 
     emlab-ucsb/oceandatrsets,
     ropensci/rnaturalearthhires
 Depends: 
@@ -46,5 +46,5 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://emlab-ucsb.github.io/oceandatr/
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1
 Config/roxygen2/rmarkdown: true

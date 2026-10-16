@@ -7,51 +7,52 @@
 get_geomorphology(spatial_grid = NULL, raw = FALSE, antimeridian = NULL)
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
-\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
-be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+\item{raw}{`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw data in that polygon(s) will be returned}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
-should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
-(default) the function will try to check if \code{spatial_grid} spans the
+\item{antimeridian}{Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.}
 }
 \value{
-For gridded data, a multi-layer raster object, or an \code{sf} object with
-geomorphology class in each column, depending on the \code{spatial_grid} format.
-If \code{raw = TRUE} an \code{sf} object with each row as a different
-geomorphological feature.
+For gridded data, a multi-layer raster object, or an `sf` object with
+  geomorphology class in each column, depending on the `spatial_grid` format.
+  If `raw = TRUE` an `sf` object with each row as a different
+  geomorphological feature.
 }
 \description{
 Get geomorphological data for a spatial grid or polygon
 }
 \details{
-Geomorphological features are from the \href{https://doi.org/10.1016/j.margeo.2014.01.011}{Harris et al. 2014} dataset, available at
-\url{https://www.bluehabitats.org}. Data is
-included in this package, except depth classification features which can be
-created using \code{get_bathymetry()} and seamounts which can be retrieved from
-a more recent dataset using \code{get_seamounts()}. List of features:
+Geomorphological features are from the [Harris et al.
+  2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at
+  [https://www.bluehabitats.org](https://www.bluehabitats.org). Data is
+  included in this package, except depth classification features which can be
+  created using `get_bathymetry()` and seamounts which can be retrieved from
+  a more recent dataset using `get_seamounts()`. List of features:
 
 \itemize{
 \item Abyssal hills
 \item Abyssal plains
 \item Basins:
-\itemize{
-\item large basins of seas and oceans
-\item major ocean basins
-\item perched on the shelf
-\item perched on the slope
-\item small basins of seas and oceans
-}
+   \itemize{
+   \item large basins of seas and oceans
+   \item major ocean basins
+   \item perched on the shelf
+   \item perched on the slope
+   \item small basins of seas and oceans
+   }
 \item Bridges
 \item Canyons:
-\itemize{
-\item blind
-\item shelf incising
-}
+   \itemize{
+   \item blind
+   \item shelf incising
+   }
 \item Escarpments
 \item Fans
 \item Glacial troughs
@@ -61,11 +62,11 @@ a more recent dataset using \code{get_seamounts()}. List of features:
 \item Rift valleys
 \item Rises
 \item Shelf valleys:
-\itemize{
-\item large shelf valleys and glacial troughs
-\item moderate size
-\item small
-}
+   \itemize{
+   \item large shelf valleys and glacial troughs
+   \item moderate size
+   \item small
+   }
 \item Sills
 \item Spreading ridges
 \item Terraces

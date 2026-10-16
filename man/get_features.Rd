@@ -18,53 +18,54 @@ get_features(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
-\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
-be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+\item{raw}{`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw feature data in that polygon(s) will be returned. Note that this
-will be a list object, since raster and \code{sf} data may be returned.}
+will be a list object, since raster and `sf` data may be returned.}
 
 \item{features}{a vector of feature names, can include: "bathymetry",
 "seamounts", "knolls", "geomorphology", "corals", "enviro_zones"}
 
-\item{seamount_buffer}{\code{numeric}; the distance from the seamount peak to
+\item{seamount_buffer}{`numeric`; the distance from the seamount peak to
 include in the output. Distance should be in the same units as the
-area_polygon or spatial_grid provided, use e.g. \code{sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal} to check what units your planning grid or
+area_polygon or spatial_grid provided, use e.g. `sf::st_crs(spatial_grid,
+parameters = TRUE)$units_gdal` to check what units your planning grid or
 area polygon is in (works for raster as well as sf objects)}
 
-\item{antipatharia_threshold}{\code{numeric} between 0 and 100; the threshold
+\item{antipatharia_threshold}{`numeric` between 0 and 100; the threshold
 value for habitat suitability for antipatharia corals to be considered
 present (default is 22, as defined in Yesson et al., 2017)}
 
-\item{octocoral_threshold}{\code{numeric} between 0 and 7; the threshold value for
+\item{octocoral_threshold}{`numeric` between 0 and 7; the threshold value for
 how many species (of 7) should be predicted present in an area for
 octocorals to be considered present (default is 2)}
 
-\item{enviro_clusters}{\code{numeric}; the number of environmental zones to
+\item{enviro_clusters}{`numeric`; the number of environmental zones to
 cluster the data into - to be used when a clustering algorithm is not
 necessary (default is NULL)}
 
-\item{max_enviro_clusters}{\code{numeric}; the maximum number of environmental
+\item{max_enviro_clusters}{`numeric`; the maximum number of environmental
 zones to try when using the clustering algorithm (default is 8)}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
-should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
-(default) the function will try to check if \code{spatial_grid} spans the
+\item{antimeridian}{Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.}
 }
 \value{
-If \code{raw = TRUE}, a list of feature data is returned (mixed raster and
-\code{sf} objects). If a \code{spatial_grid} is supplied, a multi-layer raster or
-\code{sf} object of gridded data is returned, depending on the \code{spatial_grid}
-format.
+If `raw = TRUE`, a list of feature data is returned (mixed raster and
+  `sf` objects). If a `spatial_grid` is supplied, a multi-layer raster or
+  `sf` object of gridded data is returned, depending on the `spatial_grid`
+  format.
 }
 \description{
-This is a wrapper of \code{get_bathymetry()},
-\code{get_seamounts_buffered()}, \code{get_knolls()}, \code{get_geomorphology()},
-\code{get_coral_habitat()}, and \code{get_enviro_zones()}. See the individual
-functions for details.
+This is a wrapper of `get_bathymetry()`,
+  `get_seamounts_buffered()`, `get_knolls()`, `get_geomorphology()`,
+  `get_coral_habitat()`, and `get_enviro_zones()`. See the individual
+  functions for details.
 }
 \examples{
 # Grab EEZ data first 

@@ -14,13 +14,19 @@ export(get_grid)
 export(get_knolls)
 export(get_seamounts)
 export(remove_empty_layers)
-importFrom(graphics,legend)
-importFrom(graphics,par)
+importFrom(graphics,
+  legend,
+  par
+)
 importFrom(methods,is)
-importFrom(rlang,":=")
-importFrom(rlang,.data)
-importFrom(stats,complete.cases)
-importFrom(stats,kmeans)
-importFrom(stats,model.matrix)
-importFrom(stats,setNames)
+importFrom(rlang,
+  ":=",
+  .data
+)
+importFrom(stats,
+  complete.cases,
+  kmeans,
+  model.matrix,
+  setNames
+)
 importFrom(utils,install.packages)

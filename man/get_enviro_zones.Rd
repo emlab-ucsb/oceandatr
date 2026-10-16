@@ -19,67 +19,68 @@ get_enviro_zones(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
-\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
-be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+\item{raw}{`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw Bio-Oracle environmental data in that polygon(s) will be returned,
-unless \code{enviro_zones = TRUE}, in which case the raw data will be
+unless `enviro_zones = TRUE`, in which case the raw data will be
 classified into environmental zones}
 
-\item{enviro_zones}{\code{logical} if TRUE, environmental zones will be
+\item{enviro_zones}{`logical` if TRUE, environmental zones will be
 created. If FALSE the gridded Bio-Oracle data will be returned}
 
-\item{show_plots}{\code{logical}; whether to show boxplots for each environmental
+\item{show_plots}{`logical`; whether to show boxplots for each environmental
 variable in each environmental zone (default is FALSE)}
 
-\item{num_clusters}{\code{numeric}; the number of environmental zones to cluster
+\item{num_clusters}{`numeric`; the number of environmental zones to cluster
 the data into - to be used when a clustering algorithm is not necessary
 (default is NULL)}
 
-\item{min_num_clusters}{\code{numeric}; the minimum number of environmental
+\item{min_num_clusters}{`numeric`; the minimum number of environmental
 zones to try when using the clustering algorithm (default is 2)}
 
-\item{max_num_clusters}{\code{numeric}; the maximum number of environmental zones
+\item{max_num_clusters}{`numeric`; the maximum number of environmental zones
 to try when using the clustering algorithm (default is 6, minimum must be
-4). Must be at least 2 larger than \code{min_num_clusters}}
+4). Must be at least 2 larger than `min_num_clusters`}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
-should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
-(default) the function will try to check if \code{spatial_grid} spans the
+\item{antimeridian}{Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.}
 
-\item{sample_size}{\code{numeric}; default is 5000. Larger sample sizes will
+\item{sample_size}{`numeric`; default is 5000. Larger sample sizes will
 quickly consume memory (>10GB) so should be used with caution.}
 
-\item{num_samples}{\code{numeric}; default is 5, which resulted in good consensus
+\item{num_samples}{`numeric`; default is 5, which resulted in good consensus
 on the optimal number of clusters in testing.}
 
-\item{num_cores}{\code{numeric}; default 1. Multi-core sampling is supported if
-the package \code{parallel} is installed, but be aware that increasing the
+\item{num_cores}{`numeric`; default 1. Multi-core sampling is supported if
+the package `parallel` is installed, but be aware that increasing the
 number of cores will also increase the memory required.}
 }
 \value{
-If \code{enviro_zones = FALSE}, Bio-Oracle data in the \code{spatial_grid}
-supplied, or the original Bio-Oracle data cropped and masked to the grid if
-\code{raw = TRUE}. If \code{enviro_zones = TRUE} a multi-layer raster or an \code{sf}
-object with one environmental zone in each column/ layer is returned,
-depending on the \code{spatial_grid} format. If \code{enviro_zones = TRUE} and \code{raw = TRUE} (in which case \code{spatial_grid} should be an \code{sf} polygon), the raw
-Bio-Oracle data is classified into environmental zones.
+If `enviro_zones = FALSE`, Bio-Oracle data in the `spatial_grid`
+  supplied, or the original Bio-Oracle data cropped and masked to the grid if
+  `raw = TRUE`. If `enviro_zones = TRUE` a multi-layer raster or an `sf`
+  object with one environmental zone in each column/ layer is returned,
+  depending on the `spatial_grid` format. If `enviro_zones = TRUE` and `raw
+  = TRUE` (in which case `spatial_grid` should be an `sf` polygon), the raw
+  Bio-Oracle data is classified into environmental zones.
 }
 \description{
-This function gets \href{https://bio-oracle.org/}{Bio-Oracle}
-environmental data for the spatial grid and can then create environmental
-zones, using k-means clustering. The idea for the clustering comes from
-Magris et al. \href{https://doi.org/10.1111/ddi.13183}{2020}. The number of
-environmental zones can be specified directly, using \code{num_clusters}, but
-the function can also find the 'optimal' number of clusters using the
-\code{NbClust()} from the \code{NbClust} package.
+This function gets [Bio-Oracle](https://bio-oracle.org/)
+  environmental data for the spatial grid and can then create environmental
+  zones, using k-means clustering. The idea for the clustering comes from
+  Magris et al. [2020](https://doi.org/10.1111/ddi.13183). The number of
+  environmental zones can be specified directly, using `num_clusters`, but
+  the function can also find the 'optimal' number of clusters using the
+  `NbClust()` from the `NbClust` package.
 }
 \details{
 The environmental data used in the clustering are all sea surface
-measurements over the period 2010 - 2020:
+  measurements over the period 2010 - 2020:
 \itemize{
 \item Chlorophyll concentration (mean, mg/ m3)
 \item Dissolved oxygen concentration (mean)
@@ -94,19 +95,20 @@ measurements over the period 2010 - 2020:
 \item Silicate concentration (mean, mmol/ m3)
 }
 
-For full details of the Bio-Oracle data see \href{https://onlinelibrary.wiley.com/doi/10.1111/geb.13813}{Assis et al. 2024}.
+  For full details of the Bio-Oracle data see [Assis et al.
+  2024](https://onlinelibrary.wiley.com/doi/10.1111/geb.13813).
 
-When the number of planning units/ cells for clustering exceeds ~ 10,000,
-the amount of computer memory required to find the optimal number of
-clusters using \code{NbClust::NbClust()} exceeds 10GB, so repeated sampling is
-used to find a consensus number of clusters. Sensible defaults for
-\code{NbClust()} are provided, namely \code{sample_size = 5000}, \code{num_samples = 5},
-\code{max_num_clusters = 6} but can be customised if desired, though see the
-parameter descriptions below for some words of warning. Parallel processing
-is offered by specifying \code{num_cores} >1 (must be an integer), though the
-package \code{parallel} must be installed (it is included in most R
-installations). To find the number of available cores on your systems run
-\code{parallel::detectCores()}.
+  When the number of planning units/ cells for clustering exceeds ~ 10,000,
+  the amount of computer memory required to find the optimal number of
+  clusters using `NbClust::NbClust()` exceeds 10GB, so repeated sampling is
+  used to find a consensus number of clusters. Sensible defaults for
+  `NbClust()` are provided, namely `sample_size = 5000`, `num_samples = 5`,
+  `max_num_clusters = 6` but can be customised if desired, though see the
+  parameter descriptions below for some words of warning. Parallel processing
+  is offered by specifying `num_cores` >1 (must be an integer), though the
+  package `parallel` must be installed (it is included in most R
+  installations). To find the number of available cores on your systems run
+  `parallel::detectCores()`.
 }
 \examples{
 # Get EEZ data first 

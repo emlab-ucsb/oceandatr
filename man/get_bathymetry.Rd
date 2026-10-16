@@ -16,52 +16,54 @@ get_bathymetry(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
-\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
-be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+\item{raw}{`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw data in that polygon(s) will be returned}
 
-\item{classify_bathymetry}{\code{logical}; whether to classify the bathymetry into
-depth zones. Original bathymetry data can be classified if \code{raw = TRUE} and
-\code{spatial_grid} is an \code{sf} polygon.}
+\item{classify_bathymetry}{`logical`; whether to classify the bathymetry into
+depth zones. Original bathymetry data can be classified if `raw = TRUE` and
+`spatial_grid` is an `sf` polygon.}
 
-\item{above_sea_level_isNA}{\code{logical}; whether to set bathymetry (elevation)
+\item{above_sea_level_isNA}{`logical`; whether to set bathymetry (elevation)
 data values that are above sea level (i.e. greater than or equal to zero)
-to \code{NA} (\code{TRUE}) or zero (\code{FALSE})}
+to `NA` (`TRUE`) or zero (`FALSE`)}
 
-\item{name}{\code{string}; name of raster or column in sf object that is returned}
+\item{name}{`string`; name of raster or column in sf object that is returned}
 
-\item{bathymetry_data_filepath}{\code{string}; the file path (including file name
+\item{bathymetry_data_filepath}{`string`; the file path (including file name
 and extension) where bathymetry raster data are saved locally}
 
-\item{path}{\code{string}; the folder path where you would like to save the
-bathymetry data. Defaults to \code{tempdir()}. If you are downloading data for
+\item{path}{`string`; the folder path where you would like to save the
+bathymetry data. Defaults to `tempdir()`. If you are downloading data for
 large areas (e.g. whole oceans), we strongly recommend you set your own
 path to save to.}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
-should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
-(default) the function will try to check if \code{spatial_grid} spans the
+\item{antimeridian}{Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.}
 }
 \value{
-If \code{classify_bathymetry = FALSE}, bathymetry data in the
-\code{spatial_grid} supplied, or in the original raster file resolution if \code{raw = TRUE}. If \code{classify_bathymetry = TRUE} a multi-layer raster or an \code{sf}
-object with one zone in each column is returned, depending on the
-\code{spatial_grid} format. If \code{classify_bathymetry = TRUE} and \code{raw = TRUE} (in
-which case \code{spatial_grid} should be an \code{sf} polygon), the raw raster
-bathymetry data is classified into depth zones.
+If `classify_bathymetry = FALSE`, bathymetry data in the
+  `spatial_grid` supplied, or in the original raster file resolution if `raw
+  = TRUE`. If `classify_bathymetry = TRUE` a multi-layer raster or an `sf`
+  object with one zone in each column is returned, depending on the
+  `spatial_grid` format. If `classify_bathymetry = TRUE` and `raw = TRUE` (in
+  which case `spatial_grid` should be an `sf` polygon), the raw raster
+  bathymetry data is classified into depth zones.
 }
 \description{
-Get bathymetry data from the GEBCO 2026 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}
+Get bathymetry data from the GEBCO 2026 global terrain model. If data are already downloaded locally, the user can specify the file path of the dataset. Data can be classified into depth zones by setting `classify_bathymetry = TRUE`
 }
 \details{
-Extracts bathymetry data for an \code{area_polygon}, or if a
-\code{spatial_grid} is supplied, gridded bathymetry is returned.
+Extracts bathymetry data for an `area_polygon`, or if a
+  `spatial_grid` is supplied, gridded bathymetry is returned.
 
-Data can be classified into depth zones by setting \code{classify_bathymetry = TRUE}. Depths are classified as follows:
+  Data can be classified into depth zones by setting `classify_bathymetry =
+  TRUE`. Depths are classified as follows:
 \itemize{
 \item Continental Shelf: 0 - 200 m depth
 \item Upper Bathyal: 200 - 800 m depth
@@ -70,12 +72,12 @@ Data can be classified into depth zones by setting \code{classify_bathymetry = T
 \item Hadal: 6500+ m depth
 }
 
-If the user has downloaded bathymetry data for the area of interest, for
-example from GEBCO (https://www.gebco.net), they can pass the file path to
-this function in \code{bathymetry_data_filepath}. If no file path is provided,
-the function will extract bathymetry data for the area from the GEBCO 2026
-global terrain model (sub-ice) from  the Natural Environment Research Council's (NERC) Centre for Environmental Data Analysis (CEDA)
-(https://data.ceda.ac.uk/bodc/gebco/global/gebco_2026).
+  If the user has downloaded bathymetry data for the area of interest, for
+  example from GEBCO (https://www.gebco.net), they can pass the file path to
+  this function in `bathymetry_data_filepath`. If no file path is provided,
+  the function will extract bathymetry data for the area from the GEBCO 2026
+  global terrain model (sub-ice) from  the Natural Environment Research Council's (NERC) Centre for Environmental Data Analysis (CEDA)
+  (https://data.ceda.ac.uk/bodc/gebco/global/gebco_2026).
 }
 \examples{
 # Get EEZ data first

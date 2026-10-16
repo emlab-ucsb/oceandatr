@@ -7,42 +7,43 @@
 get_grid(boundary, resolution = 5000, crs, output = "raster", touches = FALSE)
 }
 \arguments{
-\item{boundary}{\code{sf} object with boundary of the area(s) you want a grid for,
-e.g an EEZ or country. Boundaries can be obtained using \code{get_boundary()}}
+\item{boundary}{`sf` object with boundary of the area(s) you want a grid for,
+e.g an EEZ or country. Boundaries can be obtained using `get_boundary()`}
 
-\item{resolution}{\code{numeric}; the desired grid cell resolution in same units
-(usually metres or degrees) as \code{crs}: \code{sf::st_crs(crs, parameters = TRUE)$units_gdal}}
+\item{resolution}{`numeric`; the desired grid cell resolution in same units
+(usually metres or degrees) as `crs`: `sf::st_crs(crs, parameters =
+TRUE)$units_gdal`}
 
-\item{crs}{a coordinate reference system: \code{numeric} (e.g. EPSG code \code{4326}),
-\code{character} (e.g. \code{"+proj=longlat +datum=WGS84 +no_defs"}), or object of
-class \code{sf} or \code{sfc}. This is passed to \code{sf::st_crs()}}
+\item{crs}{a coordinate reference system: `numeric` (e.g. EPSG code `4326`),
+`character` (e.g. `"+proj=longlat +datum=WGS84 +no_defs"`), or object of
+class `sf` or `sfc`. This is passed to `sf::st_crs()`}
 
-\item{output}{\code{character} the desired output format, either \code{"raster"},
-\code{"sf_square"} (vector), or \code{"sf_hex"} (vector); default is \code{"raster"}}
+\item{output}{`character` the desired output format, either `"raster"`,
+`"sf_square"` (vector), or `"sf_hex"` (vector); default is `"raster"`}
 
-\item{touches}{\code{logical}. If \code{TRUE} all cells touched by the \code{boundary} will
-be included, and if \code{FALSE} only cells whose center point (centroid) falls
-within the \code{boundary} are included. Default is \code{FALSE}.}
+\item{touches}{`logical`. If `TRUE` all cells touched by the `boundary` will
+be included, and if `FALSE` only cells whose center point (centroid) falls
+within the `boundary` are included. Default is `FALSE`.}
 }
 \value{
-A spatial grid in \code{output} format requested with \code{resolution} and
-\code{crs} provided
+A spatial grid in `output` format requested with `resolution` and
+  `crs` provided
 }
 \description{
-Creates a spatial grid, in \code{terra::rast()} of \code{sf} format, for
-areas within the boundaries provided
+Creates a spatial grid, in `terra::rast()` of `sf` format, for
+  areas within the boundaries provided
 }
 \details{
-For a \code{terra::rast()} format grid, each cell within the boundary is
-set to value 1, whereas cells outside are NA. For \code{sf} grids, the grid covers
-the boundary area and cells can be square (\code{output = "sf_square"}) or
-hexagonal (\code{output = "sf_hex"}). By default only cells whose centroids fall
-within the \code{boundary} are included in the grid. To include cells that touch
-the \code{boundary} use \code{touches = TRUE}. \code{sf::st_make_grid()} is used to create
-\code{sf} grids. The default ordering of this grid type is from bottom to top,
-left to right. In contrast, the \code{terra::rast()} grid is ordered from top to
+For a `terra::rast()` format grid, each cell within the boundary is
+set to value 1, whereas cells outside are NA. For `sf` grids, the grid covers
+the boundary area and cells can be square (`output = "sf_square"`) or
+hexagonal (`output = "sf_hex"`). By default only cells whose centroids fall
+within the `boundary` are included in the grid. To include cells that touch
+the `boundary` use `touches = TRUE`. `sf::st_make_grid()` is used to create
+`sf` grids. The default ordering of this grid type is from bottom to top,
+left to right. In contrast, the `terra::rast()` grid is ordered from top to
 bottom, left to right. To preserve consistency across the data types, we have
-reordered \code{sf} grids to also fill from top to bottom, left to right.
+reordered `sf` grids to also fill from top to bottom, left to right.
 }
 \examples{
 # use get_boundary() to get a polygon of Samoa's Exclusive Economic Zone

@@ -12,40 +12,39 @@ get_ecoregion(
 )
 }
 \arguments{
-\item{spatial_grid}{\code{sf} or \code{terra::rast()} grid, e.g. created using
-\code{get_grid()}. Alternatively, if raw data is required, an \code{sf} polygon can
-be provided, e.g. created using \code{get_boundary()}, and set \code{raw = TRUE}.}
+\item{spatial_grid}{`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.}
 
-\item{raw}{\code{logical} if TRUE, \code{spatial_grid} should be an \code{sf} polygon, and
+\item{raw}{`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw data in that polygon(s) will be returned}
 
-\item{type}{\code{character} which ecoregion type is required? Default is
-\verb{\\"MEOW\\"} (Marine Ecosystems of the World); other possible values are
-\verb{\\"Longhurst\\"}, \verb{\\"LME\\"}, and \verb{\\"meso\\"}}
+\item{type}{`character` which ecoregion type is required? Default is
+`\"MEOW\"` (Marine Ecosystems of the World); other possible values are
+`\"Longhurst\"`, `\"LME\"`, and `\"meso\"`}
 
-\item{antimeridian}{Does \code{spatial_grid} span the antimeridian? If so, this
-should be set to \code{TRUE}, otherwise set to \code{FALSE}. If set to \code{NULL}
-(default) the function will try to check if \code{spatial_grid} spans the
+\item{antimeridian}{Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.}
 }
 \value{
-For gridded data, a multi-layer raster object, or an \code{sf} object
-depending on the \code{spatial_grid} format. If \code{raw = TRUE} an \code{sf} object of
-the Ecoregion.
+For gridded data, a multi-layer raster object, or an `sf` object
+  depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object of
+  the Ecoregion.
 }
 \description{
 Gets ecoregion data for a spatial grid or polygon
 }
 \details{
 The Following ecoregions can be obtained:
-\itemize{
-\item Marine Ecosystems of the World \href{https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas}{dataset}
-\item \href{https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=}{Longhurst Provinces}
-\item \href{http://geonode.iwlearn.org/layers/geonode:lmes}{Large Marine Ecosystems of the World}
-\item \href{https://www.sciencedirect.com/science/article/pii/S0967063717301437?via\%3Dihub}{Mesopelagic Ecoregions}
+* Marine Ecosystems of the World [dataset](https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas)
+* [Longhurst Provinces](https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=)
+* [Large Marine Ecosystems of the World](http://geonode.iwlearn.org/layers/geonode:lmes)
+* [Mesopelagic Ecoregions](https://www.sciencedirect.com/science/article/pii/S0967063717301437?via%3Dihub)
 
-All data are downloaded via the \href{https://marineregions.org/sources.php}{Marine Regions website}
-}
+  All data are downloaded via the [Marine Regions
+  website](https://marineregions.org/sources.php)
 }
 \examples{
 #' # Get EEZ data first
