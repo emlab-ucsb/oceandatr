@@ -57,38 +57,39 @@
 
 
 <dl><dt id="arg-spatial-grid">spatial_grid<a class="anchor" aria-label="anchor" href="#arg-spatial-grid"></a></dt>
-<dd><p><code>sf</code> or <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> grid, e.g. created using
-<code><a href="get_grid.html">get_grid()</a></code>. Alternatively, if raw data is required, an <code>sf</code> polygon can
-be provided, e.g. created using <code><a href="get_boundary.html">get_boundary()</a></code>, and set <code>raw = TRUE</code>.</p></dd>
+<dd><p>`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.</p></dd>
 
 
 <dt id="arg-raw">raw<a class="anchor" aria-label="anchor" href="#arg-raw"></a></dt>
-<dd><p><code>logical</code> if TRUE, <code>spatial_grid</code> should be an <code>sf</code> polygon, and
+<dd><p>`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw data in that polygon(s) will be returned</p></dd>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p><code>string</code>; name of raster or column in sf object that is returned</p></dd>
+<dd><p>`string`; name of raster or column in sf object that is returned</p></dd>
 
 
 <dt id="arg-antimeridian">antimeridian<a class="anchor" aria-label="anchor" href="#arg-antimeridian"></a></dt>
-<dd><p>Does <code>spatial_grid</code> span the antimeridian? If so, this
-should be set to <code>TRUE</code>, otherwise set to <code>FALSE</code>. If set to <code>NULL</code>
-(default) the function will try to check if <code>spatial_grid</code> spans the
+<dd><p>Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For gridded data, a <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> or <code>sf</code> object, depending on the
-<code>spatial_grid</code> format. If <code>raw = TRUE</code> an <code>sf</code> object crop and intersected
-with the polygon supplied.</p>
+    <p>For gridded data, a `terra::rast()` or `sf` object, depending on the
+  `spatial_grid` format. If `raw = TRUE` an `sf` object crop and intersected
+  with the polygon supplied.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Knolls are small seamounts; seamounts with peaks 200-1000 m higher
-than the surrounding seafloor <a href="https://doi.org/10.3354/meps07268" class="external-link">(Morato et al., 2008)</a>. The knolls base area data is
-from <a href="https://doi.org/10.1016/j.dsr.2011.02.004" class="external-link">Yesson et al. 2011</a></p>
+  than the surrounding seafloor [(Morato et al.,
+  2008)](https://doi.org/10.3354/meps07268). The knolls base area data is
+  from [Yesson et al. 2011](https://doi.org/10.1016/j.dsr.2011.02.004)</p>
     </div>
 
     <div class="section level2">

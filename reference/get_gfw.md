@@ -3,15 +3,15 @@
 Global Fishing Watch (GFW) provides data on apparent fishing effort
 (hours) at 0.01 degree spatial resolution, based on automatic
 identification system (AIS) broadcasts from vessels. Data is principally
-for larger vessel (\> 24m in length); less than 1% of vessels \<12 m
-length are represented in the data (see [GFW
-website](https://globalfishingwatch.org/dataset-and-code-fishing-effort/)
+for larger vessel (\> 24m in length); less than 1 are represented in the
+data (see \[GFW
+website\](https://globalfishingwatch.org/dataset-and-code-fishing-effort/)
 for detailed information). This function is primarily a wrapper for the
-[`gfwr` package](https://github.com/GlobalFishingWatch/gfwr) function
-`gfw_ais_fishing_hours()`, but allows the user to return multiple years
-of data in a summarized and gridded format. An API key is required to
-retrieve GFW data; see the package website for instructions on how to
-get and save one (free).
+\[\`gfwr\` package\](https://github.com/GlobalFishingWatch/gfwr)
+function \`gfw_ais_fishing_hours()\`, but allows the user to return
+multiple years of data in a summarized and gridded format. An API key is
+required to retrieve GFW data; see the package website for instructions
+on how to get and save one (free).
 
 ## Usage
 
@@ -32,67 +32,63 @@ get_gfw(
 
 - spatial_grid:
 
-  `sf` or
-  [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-  grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
-  Alternatively, if raw data is required, an `sf` polygon can be
-  provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
-  and set `raw = TRUE`.
+  \`sf\` or \`terra::rast()\` grid, e.g. created using \`get_grid()\`.
+  Alternatively, if raw data is required, an \`sf\` polygon can be
+  provided, e.g. created using \`get_boundary()\`, and set \`raw =
+  TRUE\`.
 
 - raw:
 
-  `logical` if TRUE, `spatial_grid` can be an `sf` polygon, and the raw
-  GFW data, in tibble format, is returned for a bounding box covering
-  the polygon +/-1 degree. The bounding box is expanded to ensure that
-  the entire polygon has data coverage once the point data is
-  rasterized. This data will not be summarised, i.e. `summarise` is
+  \`logical\` if TRUE, \`spatial_grid\` can be an \`sf\` polygon, and
+  the raw GFW data, in tibble format, is returned for a bounding box
+  covering the polygon +/-1 degree. The bounding box is expanded to
+  ensure that the entire polygon has data coverage once the point data
+  is rasterized. This data will not be summarised, i.e. \`summarise\` is
   ignored.
 
 - resolution:
 
-  `string` either `"HIGH"` = 0.01 degree spatial resolution, or `"LOW"`
-  = 0.1.
+  \`string\` either \`"HIGH"\` = 0.01 degree spatial resolution, or
+  \`"LOW"\` = 0.1.
 
 - start_year:
 
-  `numeric` must be 2012 or more recent year. Note that GFW added data
+  \`numeric\` must be 2012 or more recent year. Note that GFW added data
   from Spire and Orbcomm AIS providers in 2017, so data from 2017 is
-  likely to have greater spatial and temporal coverage ([Welch et al.
-  2022](https://doi.org/10.1126/sciadv.abq2109)).
+  likely to have greater spatial and temporal coverage (\[Welch et al.
+  2022\](https://doi.org/10.1126/sciadv.abq2109)).
 
 - end_year:
 
-  `numeric` any year between 2012 and the current year
+  \`numeric\` any year between 2012 and the current year
 
 - group_by:
 
-  `string` can be `"geartype"`, `"flag"`, or `"location"`.
+  \`string\` can be \`"geartype"\`, \`"flag"\`, or \`"location"\`.
 
 - summarise:
 
-  `string` can be `"total_annual_effort"`; the sum of all fishing effort
-  for all years, from `start_year` to `end_year` at each location is
-  returned, grouped by `group_by`; or `"mean_total_annual_effort"`; the
-  mean of the annual sums of fishing effort for all years at each
-  location is returned, grouped by `group_by`.
+  \`string\` can be \`"total_annual_effort"\`; the sum of all fishing
+  effort for all years, from \`start_year\` to \`end_year\` at each
+  location is returned, grouped by \`group_by\`; or
+  \`"mean_total_annual_effort"\`; the mean of the annual sums of fishing
+  effort for all years at each location is returned, grouped by
+  \`group_by\`.
 
 - key:
 
-  `string` Authorization token. If `NULL` a token is attempted to be
-  retrieved from the R environment using `Sys.getenv("GFW_TOKEN")`. See
-  `gfwr`
-  [website](https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization)
+  \`string\` Authorization token. If \`NULL\` a token is attempted to be
+  retrieved from the R environment using \`Sys.getenv("GFW_TOKEN")\`.
+  See \`gfwr\`
+  \[website\](https://github.com/GlobalFishingWatch/gfwr?tab=readme-ov-file#authorization)
   for details on how to request a token.
 
 ## Value
 
-For gridded data, a
-[`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-or `sf` object, depending on the `spatial_grid` format. If `raw = TRUE`,
-non-summarised data in `tibble` format is returned for the polygon area
-direct from the GFW query `gfwr::gfw_ais_fishing_hours()`.
+For gridded data, a \`terra::rast()\` or \`sf\` object, depending on the
+\`spatial_grid\` format. If \`raw = TRUE\`, non-summarised data in
+\`tibble\` format is returned for the polygon area direct from the GFW
+query \`gfwr::gfw_ais_fishing_hours()\`.
 
 ## Examples
 

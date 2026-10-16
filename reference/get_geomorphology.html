@@ -52,37 +52,38 @@
 
 
 <dl><dt id="arg-spatial-grid">spatial_grid<a class="anchor" aria-label="anchor" href="#arg-spatial-grid"></a></dt>
-<dd><p><code>sf</code> or <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> grid, e.g. created using
-<code><a href="get_grid.html">get_grid()</a></code>. Alternatively, if raw data is required, an <code>sf</code> polygon can
-be provided, e.g. created using <code><a href="get_boundary.html">get_boundary()</a></code>, and set <code>raw = TRUE</code>.</p></dd>
+<dd><p>`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.</p></dd>
 
 
 <dt id="arg-raw">raw<a class="anchor" aria-label="anchor" href="#arg-raw"></a></dt>
-<dd><p><code>logical</code> if TRUE, <code>spatial_grid</code> should be an <code>sf</code> polygon, and
+<dd><p>`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw data in that polygon(s) will be returned</p></dd>
 
 
 <dt id="arg-antimeridian">antimeridian<a class="anchor" aria-label="anchor" href="#arg-antimeridian"></a></dt>
-<dd><p>Does <code>spatial_grid</code> span the antimeridian? If so, this
-should be set to <code>TRUE</code>, otherwise set to <code>FALSE</code>. If set to <code>NULL</code>
-(default) the function will try to check if <code>spatial_grid</code> spans the
+<dd><p>Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For gridded data, a multi-layer raster object, or an <code>sf</code> object with
-geomorphology class in each column, depending on the <code>spatial_grid</code> format.
-If <code>raw = TRUE</code> an <code>sf</code> object with each row as a different
-geomorphological feature.</p>
+    <p>For gridded data, a multi-layer raster object, or an `sf` object with
+  geomorphology class in each column, depending on the `spatial_grid` format.
+  If `raw = TRUE` an `sf` object with each row as a different
+  geomorphological feature.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Geomorphological features are from the <a href="https://doi.org/10.1016/j.margeo.2014.01.011" class="external-link">Harris et al. 2014</a> dataset, available at
-<a href="https://www.bluehabitats.org" class="external-link">https://www.bluehabitats.org</a>. Data is
-included in this package, except depth classification features which can be
-created using <code><a href="get_bathymetry.html">get_bathymetry()</a></code> and seamounts which can be retrieved from
-a more recent dataset using <code><a href="get_seamounts.html">get_seamounts()</a></code>. List of features:</p>
+    <p>Geomorphological features are from the [Harris et al.
+  2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available at
+  [https://www.bluehabitats.org](https://www.bluehabitats.org). Data is
+  included in this package, except depth classification features which can be
+  created using `get_bathymetry()` and seamounts which can be retrieved from
+  a more recent dataset using `get_seamounts()`. List of features:</p>
 <ul><li><p>Abyssal hills</p></li>
 <li><p>Abyssal plains</p></li>
 <li><p>Basins:</p><ul><li><p>large basins of seas and oceans</p></li>

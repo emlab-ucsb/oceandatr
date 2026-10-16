@@ -1,8 +1,7 @@
 # Create a spatial grid
 
-Creates a spatial grid, in
-[`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-of `sf` format, for areas within the boundaries provided
+Creates a spatial grid, in \`terra::rast()\` of \`sf\` format, for areas
+within the boundaries provided
 
 ## Usage
 
@@ -14,56 +13,51 @@ get_grid(boundary, resolution = 5000, crs, output = "raster", touches = FALSE)
 
 - boundary:
 
-  `sf` object with boundary of the area(s) you want a grid for, e.g an
-  EEZ or country. Boundaries can be obtained using
-  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md)
+  \`sf\` object with boundary of the area(s) you want a grid for, e.g an
+  EEZ or country. Boundaries can be obtained using \`get_boundary()\`
 
 - resolution:
 
-  `numeric`; the desired grid cell resolution in same units (usually
-  metres or degrees) as `crs`:
-  `sf::st_crs(crs, parameters = TRUE)$units_gdal`
+  \`numeric\`; the desired grid cell resolution in same units (usually
+  metres or degrees) as \`crs\`: \`sf::st_crs(crs, parameters =
+  TRUE)\$units_gdal\`
 
 - crs:
 
-  a coordinate reference system: `numeric` (e.g. EPSG code `4326`),
-  `character` (e.g. `"+proj=longlat +datum=WGS84 +no_defs"`), or object
-  of class `sf` or `sfc`. This is passed to
-  [`sf::st_crs()`](https://r-spatial.github.io/sf/reference/st_crs.html)
+  a coordinate reference system: \`numeric\` (e.g. EPSG code \`4326\`),
+  \`character\` (e.g. \`"+proj=longlat +datum=WGS84 +no_defs"\`), or
+  object of class \`sf\` or \`sfc\`. This is passed to \`sf::st_crs()\`
 
 - output:
 
-  `character` the desired output format, either `"raster"`,
-  `"sf_square"` (vector), or `"sf_hex"` (vector); default is `"raster"`
+  \`character\` the desired output format, either \`"raster"\`,
+  \`"sf_square"\` (vector), or \`"sf_hex"\` (vector); default is
+  \`"raster"\`
 
 - touches:
 
-  `logical`. If `TRUE` all cells touched by the `boundary` will be
-  included, and if `FALSE` only cells whose center point (centroid)
-  falls within the `boundary` are included. Default is `FALSE`.
+  \`logical\`. If \`TRUE\` all cells touched by the \`boundary\` will be
+  included, and if \`FALSE\` only cells whose center point (centroid)
+  falls within the \`boundary\` are included. Default is \`FALSE\`.
 
 ## Value
 
-A spatial grid in `output` format requested with `resolution` and `crs`
-provided
+A spatial grid in \`output\` format requested with \`resolution\` and
+\`crs\` provided
 
 ## Details
 
-For a
-[`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-format grid, each cell within the boundary is set to value 1, whereas
-cells outside are NA. For `sf` grids, the grid covers the boundary area
-and cells can be square (`output = "sf_square"`) or hexagonal
-(`output = "sf_hex"`). By default only cells whose centroids fall within
-the `boundary` are included in the grid. To include cells that touch the
-`boundary` use `touches = TRUE`.
-[`sf::st_make_grid()`](https://r-spatial.github.io/sf/reference/st_make_grid.html)
-is used to create `sf` grids. The default ordering of this grid type is
-from bottom to top, left to right. In contrast, the
-[`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-grid is ordered from top to bottom, left to right. To preserve
-consistency across the data types, we have reordered `sf` grids to also
-fill from top to bottom, left to right.
+For a \`terra::rast()\` format grid, each cell within the boundary is
+set to value 1, whereas cells outside are NA. For \`sf\` grids, the grid
+covers the boundary area and cells can be square (\`output =
+"sf_square"\`) or hexagonal (\`output = "sf_hex"\`). By default only
+cells whose centroids fall within the \`boundary\` are included in the
+grid. To include cells that touch the \`boundary\` use \`touches =
+TRUE\`. \`sf::st_make_grid()\` is used to create \`sf\` grids. The
+default ordering of this grid type is from bottom to top, left to right.
+In contrast, the \`terra::rast()\` grid is ordered from top to bottom,
+left to right. To preserve consistency across the data types, we have
+reordered \`sf\` grids to also fill from top to bottom, left to right.
 
 ## Examples
 

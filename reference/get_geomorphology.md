@@ -12,44 +12,39 @@ get_geomorphology(spatial_grid = NULL, raw = FALSE, antimeridian = NULL)
 
 - spatial_grid:
 
-  `sf` or
-  [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-  grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
-  Alternatively, if raw data is required, an `sf` polygon can be
-  provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
-  and set `raw = TRUE`.
+  \`sf\` or \`terra::rast()\` grid, e.g. created using \`get_grid()\`.
+  Alternatively, if raw data is required, an \`sf\` polygon can be
+  provided, e.g. created using \`get_boundary()\`, and set \`raw =
+  TRUE\`.
 
 - raw:
 
-  `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the
-  raw data in that polygon(s) will be returned
+  \`logical\` if TRUE, \`spatial_grid\` should be an \`sf\` polygon, and
+  the raw data in that polygon(s) will be returned
 
 - antimeridian:
 
-  Does `spatial_grid` span the antimeridian? If so, this should be set
-  to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the
-  function will try to check if `spatial_grid` spans the antimeridian
-  and set this appropriately.
+  Does \`spatial_grid\` span the antimeridian? If so, this should be set
+  to \`TRUE\`, otherwise set to \`FALSE\`. If set to \`NULL\` (default)
+  the function will try to check if \`spatial_grid\` spans the
+  antimeridian and set this appropriately.
 
 ## Value
 
-For gridded data, a multi-layer raster object, or an `sf` object with
-geomorphology class in each column, depending on the `spatial_grid`
-format. If `raw = TRUE` an `sf` object with each row as a different
+For gridded data, a multi-layer raster object, or an \`sf\` object with
+geomorphology class in each column, depending on the \`spatial_grid\`
+format. If \`raw = TRUE\` an \`sf\` object with each row as a different
 geomorphological feature.
 
 ## Details
 
-Geomorphological features are from the [Harris et al.
-2014](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available
-at <https://www.bluehabitats.org>. Data is included in this package,
-except depth classification features which can be created using
-[`get_bathymetry()`](https://emlab-ucsb.github.io/oceandatr/reference/get_bathymetry.md)
-and seamounts which can be retrieved from a more recent dataset using
-[`get_seamounts()`](https://emlab-ucsb.github.io/oceandatr/reference/get_seamounts.md).
-List of features:
+Geomorphological features are from the \[Harris et al.
+2014\](https://doi.org/10.1016/j.margeo.2014.01.011) dataset, available
+at \[https://www.bluehabitats.org\](https://www.bluehabitats.org). Data
+is included in this package, except depth classification features which
+can be created using \`get_bathymetry()\` and seamounts which can be
+retrieved from a more recent dataset using \`get_seamounts()\`. List of
+features:
 
 - Abyssal hills
 

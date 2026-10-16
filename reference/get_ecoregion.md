@@ -17,57 +17,48 @@ get_ecoregion(
 
 - spatial_grid:
 
-  `sf` or
-  [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-  grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
-  Alternatively, if raw data is required, an `sf` polygon can be
-  provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
-  and set `raw = TRUE`.
+  \`sf\` or \`terra::rast()\` grid, e.g. created using \`get_grid()\`.
+  Alternatively, if raw data is required, an \`sf\` polygon can be
+  provided, e.g. created using \`get_boundary()\`, and set \`raw =
+  TRUE\`.
 
 - raw:
 
-  `logical` if TRUE, `spatial_grid` should be an `sf` polygon, and the
-  raw data in that polygon(s) will be returned
+  \`logical\` if TRUE, \`spatial_grid\` should be an \`sf\` polygon, and
+  the raw data in that polygon(s) will be returned
 
 - type:
 
-  `character` which ecoregion type is required? Default is `\"MEOW\"`
-  (Marine Ecosystems of the World); other possible values are
-  `\"Longhurst\"`, `\"LME\"`, and `\"meso\"`
+  \`character\` which ecoregion type is required? Default is
+  \`\\MEOW\\\` (Marine Ecosystems of the World); other possible values
+  are \`\\Longhurst\\\`, \`\\LME\\\`, and \`\\meso\\\`
 
 - antimeridian:
 
-  Does `spatial_grid` span the antimeridian? If so, this should be set
-  to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the
-  function will try to check if `spatial_grid` spans the antimeridian
-  and set this appropriately.
+  Does \`spatial_grid\` span the antimeridian? If so, this should be set
+  to \`TRUE\`, otherwise set to \`FALSE\`. If set to \`NULL\` (default)
+  the function will try to check if \`spatial_grid\` spans the
+  antimeridian and set this appropriately.
 
 ## Value
 
-For gridded data, a multi-layer raster object, or an `sf` object
-depending on the `spatial_grid` format. If `raw = TRUE` an `sf` object
-of the Ecoregion.
+For gridded data, a multi-layer raster object, or an \`sf\` object
+depending on the \`spatial_grid\` format. If \`raw = TRUE\` an \`sf\`
+object of the Ecoregion.
 
 ## Details
 
-The Following ecoregions can be obtained:
+The Following ecoregions can be obtained: \* Marine Ecosystems of the
+World
+\[dataset\](https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas)
+\* \[Longhurst
+Provinces\](https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=)
+\* \[Large Marine Ecosystems of the
+World\](http://geonode.iwlearn.org/layers/geonode:lmes) \* \[Mesopelagic
+Ecoregions\](https://www.sciencedirect.com/science/article/pii/S0967063717301437?via
 
-- Marine Ecosystems of the World
-  [dataset](https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas)
-
-- [Longhurst
-  Provinces](https://www.sciencedirect.com/book/9780124555211/ecological-geography-of-the-sea?via=ihub=)
-
-- [Large Marine Ecosystems of the
-  World](http://geonode.iwlearn.org/layers/geonode:lmes)
-
-- [Mesopelagic
-  Ecoregions](https://www.sciencedirect.com/science/article/pii/S0967063717301437?via%3Dihub)
-
-  All data are downloaded via the [Marine Regions
-  website](https://marineregions.org/sources.php)
+All data are downloaded via the \[Marine Regions
+website\](https://marineregions.org/sources.php)
 
 ## Examples
 

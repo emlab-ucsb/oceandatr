@@ -58,54 +58,56 @@
 
 
 <dl><dt id="arg-spatial-grid">spatial_grid<a class="anchor" aria-label="anchor" href="#arg-spatial-grid"></a></dt>
-<dd><p><code>sf</code> or <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> grid, e.g. created using
-<code><a href="get_grid.html">get_grid()</a></code>. Alternatively, if raw data is required, an <code>sf</code> polygon can
-be provided, e.g. created using <code><a href="get_boundary.html">get_boundary()</a></code>, and set <code>raw = TRUE</code>.</p></dd>
+<dd><p>`sf` or `terra::rast()` grid, e.g. created using
+`get_grid()`. Alternatively, if raw data is required, an `sf` polygon can
+be provided, e.g. created using `get_boundary()`, and set `raw = TRUE`.</p></dd>
 
 
 <dt id="arg-raw">raw<a class="anchor" aria-label="anchor" href="#arg-raw"></a></dt>
-<dd><p><code>logical</code> if TRUE, <code>spatial_grid</code> should be an <code>sf</code> polygon, and
+<dd><p>`logical` if TRUE, `spatial_grid` should be an `sf` polygon, and
 the raw data in that polygon(s) will be returned</p></dd>
 
 
 <dt id="arg-buffer">buffer<a class="anchor" aria-label="anchor" href="#arg-buffer"></a></dt>
-<dd><p><code>numeric</code>; the distance from the seamount peak to include in
+<dd><p>`numeric`; the distance from the seamount peak to include in
 the output. Distance should be in the same units as the spatial_grid, use
-e.g. <code>sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal</code> to check
-units. If buffering raw data, units are metres, unless <code><a href="https://r-spatial.github.io/sf/reference/s2.html" class="external-link">sf::sf_use_s2()</a></code> is
-set to <code>FALSE</code>, in which case the units are degrees.</p></dd>
+e.g. `sf::st_crs(spatial_grid, parameters = TRUE)$units_gdal` to check
+units. If buffering raw data, units are metres, unless `sf::sf_use_s2()` is
+set to `FALSE`, in which case the units are degrees.</p></dd>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p><code>string</code>; name of raster or column in sf object that is returned</p></dd>
+<dd><p>`string`; name of raster or column in sf object that is returned</p></dd>
 
 
 <dt id="arg-antimeridian">antimeridian<a class="anchor" aria-label="anchor" href="#arg-antimeridian"></a></dt>
-<dd><p>Does <code>spatial_grid</code> span the antimeridian? If so, this
-should be set to <code>TRUE</code>, otherwise set to <code>FALSE</code>. If set to <code>NULL</code>
-(default) the function will try to check if <code>spatial_grid</code> spans the
+<dd><p>Does `spatial_grid` span the antimeridian? If so, this
+should be set to `TRUE`, otherwise set to `FALSE`. If set to `NULL`
+(default) the function will try to check if `spatial_grid` spans the
 antimeridian and set this appropriately.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For buffered seamounts as gridded data, a <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> or <code>sf</code>
-object, depending on the <code>spatial_grid</code> format. If <code>raw = TRUE</code> and <code>buffer = NULL</code> an <code>sf</code> POINT geometry object of seamount peaks within the polygon
-provided. If <code>raw = TRUE</code> and <code>buffer</code> is not <code>NULL</code> an <code>sf</code> polygon
-geometry object of buffered seamount peaks within the polygon provided.
-Note: at present, it is not possible to return gridded seamount peaks:
-https://github.com/emlab-ucsb/oceandatr/issues/48</p>
+    <p>For buffered seamounts as gridded data, a `terra::rast()` or `sf`
+  object, depending on the `spatial_grid` format. If `raw = TRUE` and `buffer
+  = NULL` an `sf` POINT geometry object of seamount peaks within the polygon
+  provided. If `raw = TRUE` and `buffer` is not `NULL` an `sf` polygon
+  geometry object of buffered seamount peaks within the polygon provided.
+  Note: at present, it is not possible to return gridded seamount peaks:
+  https://github.com/emlab-ucsb/oceandatr/issues/48</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Seamounts are classified as peaks at least 1000m higher than the
-surrounding seafloor <a href="https://doi.org/10.3354/meps07268" class="external-link">Morato et al. 2008</a>. The seamounts peak dataset is
-from <a href="https://doi.org/10.14324/111.444/ucloe.000030" class="external-link">Yeson et al. 2021</a>.
-<a href="https://doi.org/10.1073/pnas.0910290107" class="external-link">Morato et al. 2010</a> found that
-seamounts have higher biodiversity within 30 - 40 km of the peak. To enable
-this radius of higher biodiversity to be included in conservation planning,
-the <code>buffer</code> argument can be set, so that each seamount peak is buffered to
-the radius specified</p>
+  surrounding seafloor [Morato et al.
+  2008](https://doi.org/10.3354/meps07268). The seamounts peak dataset is
+  from [Yeson et al. 2021](https://doi.org/10.14324/111.444/ucloe.000030).
+  [Morato et al. 2010](https://doi.org/10.1073/pnas.0910290107) found that
+  seamounts have higher biodiversity within 30 - 40 km of the peak. To enable
+  this radius of higher biodiversity to be included in conservation planning,
+  the `buffer` argument can be set, so that each seamount peak is buffered to
+  the radius specified</p>
     </div>
 
     <div class="section level2">

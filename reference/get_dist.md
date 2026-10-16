@@ -1,9 +1,8 @@
 # Get distance to port or shore for a spatial grid
 
 Calculates distance from shore, port or anchorage for each grid cell in
-the provided spatial grid. Spatial grid can be
-[`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-or `sf` format.
+the provided spatial grid. Spatial grid can be \`terra::rast()\` or
+\`sf\` format.
 
 ## Usage
 
@@ -22,52 +21,47 @@ get_dist(
 
 - spatial_grid:
 
-  `sf` or
-  [`terra::rast()`](https://rspatial.github.io/terra/reference/rast.html)
-  grid, e.g. created using
-  [`get_grid()`](https://emlab-ucsb.github.io/oceandatr/reference/get_grid.md).
-  Alternatively, if raw data is required, an `sf` polygon can be
-  provided, e.g. created using
-  [`get_boundary()`](https://emlab-ucsb.github.io/oceandatr/reference/get_boundary.md),
-  and set `raw = TRUE`.
+  \`sf\` or \`terra::rast()\` grid, e.g. created using \`get_grid()\`.
+  Alternatively, if raw data is required, an \`sf\` polygon can be
+  provided, e.g. created using \`get_boundary()\`, and set \`raw =
+  TRUE\`.
 
 - dist_to:
 
-  `character` which data to use to calculate distance to. Default is
-  `"shore"` (Natural Earth land polygons); other possible values are
-  `"ports"` (WPI Ports), `"anchorages_land_masked"`,
-  `"anchorages_grouped"` and `"anchorages_all"` (GFW anchorages).
+  \`character\` which data to use to calculate distance to. Default is
+  \`"shore"\` (Natural Earth land polygons); other possible values are
+  \`"ports"\` (WPI Ports), \`"anchorages_land_masked"\`,
+  \`"anchorages_grouped"\` and \`"anchorages_all"\` (GFW anchorages).
 
 - raw:
 
-  `logical` set to TRUE to retrieve the raw shore, port or anchorage
-  data within the extent of the `spatial_grid`. Note that the closest
+  \`logical\` set to TRUE to retrieve the raw shore, port or anchorage
+  data within the extent of the \`spatial_grid\`. Note that the closest
   shore, port or anchorage may be outside the extent.
 
 - inverse:
 
-  `logical` set to `TRUE` to get the inverse of distance, i.e. highest
-  values become lowest and vice versa. Can be useful if the result is to
-  be used as a proxy for fishing activity, where the closer a grid cell
-  is to the port or shore, the more fishing activity there might be.
-  Default is `FALSE`.
+  \`logical\` set to \`TRUE\` to get the inverse of distance, i.e.
+  highest values become lowest and vice versa. Can be useful if the
+  result is to be used as a proxy for fishing activity, where the closer
+  a grid cell is to the port or shore, the more fishing activity there
+  might be. Default is \`FALSE\`.
 
 - name:
 
-  `string`; name of raster or column in sf object that is returned
+  \`string\`; name of raster or column in sf object that is returned
 
 - antimeridian:
 
-  Does `spatial_grid` span the antimeridian? If so, this should be set
-  to `TRUE`, otherwise set to `FALSE`. If set to `NULL` (default) the
-  function will try to check if `spatial_grid` spans the antimeridian
-  and set this appropriately.
+  Does \`spatial_grid\` span the antimeridian? If so, this should be set
+  to \`TRUE\`, otherwise set to \`FALSE\`. If set to \`NULL\` (default)
+  the function will try to check if \`spatial_grid\` spans the
+  antimeridian and set this appropriately.
 
 ## Value
 
-a [`terra::rast`](https://rspatial.github.io/terra/reference/rast.html)
-or `sf` object (same type as `spatial_grid` input) with distance to
-shore for each grid cell.
+a \`terra::rast\` or \`sf\` object (same type as \`spatial_grid\` input)
+with distance to shore for each grid cell.
 
 ## Shore
 
@@ -93,7 +87,7 @@ expensive. Anchorages close together have the same names, so to reduce
 the number of anchorages, they are aggregated by iso3 code (country
 code) and label (name) and the mean longitude and latitude coordinates
 obtained to get one anchorage point per name in each country. This data
-can be used by specifying `dist_to = "anchorages_grouped"`.
+can be used by specifying \`dist_to = "anchorages_grouped"\`.
 
 To further reduce the number of points, anchorages within countries'
 land boundaries, e.g. along rivers, can be removed. I do this by
@@ -102,11 +96,11 @@ avoid cutting off coastal anchorages that fall within the land boundary,
 due to inaccuracies in the Natural Earth land boundaries, e.g. for
 islands and other small scale coastlines, and then masking points that
 fall within the resulting polygons. This data can be used by specifying
-`dist_to = "anchorages_land_masked"`.
+\`dist_to = "anchorages_land_masked"\`.
 
-The full anchorages dataset can be used by specifying
-`dist_to = "anchorages_all"`, but this option may take a long time to
-calculate and/ or cause your system to hang.
+The full anchorages dataset can be used by specifying \`dist_to =
+"anchorages_all"\`, but this option may take a long time to calculate
+and/ or cause your system to hang.
 
 ## Examples
 
