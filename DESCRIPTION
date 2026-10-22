@@ -21,7 +21,6 @@ Imports:
     graphics,
     stats,
     rlang,
-    RNetCDF,
     checkmate,
     oceandatrsets (>= 0.1),
     utils,
