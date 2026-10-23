@@ -1,5 +1,12 @@
 # oceandatr (development version)
 
+# oceandatr 0.6.1
+* Fix get_bathymetry() for areas that need more than one download chunk: every chunk but the northernmost was written one raster row too far north, so the bathymetry was shifted by one cell (15 arc seconds) from the first chunk boundary southwards, one row of data was lost at the boundary, and the southernmost row was never written. Areas that are a single chunk were not affected.
+* Fix get_bathymetry() silently returning incomplete bathymetry when a download is interrupted. The GEBCO data are now downloaded with httr2 instead of RNetCDF, because when a download was cut short (e.g. an HTTP/2 stream error) the netcdf library reported the error to the console but returned the part of the chunk that was not received as zeros, with no R error. Each response is now checked to be complete, and downloads that fail are tried again up to 3 times. This removes the `RNetCDF` dependency.
+* Fix the position of the bathymetry downloaded by get_bathymetry(): the coordinates of the GEBCO grid are the centres of its cells, but were used as the edges of the raster, so the data were half a cell (7.5 arc-seconds) north and east of their true position. 
+* Fix get_bathymetry() leaving out the last column of the GEBCO grid when an area reaches 180 degrees longitude, so for areas that cross the antimeridian the bathymetry stopped one cell short of it, leaving a strip with no data. The same applied to the last row of the grid for areas reaching 90 degrees north. Downloaded bathymetry rasters are one row and one column larger as a result.
+* Downloaded bathymetry is now saved in files named "bathy_gebco2026_..." instead of "bathy_...", so that files saved by earlier versions (which have the position errors fixed in this version) are not used when path is set to a folder that already has them. 
+
 # oceandatr 0.6.0
 * Switch to internal functions to access Marine Regions data and Bio-Oracle data on ERDDAP server. This removes `mregions2` and `rerddap` external dependencies, but adds the light dependency `jsonlite`.
 * Add better handling of errors when APIs/ web files are unreachable or stop downloading part way through.
