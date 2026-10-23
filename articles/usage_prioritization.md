@@ -234,10 +234,13 @@ fishing_effort <- get_gfw(spatial_grid = pacific_hs_planning_grid, start_year = 
   setNames("fishing_effort")
 
 tm_shape(fishing_effort) +
-  tm_raster(col.scale = tm_scale(values = "viridis"),
+  tm_raster(col.scale = tm_scale_continuous(values = "viridis",
+                                            ticks = as.numeric(minmax(fishing_effort)),
+                                            labels = c("Low", "High")),
             col.legend = tm_legend(orientation = "landscape",
-                                   title = "", 
-                                   text.size = 1))
+                                   title = "",
+                                   position = tm_pos_out("center", "bottom", pos.h = "center"),
+                                   text.size = 1.4))
 ```
 
 ![Map of total apparent fishing effort in 2022 for the Pacific High Seas
@@ -275,7 +278,7 @@ tm_shape(sol) +
     col.legend = tm_legend(title = "",
                            orientation = "landscape",
                            position = tm_pos_out("center", "bottom", pos.h = "center"), 
-                           text.size = 1)) +
+                           text.size = 1.4)) +
   tm_shape(pacific_hs) +
   tm_borders()
 ```

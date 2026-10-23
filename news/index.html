@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oceandatr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="oceandatr-development-version">oceandatr (development version)<a class="anchor" aria-label="anchor" href="#oceandatr-development-version"></a></h2>
 </div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.1" id="oceandatr-061">oceandatr 0.6.1<a class="anchor" aria-label="anchor" href="#oceandatr-061"></a></h2>
+<ul><li>Fix get_bathymetry() for areas that need more than one download chunk: every chunk but the northernmost was written one raster row too far north, so the bathymetry was shifted by one cell (15 arc seconds) from the first chunk boundary southwards, one row of data was lost at the boundary, and the southernmost row was never written. Areas that are a single chunk were not affected.</li>
+<li>Fix get_bathymetry() silently returning incomplete bathymetry when a download is interrupted. The GEBCO data are now downloaded with httr2 instead of RNetCDF, because when a download was cut short (e.g. an HTTP/2 stream error) the netcdf library reported the error to the console but returned the part of the chunk that was not received as zeros, with no R error. Each response is now checked to be complete, and downloads that fail are tried again up to 3 times. This removes the <code>RNetCDF</code> dependency.</li>
+<li>Fix the position of the bathymetry downloaded by get_bathymetry(): the coordinates of the GEBCO grid are the centres of its cells, but were used as the edges of the raster, so the data were half a cell (7.5 arc-seconds) north and east of their true position.</li>
+<li>Fix get_bathymetry() leaving out the last column of the GEBCO grid when an area reaches 180 degrees longitude, so for areas that cross the antimeridian the bathymetry stopped one cell short of it, leaving a strip with no data. The same applied to the last row of the grid for areas reaching 90 degrees north. Downloaded bathymetry rasters are one row and one column larger as a result.</li>
+<li>Downloaded bathymetry is now saved in files named “bathy_gebco2026_…” instead of “bathy_…”, so that files saved by earlier versions (which have the position errors fixed in this version) are not used when path is set to a folder that already has them.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="oceandatr-060">oceandatr 0.6.0<a class="anchor" aria-label="anchor" href="#oceandatr-060"></a></h2>
 <ul><li>Switch to internal functions to access Marine Regions data and Bio-Oracle data on ERDDAP server. This removes <code>mregions2</code> and <code>rerddap</code> external dependencies, but adds the light dependency <code>jsonlite</code>.</li>

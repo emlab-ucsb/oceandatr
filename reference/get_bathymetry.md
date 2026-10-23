@@ -115,7 +115,7 @@ bathymetry <- get_bathymetry(spatial_grid = bermuda_eez,
                              raw = TRUE, 
                              classify_bathymetry = FALSE)
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully saved to /tmp/RtmpCn5uGe/bathy_-68.92_-60.7_28.91_35.81.tif
+#> Finished! Data successfully saved to /tmp/RtmpJakd1Y/bathy_gebco2026_-68.92_-60.7_28.91_35.81.tif
 terra::plot(bathymetry)
 
 # Get depth zones in spatial_grid
@@ -129,7 +129,7 @@ bermuda_grid <- get_grid(boundary = bermuda_eez,
                          
 depth_zones <- get_bathymetry(spatial_grid = bermuda_grid)
 #> Downloaded and saved data chunk 1 of 1
-#> Finished! Data successfully saved to /tmp/RtmpCn5uGe/bathy_-68.94_-60.68_28.9_35.81.tif
+#> Finished! Data successfully saved to /tmp/RtmpJakd1Y/bathy_gebco2026_-68.94_-60.68_28.9_35.81.tif
 terra::plot(depth_zones)
 
 
@@ -138,7 +138,7 @@ terra::plot(depth_zones)
   
 gridded_bathymetry <- get_bathymetry(spatial_grid = bermuda_grid, 
                                      classify_bathymetry = FALSE)
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmpCn5uGe/bathy_-68.94_-60.68_28.9_35.81.tif
+#> Bathymetry data already downloaded, loading data from: /tmp/RtmpJakd1Y/bathy_gebco2026_-68.94_-60.68_28.9_35.81.tif
                                      
 terra::plot(gridded_bathymetry)
 ```

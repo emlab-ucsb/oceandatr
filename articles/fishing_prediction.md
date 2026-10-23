@@ -5,7 +5,10 @@
 library(oceandatr)
 library(terra)
 library(sf)
+#> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
 library(mgcv) #for Generalized Additive Modelling
+#> Loading required package: nlme
+#> This is mgcv 1.9-4. For overview type '?mgcv'.
 ```
 
 We will create a Generalized Additive Model (GAM) of fishing effort in
@@ -23,8 +26,6 @@ Download FSM’s EEZ using `oceandatr`
 ``` r
 
 fsm <- get_boundary("Micronesia")
-#> Cache is fresh. Reading: '/tmp/RtmpmxUBrw/eez-9e33e424/eez.shp'
-#> (Last Modified: 2026-07-03 10:22:32.424902)
 
 plot(fsm[,1], axes = T)
 ```
@@ -92,7 +93,6 @@ fishing_effort <- get_gfw(fsm_grid,
                           end_year = 2025,
                           group_by = "location",
                           summarise = "mean_total_annual_effort")
-#> GFW data already downloaded, using cached version
 
 plot(log(fishing_effort+1))
 lines(fsm_eez_proj, col = "orange", lwd = 0.5)
@@ -117,8 +117,6 @@ can download FSM’s 12nm polygons and mask the fishing effort data.
 
 fsm_12nm <- get_boundary("Micronesia", type = "12nm") |>
   sf::st_transform(fsm_proj)
-#> Cache is fresh. Reading: '/tmp/RtmpmxUBrw/eez_12nm-77146a5e/eez_12nm.shp'
-#> (Last Modified: 2026-07-03 10:23:23.333102)
 
 fishing_effort_masked <- mask(fishing_effort, mask = fsm_12nm, inverse = TRUE)
 
@@ -145,7 +143,13 @@ downloaded, gridded, and transformed to the correct CRS using
 # seafloor depth
 bathy <- get_bathymetry(spatial_grid = fsm_grid,
                         classify_bathymetry = FALSE)
-#> Bathymetry data already downloaded, loading data from: /tmp/RtmpmxUBrw/bathy_135.32_165.68_-1.17_13.44.tif
+#> Downloaded and saved data chunk 1 of 6
+#> Downloaded and saved data chunk 2 of 6
+#> Downloaded and saved data chunk 3 of 6
+#> Downloaded and saved data chunk 4 of 6
+#> Downloaded and saved data chunk 5 of 6
+#> Downloaded and saved data chunk 6 of 6
+#> Finished! Data successfully saved to /tmp/Rtmpp8tIWj/bathy_gebco2026_135.32_165.68_-1.17_13.44.tif
 
 # distance to ports data
 dist_port <- get_dist(spatial_grid = fsm_grid,
@@ -236,26 +240,26 @@ fishing_model <- mgcv::gam(
 #> 
 #> Parametric coefficients:
 #>             Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  1.42992    0.00345   414.5   <2e-16 ***
+#> (Intercept) 1.540148   0.003554   433.3   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Approximate significance of smooth terms:
 #>                        edf Ref.df      F p-value    
-#> s(bathymetry)        8.461  8.922  18.41  <2e-16 ***
-#> s(dist_ports)        8.711  8.977  61.78  <2e-16 ***
-#> s(Mean_temp)         8.892  8.995  99.89  <2e-16 ***
-#> s(Dissolved_oxygen)  8.593  8.957  35.27  <2e-16 ***
-#> s(x,y)              31.332 31.847 330.51  <2e-16 ***
+#> s(bathymetry)        7.651  8.562  11.18  <2e-16 ***
+#> s(dist_ports)        8.764  8.985  54.58  <2e-16 ***
+#> s(Mean_temp)         8.883  8.995  92.37  <2e-16 ***
+#> s(Dissolved_oxygen)  8.543  8.946  31.47  <2e-16 ***
+#> s(x,y)              31.541 31.927 336.51  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> R-sq.(adj) =   0.49   Deviance explained = 49.1%
-#> -REML =  18902  Scale est. = 0.28241   n = 23726
+#> R-sq.(adj) =  0.499   Deviance explained =   50%
+#> -REML =  19076  Scale est. = 0.29461   n = 23320
 ```
 
 The model successfully captured the spatial distribution of fishing
-effort (adjusted R² = 0.490) and all predictor variables had highly
+effort (adjusted R² = 0.499) and all predictor variables had highly
 significant, non-linear effects (p \< 0.001)
 
 We can predict fishing effort using the GAM for the same model grid we
